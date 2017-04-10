@@ -1,23 +1,16 @@
 ﻿enum EnemyType
 {
 }
-class Enemy //extends Ship
+class Enemy extends Ship
 {
     private direction: Vector2;
     private enemyType: EnemyType;
 
-    //constructor(_healthMod: number, _speedMod: number)
-   // {
-
-    //}
-
-    public OnHit(_amount: number)
+    constructor(game: Phaser.Game, healthMod: number, speedMod: number)
     {
-        //this.health -= _amount;
+        super(game);
     }
-    private Destroy()
-    {
-        
-    }
+
+    
 
 }

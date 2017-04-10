@@ -4,24 +4,75 @@ class App {
         this.game.stage = new Phaser.Stage(this.game);
     }
     create() {
-        this.initStates();
-        this.game.state.start("Preload");
-    }
-    initStates() {
+        //this.initStates();
         this.game.state.add("Preload", Preloader);
         this.game.state.add("Game", GameState);
+        this.game.state.start("Preload");
+        //this.game.state.add("Game", GameState);
+    }
+    initStates() {
     }
 }
 window.onload = () => {
     var greeter = new App();
 };
+var EnemyType;
+(function (EnemyType) {
+})(EnemyType || (EnemyType = {}));
+class Enemy extends Ship {
+    constructor(game, healthMod, speedMod) {
+        super(game);
+    }
+}
+class MovementPattern {
+}
 class GameState extends Phaser.State {
+    create() {
+        this.player = new Player(this.game);
+    }
 }
 class Preloader extends Phaser.State {
     preload() {
+        this.game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
     }
     create() {
         this.game.state.start("Game");
+    }
+}
+class Ship extends Phaser.Sprite {
+    constructor(game) {
+        super(game, 0, 0);
+        this.game = game;
+    }
+    onHit(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+    die() {
+        //this.destroy();
+    }
+}
+/// <reference path="../Ship.ts"/>
+class Player extends Ship {
+    constructor(game) {
+        super(game);
+        this.loadTexture("tempship");
+        this.game.add.existing(this);
+        this.speed = 10;
+        this.scale.set(0.25);
+        this.anchor.set(0.5);
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.arcade.enable(this);
+    }
+    update() {
+        if (this.game.input.mousePointer.isDown) {
+            var dirx = (this.game.input.x - this.x) / 100;
+            var diry = (this.game.input.y - this.y) / 100;
+            this.x += dirx * this.speed;
+            this.y += diry * this.speed;
+        }
     }
 }
 class Vector2 {
