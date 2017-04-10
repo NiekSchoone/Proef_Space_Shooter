@@ -8,14 +8,15 @@
     }
 
     create() {
-        this.initStates();
+        //this.initStates();
+        this.game.state.add("Preload", Preloader);
+        this.game.state.add("Game", GameState);
         this.game.state.start("Preload");
+        //this.game.state.add("Game", GameState);
     }
 
     initStates()
     {
-        this.game.state.add("Preload", Preloader);
-        this.game.state.add("Game", GameState);
     }
 }
 
