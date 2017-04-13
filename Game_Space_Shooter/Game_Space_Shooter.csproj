@@ -23,6 +23,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\Images\background_001.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\Images\background_002.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
     <Content Include="Phaser\phaser.min.js" />
@@ -35,6 +41,11 @@
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\GameStates\GameState.ts" />
     <TypeScriptCompile Include="src\GameStates\Preloader.ts" />
+    <TypeScriptCompile Include="src\Level\Level.ts" />
+    <TypeScriptCompile Include="src\Projectiles\Missile.ts" />
+    <TypeScriptCompile Include="src\Projectiles\PlasmaBullet.ts" />
+    <TypeScriptCompile Include="src\Projectiles\Projectile.ts" />
+    <TypeScriptCompile Include="src\Projectiles\ProjectilePool.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -47,12 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\Audio\" />
-    <Folder Include="assets\Images\" />
     <Folder Include="assets\SpriteSheets\" />
     <Folder Include="src\Enemies\" />
-    <Folder Include="src\Level\" />
     <Folder Include="src\Player\" />
-    <Folder Include="src\Projectiles\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

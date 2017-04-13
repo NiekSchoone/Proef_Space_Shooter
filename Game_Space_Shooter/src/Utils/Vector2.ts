@@ -90,6 +90,17 @@
         return dest;
     }
 
+    static distance(a: Vector2, b: Vector2): number {
+        return Math.sqrt(this.squaredDistance(a, b));
+    }
+
+    static squaredDistance(a: Vector2, b: Vector2): number {
+        var x = b.x - a.x,
+            y = b.y - a.y;
+
+        return (x * x + y * y);
+    }
+
     static direction(vector: Vector2, vector2: Vector2, dest: Vector2 = null): Vector2 {
         if (!dest) dest = new Vector2();
 
