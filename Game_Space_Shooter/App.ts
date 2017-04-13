@@ -7,15 +7,10 @@ class App {
         game.stage = new Phaser.Stage(game);
     }
 
-    private create() {
-        game.state.add("Preload", Preloader);
-        game.state.add("Game", GameState);
-
-        game.state.start("Preload");
-    }
-
-    private initStates()
-    {
+    create() {
+        this.game.state.add("Preload", Preloader);
+        this.game.state.add("Game", GameState);
+        this.game.state.start("Preload");
     }
 }
 
