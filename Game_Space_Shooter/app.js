@@ -24,6 +24,8 @@ class MovementPattern {
 }
 class GameState extends Phaser.State {
     create() {
+        this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
+        this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.player = new Player(this.game);
         this.level = new Level('background');
     }
@@ -65,21 +67,22 @@ class Level {
     }
 }
 class Missile extends Projectile {
-    constructor(_pos, _vel) {
-        super(_pos, _vel);
+    constructor(_pos, _vel, _toPool) {
+        super(_pos, _vel, _toPool);
         this.projectileType = ProjectileType.MISSILE;
     }
 }
 class PlasmaBullet extends Projectile {
-    constructor(_pos, _vel) {
-        super(_pos, _vel);
+    constructor(_pos, _vel, _toPool) {
+        super(_pos, _vel, _toPool);
         this.projectileType = ProjectileType.PLASMABULLET;
     }
 }
 class Projectile {
-    constructor(_pos, _vel) {
+    constructor(_pos, _vel, _toPool) {
         this.position = _pos;
         this.velocity = _vel;
+        this.returnToPool = _toPool;
     }
     update() {
         this.checkCollision();
@@ -97,6 +100,7 @@ class Projectile {
     }
     onHit(_target) {
         _target.onHit(this.projectileType);
+        this.returnToPool(this);
     }
     setTarget(_targets) {
         for (let i = 0; i < _targets.length; i++) {
@@ -110,24 +114,76 @@ var ProjectileType;
     ProjectileType[ProjectileType["MISSILE"] = 1] = "MISSILE";
 })(ProjectileType || (ProjectileType = {}));
 class ProjectilePool {
-    constructor() {
+    constructor(_type) {
+        this.poolType = _type;
+        this.available = new Array();
+        this.inUse = new Array();
+        this.projectileCount = 0;
     }
     getProjectile() {
-        if (this.available.length > 0) {
-            let projectile = this.available[0];
+        let projectile;
+        if (this.available.length != 0) {
+            projectile = this.available.pop();
+            this.inUse.push(projectile);
             return projectile;
         }
         else {
-            return this.available[0];
+            projectile = this.addProjectile();
+            this.inUse.push(projectile);
+            return projectile;
         }
     }
-    returnProjectile() {
+    returnProjectile(projectile) {
+        let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
+        this.inUse.splice(index, 1);
+        this.available.push(projectile);
     }
     addProjectile() {
-        let newProjectile = new Projectile(new Vector2(0, 0), new Vector2(0, 0));
-        this.available.push(newProjectile);
+        let newProjectile;
+        if (this.poolType == ProjectileType.PLASMABULLET) {
+            newProjectile = new PlasmaBullet(new Vector2(0, 0), new Vector2(0, 0), this.returnProjectile);
+            newProjectile.projectileIndex = this.projectileCount;
+            this.projectileCount++;
+            return newProjectile;
+        }
+        else if (this.poolType == ProjectileType.MISSILE) {
+            newProjectile = new Missile(new Vector2(0, 0), new Vector2(0, 0), this.returnProjectile);
+            newProjectile.projectileIndex = this.projectileCount;
+            this.projectileCount++;
+            return newProjectile;
+        }
+        else {
+            throw "Incorrect type specified for object pool";
+        }
+    }
+    compare(a, b) {
+        if (a.projectileIndex < b.projectileIndex) {
+            return -1;
+        }
+        else if (a.projectileIndex > b.projectileIndex) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 }
+class Ship extends Phaser.Sprite {
+    constructor(game) {
+        super(game, 0, 0);
+        this.game = game;
+    }
+    onHit(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+    die() {
+        //this.destroy();
+    }
+}
+/// <reference path="../Ship.ts"/>
 class Player extends Ship {
     constructor(game) {
         super(game);
@@ -146,21 +202,6 @@ class Player extends Ship {
             this.x += dirx * this.speed;
             this.y += diry * this.speed;
         }
-    }
-}
-class Ship extends Phaser.Sprite {
-    constructor(game) {
-        super(game, 0, 0);
-        this.game = game;
-    }
-    onHit(amount) {
-        this.health -= amount;
-        if (this.health <= 0) {
-            this.die();
-        }
-    }
-    die() {
-        //this.destroy();
     }
 }
 class Vector2 {
