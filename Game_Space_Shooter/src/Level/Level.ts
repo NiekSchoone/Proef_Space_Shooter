@@ -1,4 +1,5 @@
 ﻿class Level {
+
     private background: string;
     private scrollSpeed: number;
     private scrollY: number;

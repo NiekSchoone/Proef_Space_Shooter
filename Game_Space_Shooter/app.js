@@ -8,14 +8,23 @@ class App {
         game.state.add("Game", GameState);
         game.state.start("Preload");
     }
-    initStates() {
-    }
 }
 window.onload = () => {
-    var greeter = new App();
+    var app = new App();
 };
+var EnemyType;
+(function (EnemyType) {
+})(EnemyType || (EnemyType = {}));
+class Enemy extends Ship {
+    constructor(game, healthMod, speedMod) {
+        super(game);
+    }
+}
+class MovementPattern {
+}
 class GameState extends Phaser.State {
     create() {
+        this.player = new Player(this.game);
         this.level = new Level('background');
     }
     update() {
@@ -25,6 +34,7 @@ class GameState extends Phaser.State {
 class Preloader extends Phaser.State {
     preload() {
         game.load.spritesheet('background', 'assets/Images/background_002.jpg', 512, 2048, 4);
+        game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
     }
     create() {
         this.game.state.start("Game");
@@ -54,10 +64,20 @@ class Level {
         this.scrollBackground();
     }
 }
+class Missile extends Projectile {
+    constructor(_pos, _vel) {
+        super(_pos, _vel);
+        this.projectileType = ProjectileType.MISSILE;
+    }
+}
+class PlasmaBullet extends Projectile {
+    constructor(_pos, _vel) {
+        super(_pos, _vel);
+        this.projectileType = ProjectileType.PLASMABULLET;
+    }
+}
 class Projectile {
-    constructor(_tex, _type, _pos, _vel) {
-        this.texture = _tex;
-        this.type = _type;
+    constructor(_pos, _vel) {
         this.position = _pos;
         this.velocity = _vel;
     }
@@ -65,16 +85,18 @@ class Projectile {
         this.checkCollision();
     }
     checkCollision() {
-        if (this.targets != null) {
+        /*if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
                 let distance = Vector2.distance(this.position, this.targets[i].position);
+
                 if (distance < this.targets[i].collisionRadius) {
                     this.onHit(this.targets[i]);
                 }
             }
-        }
+        }*/
     }
     onHit(_target) {
+        _target.onHit(this.projectileType);
     }
     setTarget(_targets) {
         for (let i = 0; i < _targets.length; i++) {
@@ -89,9 +111,56 @@ var ProjectileType;
 })(ProjectileType || (ProjectileType = {}));
 class ProjectilePool {
     constructor() {
-        this.pool = [];
     }
-    GetObject() {
+    getProjectile() {
+        if (this.available.length > 0) {
+            let projectile = this.available[0];
+            return projectile;
+        }
+        else {
+            return this.available[0];
+        }
+    }
+    returnProjectile() {
+    }
+    addProjectile() {
+        let newProjectile = new Projectile(new Vector2(0, 0), new Vector2(0, 0));
+        this.available.push(newProjectile);
+    }
+}
+class Player extends Ship {
+    constructor(game) {
+        super(game);
+        this.loadTexture("tempship");
+        this.game.add.existing(this);
+        this.speed = 10;
+        this.scale.set(0.25);
+        this.anchor.set(0.5);
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.arcade.enable(this);
+    }
+    update() {
+        if (this.game.input.mousePointer.isDown) {
+            var dirx = (this.game.input.x - this.x) / 100;
+            var diry = (this.game.input.y - this.y) / 100;
+            this.x += dirx * this.speed;
+            this.y += diry * this.speed;
+        }
+    }
+}
+class Ship extends Phaser.Sprite {
+    constructor(game) {
+        super(game, 0, 0);
+        this.game = game;
+    }
+    onHit(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+    die() {
+        //this.destroy();
     }
 }
 class Vector2 {

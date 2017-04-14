@@ -8,12 +8,13 @@ class App {
     }
 
     create() {
-        this.game.state.add("Preload", Preloader);
-        this.game.state.add("Game", GameState);
-        this.game.state.start("Preload");
+        game.state.add("Preload", Preloader);
+        game.state.add("Game", GameState);
+
+        game.state.start("Preload");
     }
 }
 
 window.onload = () => {
-    var greeter = new App();
+    var app = new App();
 };

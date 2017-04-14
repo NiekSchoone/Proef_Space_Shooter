@@ -35,18 +35,22 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="App.ts" />
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
-    <TypeScriptCompile Include="src\GameStates\GameState.ts" />
-    <TypeScriptCompile Include="src\GameStates\Preloader.ts" />
+	<TypeScriptCompile Include="src\Utils\Vector2.ts" />
+    <TypeScriptCompile Include="src\Ships\Ship.ts" />
+	<TypeScriptCompile Include="src\Ships\Player\Player.ts" />
+    <TypeScriptCompile Include="src\Enemies\Enemy.ts" />
+    <TypeScriptCompile Include="src\Enemies\MovementPattern\MovementPattern.ts" />
     <TypeScriptCompile Include="src\Level\Level.ts" />
+    <TypeScriptCompile Include="src\Projectiles\Projectile.ts" />
     <TypeScriptCompile Include="src\Projectiles\Missile.ts" />
     <TypeScriptCompile Include="src\Projectiles\PlasmaBullet.ts" />
-    <TypeScriptCompile Include="src\Projectiles\Projectile.ts" />
     <TypeScriptCompile Include="src\Projectiles\ProjectilePool.ts" />
-    <TypeScriptCompile Include="src\Utils\Vector2.ts" />
+    <TypeScriptCompile Include="src\GameStates\GameState.ts" />
+    <TypeScriptCompile Include="src\GameStates\Preloader.ts" />
+    <TypeScriptCompile Include="App.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
@@ -59,7 +63,6 @@
   <ItemGroup>
     <Folder Include="assets\Audio\" />
     <Folder Include="assets\SpriteSheets\" />
-    <Folder Include="src\Enemies\" />
     <Folder Include="src\Player\" />
   </ItemGroup>
   <PropertyGroup>
