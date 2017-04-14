@@ -2,6 +2,7 @@
 class Player extends Ship
 {
     private mouseDown: boolean;
+    private moveDir : Vector2;
 
     constructor(game: Phaser.Game)
     {
@@ -15,17 +16,17 @@ class Player extends Ship
         this.anchor.set(0.5);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(this);
+        this.moveDir = new Vector2();
     }
 
     update()
     {
         if (this.game.input.mousePointer.isDown)
         {
-            var dirx = (this.game.input.x - this.x) / 100;
-            var diry = (this.game.input.y - this.y) / 100;
-
-            this.x += dirx * this.speed;
-            this.y += diry * this.speed;
+            this.moveDir.X = (this.game.input.x - this.x) / 100;
+            this.moveDir.Y = (this.game.input.y - this.y) / 100;
+            this.x += this.moveDir.X * this.speed;
+            this.y += this.moveDir.Y * this.speed;
         }
     }
                                   
