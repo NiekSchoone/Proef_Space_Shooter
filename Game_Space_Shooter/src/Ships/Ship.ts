@@ -12,15 +12,8 @@
         this.game = game;
     }
 
-    public die()
-    {
-
+    public fire() {
     }
-
-    public fire()
-    {
-
-=======
     public onHit(amount: number) {
         this.health -= amount;
         if (this.health <= 0) {
@@ -29,6 +22,5 @@
     }
     private die() {
         //this.destroy();
->>>>>>> ec05dd27e1efa22f2b87470b7056df56c0073940
     }
 }
