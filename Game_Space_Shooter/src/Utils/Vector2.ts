@@ -7,7 +7,7 @@
         return this.x;
     }
     get Y(): number {
-        return this.x;
+        return this.y;
     }
 
     set X(value: number) {

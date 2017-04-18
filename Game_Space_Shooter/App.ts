@@ -1,20 +1,25 @@
-﻿declare var game: Phaser.Game;
+﻿class App {
 
-class App {
+    private game: Phaser.Game;
 
     constructor() {
-        game = new Phaser.Game(512, 910, Phaser.AUTO, 'content', { create: this.create });
-        game.stage = new Phaser.Stage(game);
+        this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { create: this.create });
+        this.game.stage = new Phaser.Stage(this.game);
     }
 
     create() {
-        game.state.add("Preload", Preloader);
-        game.state.add("Game", GameState);
+        //this.initStates();
+        this.game.state.add("Preload", Preloader);
+        this.game.state.add("Game", GameState);
+        this.game.state.start("Preload");
+        //this.game.state.add("Game", GameState);
+    }
 
-        game.state.start("Preload");
+    initStates()
+    {
     }
 }
 
 window.onload = () => {
-    var app = new App();
+    var greeter = new App();
 };
