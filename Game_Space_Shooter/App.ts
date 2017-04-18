@@ -1,25 +1,18 @@
-﻿class App {
+﻿declare var game: Phaser.Game;
 
-    private game: Phaser.Game;
-
+class App {
     constructor() {
-        this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { create: this.create });
-        this.game.stage = new Phaser.Stage(this.game);
+        game = new Phaser.Game(500, 910, Phaser.AUTO, 'content', { create: this.create });
+        game.stage = new Phaser.Stage(game);
     }
 
     create() {
-        //this.initStates();
-        this.game.state.add("Preload", Preloader);
-        this.game.state.add("Game", GameState);
-        this.game.state.start("Preload");
-        //this.game.state.add("Game", GameState);
-    }
-
-    initStates()
-    {
+        game.state.add("Preload", Preloader);
+        game.state.add("Game", GameState);
+        game.state.start("Preload");
     }
 }
 
 window.onload = () => {
-    var greeter = new App();
+    var app = new App();
 };
