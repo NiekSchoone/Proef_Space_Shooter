@@ -66,6 +66,13 @@ class Level {
         this.scrollBackground();
     }
 }
+class Pickup {
+    constructor(_x, _y) {
+        this.position = new Vector2(_x, _y);
+    }
+    onPickup() {
+    }
+}
 class Missile extends Projectile {
     constructor(_pos, _vel, _toPool) {
         super(_pos, _vel, _toPool);
@@ -88,15 +95,14 @@ class Projectile {
         this.checkCollision();
     }
     checkCollision() {
-        /*if (this.targets != null) {
+        if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
                 let distance = Vector2.distance(this.position, this.targets[i].position);
-
                 if (distance < this.targets[i].collisionRadius) {
                     this.onHit(this.targets[i]);
                 }
             }
-        }*/
+        }
     }
     onHit(_target) {
         _target.onHit(this.projectileType);

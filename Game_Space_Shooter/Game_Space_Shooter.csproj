@@ -38,9 +38,10 @@
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
-	<TypeScriptCompile Include="src\Utils\Vector2.ts" />
+    <TypeScriptCompile Include="src\Utils\Vector2.ts" />
+	<TypeScriptCompile Include="src\Pickups\Pickup.ts" />
     <TypeScriptCompile Include="src\Ships\Ship.ts" />
-	<TypeScriptCompile Include="src\Ships\Player\Player.ts" />
+    <TypeScriptCompile Include="src\Ships\Player\Player.ts" />
     <TypeScriptCompile Include="src\Enemies\Enemy.ts" />
     <TypeScriptCompile Include="src\Enemies\MovementPattern\MovementPattern.ts" />
     <TypeScriptCompile Include="src\Level\Level.ts" />
