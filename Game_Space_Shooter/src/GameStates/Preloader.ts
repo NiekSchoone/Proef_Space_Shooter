@@ -1,10 +1,11 @@
 ﻿class Preloader extends Phaser.State {
     preload() {
-        this.game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
+        game.load.image("background", "assets/Images/background_001.png");
+        game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
     }
 
     create()
     {
-        this.game.state.start("Game");
+        game.state.start("Game");
     }
 }

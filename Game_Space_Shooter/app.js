@@ -1,32 +1,33 @@
 class App {
     constructor() {
-        game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { create: this.create });
+        game = new Phaser.Game(500, 910, Phaser.AUTO, 'content', { create: this.create });
         game.stage = new Phaser.Stage(game);
     }
     create() {
-        //this.initStates();
         game.state.add("Preload", Preloader);
         game.state.add("Game", GameState);
         game.state.start("Preload");
-        //this.game.state.add("Game", GameState);
-    }
-    initStates() {
     }
 }
 window.onload = () => {
-    var greeter = new App();
+    var app = new App();
 };
 class GameState extends Phaser.State {
     create() {
-        this.player = new Player(this.game);
+        this.level = new Level('background');
+        this.player = new Player(game);
+    }
+    update() {
+        this.level.update();
     }
 }
 class Preloader extends Phaser.State {
     preload() {
-        this.game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
+        game.load.image("background", "assets/Images/background_001.png");
+        game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
     }
     create() {
-        this.game.state.start("Game");
+        game.state.start("Game");
     }
 }
 class Level {
@@ -51,6 +52,13 @@ class Level {
     }
     update() {
         this.scrollBackground();
+    }
+}
+class Pickup {
+    constructor(_x, _y) {
+        this.position = new Vector2(_x, _y);
+    }
+    onPickup() {
     }
 }
 class Missile extends Projectile {
