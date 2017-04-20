@@ -1,27 +1,206 @@
 class App {
     constructor() {
-        this.game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { create: this.create });
-        this.game.stage = new Phaser.Stage(this.game);
+        game = new Phaser.Game(800, 600, Phaser.AUTO, 'content', { create: this.create });
+        game.stage = new Phaser.Stage(game);
     }
     create() {
-        this.initStates();
-        this.game.state.start("Preload");
+        //this.initStates();
+        game.state.add("Preload", Preloader);
+        game.state.add("Game", GameState);
+        game.state.start("Preload");
+        //this.game.state.add("Game", GameState);
     }
     initStates() {
-        this.game.state.add("Preload", Preloader);
-        this.game.state.add("Game", GameState);
     }
 }
 window.onload = () => {
     var greeter = new App();
 };
 class GameState extends Phaser.State {
+    create() {
+        this.player = new Player(this.game);
+    }
 }
 class Preloader extends Phaser.State {
     preload() {
+        this.game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
     }
     create() {
         this.game.state.start("Game");
+    }
+}
+class Level {
+    constructor(bg) {
+        this.background = bg;
+        this.scrollSpeed = 15.0;
+        this.backgroundGroup = game.add.group();
+        this.backgroundGroup.createMultiple(1, this.background, [1, 2, 3, 4], true);
+        this.backgroundGroup.align(1, 4, 512, 2048);
+        this.backgroundGroup.y = -4096;
+        this.scrollY = 0;
+    }
+    scrollBackground() {
+        this.backgroundGroup.y += this.scrollSpeed;
+        this.scrollY += this.scrollSpeed;
+        if (this.scrollY > 2048) {
+            this.backgroundGroup.previous();
+            this.backgroundGroup.cursor.y -= 4 * 2048;
+            this.scrollY -= 2048;
+            this.backgroundGroup.cursor.frame = Math.floor(Math.random() * 4) + 1;
+        }
+    }
+    update() {
+        this.scrollBackground();
+    }
+}
+class Missile extends Projectile {
+    constructor(_pos, _vel, _toPool) {
+        super(_pos, _vel, _toPool);
+        this.projectileType = ProjectileType.MISSILE;
+    }
+}
+class PlasmaBullet extends Projectile {
+    constructor(_pos, _vel, _toPool) {
+        super(_pos, _vel, _toPool);
+        this.projectileType = ProjectileType.PLASMABULLET;
+    }
+}
+class Projectile {
+    constructor(_pos, _vel, _toPool) {
+        this.position = _pos;
+        this.velocity = _vel;
+        this.returnToPool = _toPool;
+    }
+    update() {
+        this.checkCollision();
+    }
+    checkCollision() {
+        if (this.targets != null) {
+            for (let i = 0; i < this.targets.length; i++) {
+                let distance = Vector2.distance(this.position, this.targets[i].pos);
+                if (distance < this.targets[i].collisionRadius) {
+                    this.onHit(this.targets[i]);
+                }
+            }
+        }
+    }
+    onHit(_target) {
+        _target.onHit(this.projectileType);
+        this.returnToPool(this);
+    }
+    setTarget(_targets) {
+        for (let i = 0; i < _targets.length; i++) {
+            this.targets.push(_targets[i]);
+        }
+    }
+}
+var ProjectileType;
+(function (ProjectileType) {
+    ProjectileType[ProjectileType["PLASMABULLET"] = 0] = "PLASMABULLET";
+    ProjectileType[ProjectileType["MISSILE"] = 1] = "MISSILE";
+})(ProjectileType || (ProjectileType = {}));
+class ProjectilePool {
+    constructor(_type) {
+        this.poolType = _type;
+        this.available = new Array();
+        this.inUse = new Array();
+        this.projectileCount = 0;
+    }
+    getProjectile() {
+        let projectile;
+        if (this.available.length != 0) {
+            projectile = this.available.pop();
+            this.inUse.push(projectile);
+            return projectile;
+        }
+        else {
+            projectile = this.addProjectile();
+            this.inUse.push(projectile);
+            return projectile;
+        }
+    }
+    returnProjectile(projectile) {
+        let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
+        this.inUse.splice(index, 1);
+        this.available.push(projectile);
+    }
+    addProjectile() {
+        let newProjectile;
+        if (this.poolType == ProjectileType.PLASMABULLET) {
+            newProjectile = new PlasmaBullet(new Vector2(0, 0), new Vector2(0, 0), this.returnProjectile);
+            newProjectile.projectileIndex = this.projectileCount;
+            this.projectileCount++;
+            return newProjectile;
+        }
+        else if (this.poolType == ProjectileType.MISSILE) {
+            newProjectile = new Missile(new Vector2(0, 0), new Vector2(0, 0), this.returnProjectile);
+            newProjectile.projectileIndex = this.projectileCount;
+            this.projectileCount++;
+            return newProjectile;
+        }
+        else {
+            throw "Incorrect type specified for object pool";
+        }
+    }
+    compare(a, b) {
+        if (a.projectileIndex < b.projectileIndex) {
+            return -1;
+        }
+        else if (a.projectileIndex > b.projectileIndex) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+}
+var EnemyType;
+(function (EnemyType) {
+})(EnemyType || (EnemyType = {}));
+class Enemy extends Ship {
+    constructor(game, healthMod, speedMod) {
+        super(game);
+    }
+}
+class MovementPattern {
+}
+class Ship extends Phaser.Sprite {
+    constructor(game) {
+        super(game, 0, 0);
+        this.game = game;
+    }
+    fire() {
+    }
+    onHit(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+    die() {
+        //this.destroy();
+    }
+}
+/// <reference path="../Ship.ts"/>
+class Player extends Ship {
+    constructor(game) {
+        super(game);
+        this.loadTexture("tempship");
+        this.game.add.existing(this);
+        this.speed = 10;
+        this.scale.set(0.25);
+        this.anchor.set(0.5);
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.arcade.enable(this);
+        this.moveDir = new Vector2();
+    }
+    update() {
+        if (this.game.input.mousePointer.isDown) {
+            this.moveDir.X = (this.game.input.x - this.x) / 100;
+            this.moveDir.Y = (this.game.input.y - this.y) / 100;
+            this.x += this.moveDir.X * this.speed;
+            this.y += this.moveDir.Y * this.speed;
+        }
     }
 }
 class Vector2 {
@@ -33,7 +212,7 @@ class Vector2 {
         return this.x;
     }
     get Y() {
-        return this.x;
+        return this.y;
     }
     set X(value) {
         this.x = value;
@@ -88,6 +267,13 @@ class Vector2 {
         dest.x *= length;
         dest.y *= length;
         return dest;
+    }
+    static distance(a, b) {
+        return Math.sqrt(this.squaredDistance(a, b));
+    }
+    static squaredDistance(a, b) {
+        var x = b.x - a.x, y = b.y - a.y;
+        return (x * x + y * y);
     }
     static direction(vector, vector2, dest = null) {
         if (!dest)
