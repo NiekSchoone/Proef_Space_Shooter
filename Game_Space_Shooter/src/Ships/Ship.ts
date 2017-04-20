@@ -5,6 +5,7 @@
     public vectorPosition: Vector2;
     public collisionRadius: number;
     private weapons: Array<Weapon>;
+
     constructor(game: Phaser.Game)
     {
         super(game, 0, 0);

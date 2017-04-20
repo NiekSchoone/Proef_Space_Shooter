@@ -1,6 +1,6 @@
 class App {
     constructor() {
-        game = new Phaser.Game(500, 910, Phaser.AUTO, 'content', { create: this.create });
+        game = new Phaser.Game(512, 910, Phaser.AUTO, 'content', { create: this.create });
         game.stage = new Phaser.Stage(game);
     }
     create() {
@@ -18,8 +18,11 @@ class GameState extends Phaser.State {
         this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.player = new Player(game);
+        this.enemyManager = new EnemyManager(this.plasmaBulletPool);
+        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.1);
     }
     update() {
+        this.enemyManager.update();
         this.level.update();
     }
 }
@@ -115,7 +118,7 @@ class Projectile extends Phaser.Sprite {
     checkCollision() {
         if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
-                let distance = Vector2.distance(this.vectorPosition, this.targets[i].pos);
+                let distance = Vector2.distance(this.vectorPosition, this.targets[i].vectorPosition);
                 if (distance < this.targets[i].collisionRadius) {
                     this.onHit(this.targets[i]);
                 }
@@ -194,13 +197,89 @@ class ProjectilePool {
 }
 var EnemyType;
 (function (EnemyType) {
+    EnemyType[EnemyType["FIGHTER"] = 0] = "FIGHTER";
+    EnemyType[EnemyType["BOMBER"] = 1] = "BOMBER";
+    EnemyType[EnemyType["BOSS"] = 2] = "BOSS";
 })(EnemyType || (EnemyType = {}));
 class Enemy extends Ship {
-    constructor(game, healthMod, speedMod) {
+    constructor(game, type, healthMod, speedMod, pattern) {
         super(game);
+        this.moveDir = new Vector2(0, 0);
+        this.movementPattern = pattern;
+        this.x = this.movementPattern[0].X;
+        this.y = this.movementPattern[0].Y;
+        this.notdead = true;
+        this.currentPosition = new Vector2(this.x, this.y);
+        this.currentMove = 1;
+        switch (type) {
+            case EnemyType.FIGHTER:
+                this.setStats(10 * healthMod, 5 * speedMod);
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOMBER:
+                this.setStats(20 * healthMod, 2 * speedMod);
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOSS:
+                this.setStats(100 * healthMod, 5 * speedMod);
+                this.loadTexture("ship_enemy");
+                break;
+        }
+        this.game.add.existing(this);
+        this.anchor.set(0.5);
+    }
+    update() {
+        super.update();
+        if (this.notdead) {
+            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.x) / 100;
+            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.y) / 100;
+            this.moveDir.normalize();
+            this.x += this.moveDir.X * this.speed;
+            this.y += this.moveDir.Y * this.speed;
+            this.currentPosition.X = this.x;
+            this.currentPosition.Y = this.y;
+            if (Vector2.distance(this.currentPosition, this.movementPattern[this.currentMove]) < 1) {
+                this.currentMove++;
+                if (this.currentMove == this.movementPattern.length) {
+                    this.die();
+                }
+            }
+        }
+    }
+    setStats(health, speed) {
+        this.health = health;
+        this.speed = speed;
+    }
+    die() {
+        this.notdead = false;
     }
 }
-class MovementPattern {
+class EnemyManager {
+    constructor(pool) {
+        this.patterns = new MovementPatterns();
+        this.enemys = new Array();
+        this.pool = pool;
+    }
+    createEnemy(type, healthMod, speedMod) {
+        let newEnemy = new Enemy(game, type, healthMod, speedMod, this.patterns.pattern01);
+        let newWeapon = new Weapon(200, this.pool);
+        newEnemy.addWeapon(newWeapon);
+        this.enemys.push(newEnemy);
+    }
+    update() {
+        for (let i = 0; i < this.enemys.length; i++) {
+            this.enemys[i].update();
+        }
+    }
+}
+class MovementPatterns {
+    constructor() {
+        this.pattern01 = new Array();
+        let point0 = new Vector2(200, -20);
+        this.pattern01.push(point0);
+        let point1 = new Vector2(200, 1000);
+        this.pattern01.push(point1);
+    }
 }
 class Player extends Ship {
     constructor(game) {
@@ -214,6 +293,7 @@ class Player extends Ship {
         this.moveDir = new Vector2();
     }
     update() {
+        super.update();
         if (this.game.input.mousePointer.isDown) {
             this.moveDir.X = (this.game.input.x - this.x) / 100;
             this.moveDir.Y = (this.game.input.y - this.y) / 100;
@@ -226,8 +306,7 @@ class Ship extends Phaser.Sprite {
     constructor(game) {
         super(game, 0, 0);
         this.game = game;
-    }
-    fire() {
+        this.weapons = new Array();
     }
     onHit(amount) {
         this.health -= amount;
@@ -235,8 +314,33 @@ class Ship extends Phaser.Sprite {
             this.die();
         }
     }
+    addWeapon(weapon) {
+        this.weapons.push(weapon);
+    }
+    update() {
+        for (let i = 0; i < this.weapons.length; i++) {
+            let currentPosition = new Vector2(this.x, this.y);
+            this.weapons[i].position = currentPosition;
+            this.weapons[i].angle = this.angle;
+            this.weapons[i].update();
+        }
+    }
     die() {
         //this.destroy();
+    }
+}
+class Weapon {
+    constructor(_cooldown, _projectilePool) {
+        this.cooldown = _cooldown;
+        this.projectilePool = _projectilePool;
+        this.fireTimer = _cooldown;
+    }
+    update() {
+        this.fireTimer -= game.time.elapsedMS;
+        if (this.fireTimer < 0) {
+            this.fireTimer = this.cooldown;
+            this.projectilePool.getProjectile().fire(this.position, this.angle);
+        }
     }
 }
 class Vector2 {

@@ -26,21 +26,19 @@ class Enemy extends Ship
         switch (type) {
             case EnemyType.FIGHTER:
                 this.setStats(10 * healthMod, 5 * speedMod);
-                this.loadTexture("tempship");
+                this.loadTexture("ship_enemy");
                 break;
             case EnemyType.BOMBER:
                 this.setStats(20 * healthMod, 2 * speedMod);
-                this.loadTexture("tempship");
+                this.loadTexture("ship_enemy");
                 break;
             case EnemyType.BOSS:
                 this.setStats(100 * healthMod, 5 * speedMod);
-                this.loadTexture("tempship");
+                this.loadTexture("ship_enemy");
                 break;
         }
         this.game.add.existing(this);
-        this.scale.set(0.25);
         this.anchor.set(0.5);
-        this.angle = 180;
     }
     
     public update() {
@@ -64,12 +62,13 @@ class Enemy extends Ship
             }
         }
     }
+
     private setStats(health: number, speed: number) {
         this.health = health;
         this.speed = speed;
     }
+
     protected die() {
-        
         this.notdead = false;
     }
 
