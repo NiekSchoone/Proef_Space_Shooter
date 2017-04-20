@@ -16,14 +16,13 @@ class Enemy extends Ship
     constructor(game: Phaser.Game, type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[])
     {
         super(game);
-        this.x = 200;
-        this.y = -200;
         this.moveDir = new Vector2(0,0);
         this.movementPattern = pattern;
+        this.x = this.movementPattern[0].X;
+        this.y = this.movementPattern[0].Y;
         this.notdead = true;
         this.currentPosition = new Vector2(this.x, this.y);
-        this.currentMove = 0;
-        game.time.events.loop(Phaser.Timer.SECOND * this.fireCooldown, this.shoot, this);
+        this.currentMove = 1;
         switch (type) {
             case EnemyType.FIGHTER:
                 this.setStats(10 * healthMod, 5 * speedMod);
@@ -45,6 +44,7 @@ class Enemy extends Ship
     }
     
     public update() {
+        super.update();
         if (this.notdead) {
             this.moveDir.X = (this.movementPattern[this.currentMove].X - this.x) / 100;
             this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.y) / 100;
@@ -62,13 +62,6 @@ class Enemy extends Ship
                     this.die();
                 }
             }
-        }
-    }
-    private shoot()
-    {
-        if (this.notdead)
-        {
-
         }
     }
     private setStats(health: number, speed: number) {

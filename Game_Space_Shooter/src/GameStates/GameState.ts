@@ -9,8 +9,8 @@
         this.level = new Level('background');
         this.player = new Player(game);
         this.projPool = new ProjectilePool(ProjectileType.PLASMABULLET);
-        this.enemyManager = new EnemyManager();
-        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 1);
+        this.enemyManager = new EnemyManager(this.projPool);
+        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.1);
     }
 
     update() {

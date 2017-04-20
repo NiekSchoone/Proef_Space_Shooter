@@ -41,6 +41,7 @@
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
+    <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
     <TypeScriptCompile Include="src\Pickups\Pickup.ts" />
     <TypeScriptCompile Include="src\Ships\Ship.ts" />
