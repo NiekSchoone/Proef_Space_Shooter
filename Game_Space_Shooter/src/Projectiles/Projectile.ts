@@ -44,7 +44,7 @@
     private checkCollision() {
         if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
-                let distance = Vector2.distance(this.vectorPosition, this.targets[i].pos);
+                let distance = Vector2.distance(this.vectorPosition, this.targets[i].vectorPosition);
 
                 if (distance < this.targets[i].collisionRadius) {
                     this.onHit(this.targets[i]);

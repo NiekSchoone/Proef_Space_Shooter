@@ -2,7 +2,7 @@
 
 class App {
     constructor() {
-        game = new Phaser.Game(500, 910, Phaser.AUTO, 'content', { create: this.create });
+        game = new Phaser.Game(512, 910, Phaser.AUTO, 'content', { create: this.create });
         game.stage = new Phaser.Stage(game);
     }
 

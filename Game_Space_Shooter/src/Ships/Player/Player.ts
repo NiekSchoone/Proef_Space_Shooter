@@ -17,8 +17,9 @@
         this.moveDir = new Vector2();
     }
 
-    update()
+    public update()
     {
+        super.update();
         if (this.game.input.mousePointer.isDown)
         {
             this.moveDir.X = (this.game.input.x - this.x) / 100;
