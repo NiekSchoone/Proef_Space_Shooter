@@ -29,8 +29,10 @@
     <Content Include="assets\Images\background_002.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Images\Placeholders\bullet.png" />
     <Content Include="assets\Images\Placeholders\alienspaceship.png" />
+    <Content Include="assets\Images\Placeholders\bullet.png" />
+    <Content Include="assets\Images\Placeholders\ship_enemy.png" />
+    <Content Include="assets\Images\Placeholders\ship_player.png" />
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
     <Content Include="Phaser\phaser.min.js" />

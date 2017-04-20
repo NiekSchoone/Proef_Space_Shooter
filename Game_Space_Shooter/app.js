@@ -14,9 +14,10 @@ window.onload = () => {
 };
 class GameState extends Phaser.State {
     create() {
-        this.level = new Level('background');
+        this.level = new Level();
+        this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
+        this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.player = new Player(game);
-        this.projPool = new ProjectilePool(ProjectileType.PLASMABULLET);
     }
     update() {
         this.level.update();
@@ -25,22 +26,22 @@ class GameState extends Phaser.State {
 class Preloader extends Phaser.State {
     preload() {
         game.load.image("background", "assets/Images/background_001.png");
-        game.load.image("tempship", "assets/Images/Placeholders/alienspaceship.png");
-        game.load.image("plasma_bullet", "assets/Images/Placeholder/bullet.png");
+        game.load.image("plasma_bullet", "assets/Images/Placeholders/bullet.png");
+        game.load.image("ship_player", "assets/Images/Placeholders/ship_player.png");
+        game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
     }
     create() {
         game.state.start("Game");
     }
 }
 class Level {
-    constructor(bg) {
-        this.background = bg;
+    constructor() {
         this.scrollSpeed = 15.0;
+        this.scrollY = 0;
         this.backgroundGroup = game.add.group();
-        this.backgroundGroup.createMultiple(1, this.background, [1, 2, 3, 4], true);
+        this.backgroundGroup.createMultiple(1, 'background', [1, 2, 3, 4], true);
         this.backgroundGroup.align(1, 4, 512, 2048);
         this.backgroundGroup.y = -4096;
-        this.scrollY = 0;
     }
     scrollBackground() {
         this.backgroundGroup.y += this.scrollSpeed;
@@ -56,13 +57,20 @@ class Level {
         this.scrollBackground();
     }
 }
-class Pickup {
-    constructor(_x, _y) {
-        this.position = new Vector2(_x, _y);
+class Pickup extends Phaser.Sprite {
+    constructor(_x, _y, _type) {
+        super(game, _x, _y);
+        this.vectorPosition = new Vector2(_x, _y);
     }
     onPickup() {
     }
 }
+var PickupType;
+(function (PickupType) {
+    PickupType[PickupType["REPAIR"] = 0] = "REPAIR";
+    PickupType[PickupType["UPGRADEMISSILE"] = 1] = "UPGRADEMISSILE";
+    PickupType[PickupType["UPGRADEPLASMA"] = 2] = "UPGRADEPLASMA";
+})(PickupType || (PickupType = {}));
 class Missile extends Projectile {
     constructor(_pos, _tex, _toPool) {
         super(_pos, _tex, _toPool);
@@ -93,10 +101,10 @@ class Projectile extends Phaser.Sprite {
         this.checkBounds();
     }
     fire(_pos, _rotation) {
-        this.vectorPosition = _pos;
-        this.angle = _rotation;
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
+        this.vectorPosition = _pos;
+        this.angle = _rotation;
         this.active = true;
     }
     setTarget(_targets) {
@@ -128,7 +136,6 @@ class Projectile extends Phaser.Sprite {
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
         this.visible = false;
-        console.log("I'm reset");
     }
 }
 var ProjectileType;
@@ -159,14 +166,12 @@ class ProjectilePool {
         }
     }
     returnProjectile(projectile) {
-        console.log(this.inUse);
         let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
         this.inUse.splice(index, 1);
         this.available.push(projectile);
         projectile.resetValues();
     }
     addProjectile() {
-        console.log("adding projectile");
         let newProjectile;
         if (this.poolType == ProjectileType.PLASMABULLET) {
             newProjectile = new PlasmaBullet(new Vector2(0, 0), 'plasma_bullet', this.returnProjectile.bind(this));
@@ -186,17 +191,6 @@ class ProjectilePool {
             throw "Incorrect type specified for object pool";
         }
     }
-    compare(a, b) {
-        if (a.projectileIndex < b.projectileIndex) {
-            return -1;
-        }
-        else if (a.projectileIndex > b.projectileIndex) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
 }
 var EnemyType;
 (function (EnemyType) {
@@ -207,6 +201,26 @@ class Enemy extends Ship {
     }
 }
 class MovementPattern {
+}
+class Player extends Ship {
+    constructor(game) {
+        super(game);
+        this.loadTexture("ship_player");
+        this.game.add.existing(this);
+        this.speed = 10;
+        this.anchor.set(0.5);
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.arcade.enable(this);
+        this.moveDir = new Vector2();
+    }
+    update() {
+        if (this.game.input.mousePointer.isDown) {
+            this.moveDir.X = (this.game.input.x - this.x) / 100;
+            this.moveDir.Y = (this.game.input.y - this.y) / 100;
+            this.x += this.moveDir.X * this.speed;
+            this.y += this.moveDir.Y * this.speed;
+        }
+    }
 }
 class Ship extends Phaser.Sprite {
     constructor(game) {
@@ -223,28 +237,6 @@ class Ship extends Phaser.Sprite {
     }
     die() {
         //this.destroy();
-    }
-}
-/// <reference path="../Ship.ts"/>
-class Player extends Ship {
-    constructor(game) {
-        super(game);
-        this.loadTexture("tempship");
-        this.game.add.existing(this);
-        this.speed = 10;
-        this.scale.set(0.25);
-        this.anchor.set(0.5);
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.physics.arcade.enable(this);
-        this.moveDir = new Vector2();
-    }
-    update() {
-        if (this.game.input.mousePointer.isDown) {
-            this.moveDir.X = (this.game.input.x - this.x) / 100;
-            this.moveDir.Y = (this.game.input.y - this.y) / 100;
-            this.x += this.moveDir.X * this.speed;
-            this.y += this.moveDir.Y * this.speed;
-        }
     }
 }
 class Vector2 {

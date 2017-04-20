@@ -28,10 +28,10 @@
     }
 
     public fire(_pos: Vector2, _rotation: number) {
-        this.vectorPosition = _pos;
-        this.angle = _rotation;
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
+        this.vectorPosition = _pos;
+        this.angle = _rotation;
         this.active = true;
     }
 
@@ -69,7 +69,6 @@
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
         this.visible = false;
-        console.log("I'm reset");
     }
 }
 

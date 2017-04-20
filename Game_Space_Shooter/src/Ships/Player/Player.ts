@@ -1,5 +1,4 @@
-﻿/// <reference path="../Ship.ts"/>
-class Player extends Ship
+﻿class Player extends Ship
 {
     private mouseDown: boolean;
     private moveDir : Vector2;
@@ -8,11 +7,10 @@ class Player extends Ship
     {
         super(game);
 
-        this.loadTexture("tempship");
+        this.loadTexture("ship_player");
         this.game.add.existing(this);
         this.speed = 10;
 
-        this.scale.set(0.25);
         this.anchor.set(0.5);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.enable(this);

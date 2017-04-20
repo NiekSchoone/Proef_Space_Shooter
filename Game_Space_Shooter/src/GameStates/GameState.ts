@@ -3,12 +3,14 @@
     private level: Level;
     private playerSprite: Phaser.Sprite;
 
-    private projPool: ProjectilePool;
+    private plasmaBulletPool: ProjectilePool;
+    private missilePool: ProjectilePool;
 
     create() {
-        this.level = new Level('background');
+        this.level = new Level();
+        this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
+        this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.player = new Player(game);
-        this.projPool = new ProjectilePool(ProjectileType.PLASMABULLET);
     }
 
     update() {

@@ -29,7 +29,6 @@
     }
 
     private returnProjectile(projectile: Projectile) {
-        console.log(this.inUse);
         let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
         this.inUse.splice(index, 1);
         this.available.push(projectile);
@@ -37,7 +36,6 @@
     }
 
     private addProjectile(): Projectile {
-        console.log("adding projectile")
         let newProjectile;
         if (this.poolType == ProjectileType.PLASMABULLET) {
             newProjectile = new PlasmaBullet(new Vector2(0, 0), 'plasma_bullet', this.returnProjectile.bind(this));
@@ -53,16 +51,6 @@
             return newProjectile;
         } else {
             throw "Incorrect type specified for object pool";
-        }
-    }
-
-    private compare(a, b) {
-        if (a.projectileIndex < b.projectileIndex) {
-            return -1;
-        } else if (a.projectileIndex > b.projectileIndex) {
-            return 1;
-        } else {
-            return 0;
         }
     }
 }
