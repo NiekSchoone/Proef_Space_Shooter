@@ -29,6 +29,8 @@
     <Content Include="assets\Images\background_002.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="assets\Images\Placeholders\bullet.png" />
+    <Content Include="assets\Images\Placeholders\alienspaceship.png" />
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
     <Content Include="Phaser\phaser.min.js" />
@@ -43,7 +45,7 @@
     <TypeScriptCompile Include="src\Ships\Ship.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\MovementPattern.ts" />
     <TypeScriptCompile Include="src\Ships\Player\Player.ts" />
-	<TypeScriptCompile Include="src\Ships\Enemies\Enemy.ts" />
+    <TypeScriptCompile Include="src\Ships\Enemies\Enemy.ts" />
     <TypeScriptCompile Include="src\Level\Level.ts" />
     <TypeScriptCompile Include="src\Projectiles\Projectile.ts" />
     <TypeScriptCompile Include="src\Projectiles\Missile.ts" />

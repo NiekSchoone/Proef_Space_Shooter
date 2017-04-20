@@ -1,7 +1,8 @@
 ﻿class PlasmaBullet extends Projectile {
 
-    constructor(_pos: Vector2, _vel: Vector2, _toPool: Function) {
-        super(_pos, _vel, _toPool);
+    constructor(_pos: Vector2, _tex: string, _toPool: Function) {
+        super(_pos, _tex, _toPool);
         this.projectileType = ProjectileType.PLASMABULLET;
+        this.speed = 10;
     }
 }

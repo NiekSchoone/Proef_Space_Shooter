@@ -18,31 +18,38 @@
         if (this.available.length != 0) {
             projectile = this.available.pop();
             this.inUse.push(projectile);
+            projectile.visible = true;
             return projectile;
         } else {
             projectile = this.addProjectile();
             this.inUse.push(projectile);
+            projectile.visible = true;
             return projectile;
         }
     }
 
-    public returnProjectile(projectile: Projectile) {
+    private returnProjectile(projectile: Projectile) {
+        console.log(this.inUse);
         let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
         this.inUse.splice(index, 1);
         this.available.push(projectile);
+        projectile.resetValues();
     }
 
-    public addProjectile(): Projectile {
+    private addProjectile(): Projectile {
+        console.log("adding projectile")
         let newProjectile;
         if (this.poolType == ProjectileType.PLASMABULLET) {
-            newProjectile = new PlasmaBullet(new Vector2(0, 0), new Vector2(0, 0), this.returnProjectile);
+            newProjectile = new PlasmaBullet(new Vector2(0, 0), 'plasma_bullet', this.returnProjectile.bind(this));
             newProjectile.projectileIndex = this.projectileCount;
             this.projectileCount++;
+            game.add.existing(newProjectile);
             return newProjectile;
         } else if (this.poolType == ProjectileType.MISSILE) {
-            newProjectile = new Missile(new Vector2(0, 0), new Vector2(0, 0), this.returnProjectile);
+            newProjectile = new Missile(new Vector2(0, 0), 'missile', this.returnProjectile.bind(this));
             newProjectile.projectileIndex = this.projectileCount;
             this.projectileCount++;
+            game.add.existing(newProjectile);
             return newProjectile;
         } else {
             throw "Incorrect type specified for object pool";
