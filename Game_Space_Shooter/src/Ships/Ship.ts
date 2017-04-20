@@ -20,7 +20,7 @@
             this.die();
         }
     }
-    private die() {
+    protected die() {
         //this.destroy();
     }
 }
