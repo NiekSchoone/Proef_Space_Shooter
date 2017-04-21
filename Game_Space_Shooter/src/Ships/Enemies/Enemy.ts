@@ -37,6 +37,7 @@ class Enemy extends Ship
         }
         game.add.existing(this);
         this.anchor.set(0.5);
+        this.fireAngle = 180;
     }
     
     public update() {

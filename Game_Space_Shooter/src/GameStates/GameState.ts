@@ -18,11 +18,11 @@
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.projectilePools.push(this.missilePool);
 
-        this.player = new Player(this.projectilePools, 80);
+        this.player = new Player(this.projectilePools, 50);
 
         this.enemyManager = new EnemyManager(this.projectilePools);
         this.enemyManager.setPlayer(this.player);
-        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.5);
+        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.2);
 
         this.player.setTargets(this.enemyManager.getEnemies());
 

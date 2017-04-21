@@ -13,8 +13,8 @@
     }
 
     public createEnemy(type: EnemyType, healthMod: number, speedMod: number) {
-        let newEnemy = new Enemy(type, healthMod, speedMod, this.patterns.pattern01, 80);
-        newEnemy.addWeapon(0.1, this.projectilePools[0], [this.player]);
+        let newEnemy = new Enemy(type, healthMod, speedMod, this.patterns.pattern01, 70);
+        newEnemy.addWeapon(0.5, this.projectilePools[0], [this.player]);
         this.enemies.push(newEnemy);
     }
 

@@ -5,8 +5,8 @@ class EnemyManager {
         this.projectilePools = _projectilePools;
     }
     createEnemy(type, healthMod, speedMod) {
-        let newEnemy = new Enemy(type, healthMod, speedMod, this.patterns.pattern01, 80);
-        newEnemy.addWeapon(0.1, this.projectilePools[0], [this.player]);
+        let newEnemy = new Enemy(type, healthMod, speedMod, this.patterns.pattern01, 70);
+        newEnemy.addWeapon(0.5, this.projectilePools[0], [this.player]);
         this.enemies.push(newEnemy);
     }
     setPlayer(_player) {
@@ -29,8 +29,11 @@ class Weapon {
             this.fireTimer = this.cooldown;
             let newProj = this.projectilePool.getProjectile();
             newProj.setTarget(this.targets);
-            newProj.fire(this.vectorPosition, this.angle);
+            newProj.fire(this.vectorPosition, this.fireAngle);
         }
+    }
+    setAngle(_angle) {
+        this.fireAngle = _angle;
     }
 }
 class Vector2 {
@@ -168,13 +171,13 @@ class Ship extends Phaser.Sprite {
     }
     addWeapon(cooldown, projectilePool, _targets) {
         let newWeapon = new Weapon(cooldown, projectilePool, _targets);
+        newWeapon.setAngle(this.fireAngle);
         this.weapons.push(newWeapon);
     }
     update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         for (let i = 0; i < this.weapons.length; i++) {
             this.weapons[i].vectorPosition = Vector2.copy(this.vectorPosition);
-            this.weapons[i].angle = this.angle;
             this.weapons[i].update();
         }
     }
@@ -202,6 +205,7 @@ class Player extends Ship {
         game.physics.arcade.enable(this);
         this.moveDir = new Vector2();
         this.enemies = new Array();
+        this.fireAngle = 0;
     }
     update() {
         if (game.input.mousePointer.isDown) {
@@ -213,7 +217,7 @@ class Player extends Ship {
     }
     setTargets(_enemies) {
         this.enemies = _enemies;
-        this.addWeapon(1, this.projectilePools[0], this.enemies);
+        this.addWeapon(0.4, this.projectilePools[0], this.enemies);
     }
 }
 var EnemyType;
@@ -247,6 +251,7 @@ class Enemy extends Ship {
         }
         game.add.existing(this);
         this.anchor.set(0.5);
+        this.fireAngle = 180;
     }
     update() {
         if (this.notdead) {
@@ -301,6 +306,7 @@ class Projectile extends Phaser.Sprite {
         this.loadTexture(_tex);
         this.returnToPool = _toPool;
         this.anchor.set(0.5);
+        this.targets = new Array();
     }
     update() {
         if (this.active) {
@@ -312,10 +318,10 @@ class Projectile extends Phaser.Sprite {
     }
     // Fires a bullet from a given position and angle
     fire(_pos, _rotation) {
+        this.angle = _rotation;
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
         this.vectorPosition = _pos;
-        this.angle = _rotation;
         this.active = true;
     }
     setTarget(_targets) {
@@ -345,8 +351,8 @@ class Projectile extends Phaser.Sprite {
     // Reset the values of this projectile to their default values
     resetValues() {
         this.visible = false;
-        this.targets = null;
         this.active = false;
+        this.targets = new Array();
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
     }
@@ -429,10 +435,10 @@ class GameState extends Phaser.State {
         this.projectilePools.push(this.plasmaBulletPool);
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.projectilePools.push(this.missilePool);
-        this.player = new Player(this.projectilePools, 80);
+        this.player = new Player(this.projectilePools, 50);
         this.enemyManager = new EnemyManager(this.projectilePools);
         this.enemyManager.setPlayer(this.player);
-        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.5);
+        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.2);
         this.player.setTargets(this.enemyManager.getEnemies());
         game.physics.startSystem(Phaser.Physics.ARCADE);
     }

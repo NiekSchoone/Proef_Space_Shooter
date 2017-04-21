@@ -17,6 +17,7 @@
         this.loadTexture(_tex);
         this.returnToPool = _toPool;
         this.anchor.set(0.5);
+        this.targets = new Array<Ship>();
     }
 
     public update() {
@@ -30,10 +31,10 @@
 
     // Fires a bullet from a given position and angle
     public fire(_pos: Vector2, _rotation: number) {
+        this.angle = _rotation;
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
         this.vectorPosition = _pos;
-        this.angle = _rotation;
         this.active = true;
     }
 
@@ -69,8 +70,8 @@
     // Reset the values of this projectile to their default values
     public resetValues() {
         this.visible = false;
-        this.targets = null;
         this.active = false;
+        this.targets = new Array<Ship>();
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
     }

@@ -16,6 +16,8 @@
         game.physics.arcade.enable(this);
         this.moveDir = new Vector2();
         this.enemies = new Array<Enemy>();
+
+        this.fireAngle = 0;
     }
 
     public update() {
@@ -29,6 +31,6 @@
 
     public setTargets(_enemies: Array<Enemy>) {
         this.enemies = _enemies;
-        this.addWeapon(1, this.projectilePools[0], this.enemies);
+        this.addWeapon(0.4, this.projectilePools[0], this.enemies);
     }
 }
