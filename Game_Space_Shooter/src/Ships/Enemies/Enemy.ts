@@ -11,17 +11,15 @@ class Enemy extends Ship
     private currentMove: number;
     private moveDir: Vector2;
     private notdead: boolean;
-    private currentPosition: Vector2;
 
-    constructor(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[])
+    constructor(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[], _collisionRadius: number)
     {
-        super();
+        super(_collisionRadius);
         this.moveDir = new Vector2(0,0);
         this.movementPattern = pattern;
-        this.x = this.movementPattern[0].X;
-        this.y = this.movementPattern[0].Y;
+        this.vectorPosition.X = this.movementPattern[0].X;
+        this.vectorPosition.Y = this.movementPattern[0].Y;
         this.notdead = true;
-        this.currentPosition = new Vector2(this.x, this.y);
         this.currentMove = 1;
         switch (type) {
             case EnemyType.FIGHTER:
@@ -47,13 +45,11 @@ class Enemy extends Ship
             this.moveDir.X = (this.movementPattern[this.currentMove].X - this.x) / 100;
             this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.y) / 100;
             this.moveDir.normalize();
-            this.x += this.moveDir.X * this.speed;
-            this.y += this.moveDir.Y * this.speed;
+            this.vectorPosition.X += this.moveDir.X * this.speed;
+            this.vectorPosition.Y += this.moveDir.Y * this.speed;
 
-            this.currentPosition.X = this.x;
-            this.currentPosition.Y = this.y;
 
-            if (Vector2.distance(this.currentPosition, this.movementPattern[this.currentMove]) < 1) {
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
                 this.currentMove++;
                 if (this.currentMove == this.movementPattern.length) {
 

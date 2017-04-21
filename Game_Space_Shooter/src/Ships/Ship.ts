@@ -5,24 +5,31 @@
     public vectorPosition: Vector2;
     public collisionRadius: number;
     protected weapons: Array<Weapon>;
+    
 
-    constructor()
+    constructor(_collisionRadius: number)
     {
         super(game, 0, 0);
         this.game = game;
+        this.collisionRadius = _collisionRadius
         this.weapons = new Array<Weapon>();
+        this.vectorPosition = new Vector2(this.x, this.y);
     }
 
-    public onHit(amount: number) {
-        this.health -= amount;
+    public onHit(_amount: number) {
+        this.health -= _amount;
         if (this.health <= 0) {
             this.die();
         }
     }
-    public addWeapon(weapon: Weapon) {
-        this.weapons.push(weapon);
+    public addWeapon(cooldown: number, projectilePool: ProjectilePool, _targets: Ship[])
+    {
+        let newWeapon = new Weapon(cooldown, projectilePool, _targets);
+        this.weapons.push(newWeapon);
     }
-    public update() {
+    public update()
+    {
+        this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y)
         for (let i = 0; i < this.weapons.length; i++) {
             let currentPosition: Vector2 = new Vector2(this.x, this.y);
             this.weapons[i].position = currentPosition;

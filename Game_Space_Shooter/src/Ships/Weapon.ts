@@ -4,11 +4,13 @@
     private projectilePool: ProjectilePool;
     public position: Vector2;
     public angle: number;
+    private targets: Ship[];
 
-    constructor( _cooldown: number, _projectilePool: ProjectilePool) {
+    constructor( _cooldown: number, _projectilePool: ProjectilePool, targets : Ship[]) {
         this.cooldown = _cooldown * Phaser.Timer.SECOND;
         this.projectilePool = _projectilePool;
         this.fireTimer = _cooldown;
+        this.targets = targets;
     }
 
     public update() {
@@ -16,7 +18,9 @@
         if (this.fireTimer < 0)
         {
             this.fireTimer = this.cooldown;
-            this.projectilePool.getProjectile().fire(this.position, this.angle);
+            let newProj = this.projectilePool.getProjectile();
+            newProj.setTarget(this.targets);
+            newProj.fire(this.position, this.angle);
         }
-    }
+    } 
 }
