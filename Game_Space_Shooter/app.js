@@ -298,11 +298,12 @@ class Level {
     }
 }
 class Projectile extends Phaser.Sprite {
-    constructor(_pos, _tex, _toPool) {
-        super(game, _pos.X, _pos.Y);
-        this.vectorPosition = _pos;
+    constructor(_tex, _toPool) {
+        super(game, 0, 0);
+        this.vectorPosition = new Vector2(0, 0);
         this.loadTexture(_tex);
         this.returnToPool = _toPool;
+        this.anchor.set(0.5);
         this.targets = new Array();
     }
     update() {
@@ -313,6 +314,7 @@ class Projectile extends Phaser.Sprite {
         this.checkCollision();
         this.checkBounds();
     }
+    // Fires a bullet from a given position and angle
     fire(_pos, _rotation) {
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
@@ -325,34 +327,33 @@ class Projectile extends Phaser.Sprite {
             this.targets.push(_targets[i]);
         }
     }
+    // Checks each posible hit target
     checkCollision() {
         if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
                 let distance = Vector2.distance(this.vectorPosition, this.targets[i].vectorPosition);
-                console.log("distance " + distance);
-                console.log("player " + this.targets[i].vectorPosition.X + ":" + this.targets[i].vectorPosition.Y);
-                console.log("bullet " + this.vectorPosition.X + ":" + this.vectorPosition.Y);
                 if (distance < this.targets[i].collisionRadius) {
-                    //console.log("player " + this.targets[i].vectorPosition.X + ":" + this.targets[i].vectorPosition.Y);  
                     this.onHit(this.targets[i]);
                 }
             }
         }
     }
+    // Check if the position of this projectile is out of the bounds of the level
     checkBounds() {
         if (this.vectorPosition.Y < -20 || this.vectorPosition.Y > game.height + 20 || this.vectorPosition.X > game.width + 20 || this.vectorPosition.X < -20) {
             this.returnToPool(this);
         }
     }
     onHit(_target) {
-        _target.onHit(this.projectileType);
+        _target.onHit(this.damageAmount);
         this.returnToPool(this);
     }
+    // Reset the values of this projectile to their default values
     resetValues() {
+        this.visible = false;
         this.active = false;
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
-        this.visible = false;
     }
 }
 var ProjectileType;
@@ -361,17 +362,19 @@ var ProjectileType;
     ProjectileType[ProjectileType["MISSILE"] = 1] = "MISSILE";
 })(ProjectileType || (ProjectileType = {}));
 class Missile extends Projectile {
-    constructor(_pos, _tex, _toPool) {
-        super(_pos, _tex, _toPool);
+    constructor(_tex, _toPool) {
+        super(_tex, _toPool);
         this.projectileType = ProjectileType.MISSILE;
         this.speed = 5;
+        this.damageAmount = 5;
     }
 }
 class PlasmaBullet extends Projectile {
-    constructor(_pos, _tex, _toPool) {
-        super(_pos, _tex, _toPool);
+    constructor(_tex, _toPool) {
+        super(_tex, _toPool);
         this.projectileType = ProjectileType.PLASMABULLET;
         this.speed = 10;
+        this.damageAmount = 1;
     }
 }
 class ProjectilePool {
@@ -381,45 +384,45 @@ class ProjectilePool {
         this.inUse = new Array();
         this.projectileCount = 0;
     }
+    // Get a projectile from the pool and return it
     getProjectile() {
         let projectile;
         if (this.available.length != 0) {
             projectile = this.available.pop();
-            this.inUse.push(projectile);
-            projectile.visible = true;
-            return projectile;
         }
         else {
             projectile = this.addProjectile();
+        }
+        if (projectile != null) {
             this.inUse.push(projectile);
             projectile.visible = true;
             return projectile;
         }
     }
+    // Returns a given projectile to the pool of available projectiles
     returnProjectile(projectile) {
+        projectile.resetValues();
         let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
         this.inUse.splice(index, 1);
         this.available.push(projectile);
-        projectile.resetValues();
     }
+    // Adds a projectile to the pool ready for use
     addProjectile() {
         let newProjectile;
         if (this.poolType == ProjectileType.PLASMABULLET) {
-            newProjectile = new PlasmaBullet(new Vector2(0, 0), 'plasma_bullet', this.returnProjectile.bind(this));
-            newProjectile.projectileIndex = this.projectileCount;
-            this.projectileCount++;
-            game.add.existing(newProjectile);
-            return newProjectile;
+            newProjectile = new PlasmaBullet('plasma_bullet', this.returnProjectile.bind(this));
         }
         else if (this.poolType == ProjectileType.MISSILE) {
-            newProjectile = new Missile(new Vector2(0, 0), 'missile', this.returnProjectile.bind(this));
-            newProjectile.projectileIndex = this.projectileCount;
-            this.projectileCount++;
-            game.add.existing(newProjectile);
-            return newProjectile;
+            newProjectile = new Missile('missile', this.returnProjectile.bind(this));
         }
         else {
             throw "Incorrect type specified for object pool";
+        }
+        if (newProjectile != null) {
+            newProjectile.projectileIndex = this.projectileCount;
+            game.add.existing(newProjectile);
+            this.projectileCount++;
+            return newProjectile;
         }
     }
 }

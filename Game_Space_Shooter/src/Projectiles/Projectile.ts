@@ -7,7 +7,7 @@
     public damageAmount: number;
 
     protected velocity: Vector2;
-    protected targets: Ship[];
+    protected targets: Array<Ship>;
     protected speed: number;
     protected returnToPool: Function; //Callback function to return this to the projectile pool it belongs to
 
@@ -17,6 +17,7 @@
         this.loadTexture(_tex);
         this.returnToPool = _toPool;
         this.anchor.set(0.5);
+        this.targets = new Array<Ship>();
     }
 
     public update() {
@@ -37,7 +38,8 @@
         this.active = true;
     }
 
-    public setTarget(_targets: Ship[]) {
+    public setTarget(_targets: Ship[])
+    {
         for (let i = 0; i < _targets.length; i++) {
             this.targets.push(_targets[i]);
         }
