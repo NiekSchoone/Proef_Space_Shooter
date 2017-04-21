@@ -2,20 +2,21 @@
 
     public projectileType: ProjectileType;
     public vectorPosition: Vector2;
-    public targets: Ship[];
     public projectileIndex: number;
     public active: boolean;
+    public damageAmount: number;
 
-    public velocity: Vector2;
-    public speed: number;
+    protected velocity: Vector2;
+    protected targets: Ship[];
+    protected speed: number;
+    protected returnToPool: Function; //Callback function to return this to the projectile pool it belongs to
 
-    private returnToPool: Function;
-
-    constructor(_pos: Vector2, _tex: string, _toPool: Function) {
-        super(game, _pos.X, _pos.Y);
-        this.vectorPosition = _pos;
+    constructor(_tex: string, _toPool: Function) {
+        super(game, 0, 0);
+        this.vectorPosition = new Vector2(0, 0);
         this.loadTexture(_tex);
         this.returnToPool = _toPool;
+        this.anchor.set(0.5);
     }
 
     public update() {
@@ -27,6 +28,7 @@
         this.checkBounds();
     }
 
+    // Fires a bullet from a given position and angle
     public fire(_pos: Vector2, _rotation: number) {
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
@@ -41,7 +43,8 @@
         }
     }
 
-    private checkCollision() {
+    // Checks each posible hit target
+    protected checkCollision() {
         if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
                 let distance = Vector2.distance(this.vectorPosition, this.targets[i].vectorPosition);
@@ -53,22 +56,24 @@
         }
     }
 
-    private checkBounds() {
+    // Check if the position of this projectile is out of the bounds of the level
+    protected checkBounds() {
         if (this.vectorPosition.Y < -20 || this.vectorPosition.Y > game.height + 20 || this.vectorPosition.X > game.width + 20 || this.vectorPosition.X < -20) {
             this.returnToPool(this);
         }
     }
 
-    private onHit(_target: Ship) {
-        _target.onHit(this.projectileType);
+    protected onHit(_target: Ship) {
+        _target.onHit(this.damageAmount);
         this.returnToPool(this);
     }
 
+    // Reset the values of this projectile to their default values
     public resetValues() {
+        this.visible = false;
         this.active = false;
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
-        this.visible = false;
     }
 }
 

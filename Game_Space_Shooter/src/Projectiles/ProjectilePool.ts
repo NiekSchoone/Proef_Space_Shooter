@@ -13,44 +13,44 @@
         this.projectileCount = 0;
     }
 
+    // Get a projectile from the pool and return it
     public getProjectile(): Projectile {
         let projectile;
         if (this.available.length != 0) {
             projectile = this.available.pop();
-            this.inUse.push(projectile);
-            projectile.visible = true;
-            return projectile;
         } else {
             projectile = this.addProjectile();
+        }
+        if (projectile != null) {
             this.inUse.push(projectile);
             projectile.visible = true;
             return projectile;
         }
     }
 
+    // Returns a given projectile to the pool of available projectiles
     private returnProjectile(projectile: Projectile) {
+        projectile.resetValues();
         let index = this.inUse.indexOf(projectile, projectile.projectileIndex);
         this.inUse.splice(index, 1);
         this.available.push(projectile);
-        projectile.resetValues();
     }
 
+    // Adds a projectile to the pool ready for use
     private addProjectile(): Projectile {
         let newProjectile;
         if (this.poolType == ProjectileType.PLASMABULLET) {
-            newProjectile = new PlasmaBullet(new Vector2(0, 0), 'plasma_bullet', this.returnProjectile.bind(this));
-            newProjectile.projectileIndex = this.projectileCount;
-            this.projectileCount++;
-            game.add.existing(newProjectile);
-            return newProjectile;
+            newProjectile = new PlasmaBullet('plasma_bullet', this.returnProjectile.bind(this));
         } else if (this.poolType == ProjectileType.MISSILE) {
-            newProjectile = new Missile(new Vector2(0, 0), 'missile', this.returnProjectile.bind(this));
-            newProjectile.projectileIndex = this.projectileCount;
-            this.projectileCount++;
-            game.add.existing(newProjectile);
-            return newProjectile;
+            newProjectile = new Missile('missile', this.returnProjectile.bind(this));
         } else {
             throw "Incorrect type specified for object pool";
+        }
+        if (newProjectile != null) {
+            newProjectile.projectileIndex = this.projectileCount;
+            game.add.existing(newProjectile);
+            this.projectileCount++;
+            return newProjectile;
         }
     }
 }
