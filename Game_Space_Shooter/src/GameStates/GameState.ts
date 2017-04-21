@@ -12,9 +12,10 @@
         this.level = new Level();
         this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
-        this.player = new Player(game);
+        this.player = new Player(this.plasmaBulletPool);
         this.enemyManager = new EnemyManager(this.plasmaBulletPool);
         this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.1);
+        game.physics.startSystem(Phaser.Physics.ARCADE);
     }
 
     update() {

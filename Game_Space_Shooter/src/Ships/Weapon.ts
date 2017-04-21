@@ -6,7 +6,7 @@
     public angle: number;
 
     constructor( _cooldown: number, _projectilePool: ProjectilePool) {
-        this.cooldown = _cooldown;
+        this.cooldown = _cooldown * Phaser.Timer.SECOND;
         this.projectilePool = _projectilePool;
         this.fireTimer = _cooldown;
     }

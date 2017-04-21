@@ -13,9 +13,9 @@ class Enemy extends Ship
     private notdead: boolean;
     private currentPosition: Vector2;
 
-    constructor(game: Phaser.Game, type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[])
+    constructor(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[])
     {
-        super(game);
+        super();
         this.moveDir = new Vector2(0,0);
         this.movementPattern = pattern;
         this.x = this.movementPattern[0].X;

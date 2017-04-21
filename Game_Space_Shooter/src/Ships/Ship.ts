@@ -4,9 +4,9 @@
     public speed: number;
     public vectorPosition: Vector2;
     public collisionRadius: number;
-    private weapons: Array<Weapon>;
+    protected weapons: Array<Weapon>;
 
-    constructor(game: Phaser.Game)
+    constructor()
     {
         super(game, 0, 0);
         this.game = game;
