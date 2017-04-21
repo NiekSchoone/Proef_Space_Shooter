@@ -38,11 +38,8 @@
         this.active = true;
     }
 
-    public setTarget(_targets: Ship[])
-    {
-        for (let i = 0; i < _targets.length; i++) {
-            this.targets.push(_targets[i]);
-        }
+    public setTarget(_targets: Array<Ship>) {
+        this.targets = _targets;
     }
 
     // Checks each posible hit target

@@ -14,18 +14,22 @@
         this.projectilePools = new Array<ProjectilePool>();
         this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
         this.projectilePools.push(this.plasmaBulletPool);
+
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
         this.projectilePools.push(this.missilePool);
-        this.player = new Player(this.projectilePools,2);
+
+        this.player = new Player(this.projectilePools, 80);
+
         this.enemyManager = new EnemyManager(this.projectilePools);
         this.enemyManager.setPlayer(this.player);
+        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.5);
+
         this.player.setTargets(this.enemyManager.getEnemies());
-        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.1);
+
         game.physics.startSystem(Phaser.Physics.ARCADE);
     }
 
     update() {
-        this.enemyManager.update();
         this.level.update();
     }
 }

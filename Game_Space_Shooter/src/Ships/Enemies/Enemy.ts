@@ -35,37 +35,34 @@ class Enemy extends Ship
                 this.loadTexture("ship_enemy");
                 break;
         }
-        this.game.add.existing(this);
+        game.add.existing(this);
         this.anchor.set(0.5);
     }
     
     public update() {
-        super.update();
         if (this.notdead) {
-            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.x) / 100;
-            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.y) / 100;
+            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
+            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
             this.moveDir.normalize();
-            this.vectorPosition.X += this.moveDir.X * this.speed;
-            this.vectorPosition.Y += this.moveDir.Y * this.speed;
 
+            this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
 
             if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
                 this.currentMove++;
                 if (this.currentMove == this.movementPattern.length) {
-
                     this.die();
                 }
             }
         }
+        super.update();
     }
 
-    private setStats(health: number, speed: number) {
-        this.health = health;
-        this.speed = speed;
+    private setStats(_health: number, _speed: number) {
+        this.health = _health;
+        this.speed = _speed;
     }
 
     protected die() {
         this.notdead = false;
     }
-
 }

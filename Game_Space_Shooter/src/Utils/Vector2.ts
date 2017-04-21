@@ -141,4 +141,8 @@
 
         return dest;
     }
+
+    static copy(vector: Vector2) {
+        return new Vector2(vector.X, vector.Y);
+    }
 }
