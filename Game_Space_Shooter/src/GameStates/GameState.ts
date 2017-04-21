@@ -12,20 +12,21 @@
     create() {
         this.level = new Level();
         this.projectilePools = new Array<ProjectilePool>();
-        this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
-        this.projectilePools.push(this.plasmaBulletPool);
 
+        // Create the various pools for different projectiles
+        this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
+        this.projectilePools.push(this.plasmaBulletPool);
         this.projectilePools.push(this.missilePool);
 
+        // Create a player
         this.player = new Player(this.projectilePools, 50);
 
+        // Create the manager that keeps track of all the enemies in the game
         this.enemyManager = new EnemyManager(this.projectilePools);
         this.enemyManager.setPlayer(this.player);
 
         this.player.setTargets(this.enemyManager.getEnemies());
-
-        game.physics.startSystem(Phaser.Physics.ARCADE);
     }
 
     update() {

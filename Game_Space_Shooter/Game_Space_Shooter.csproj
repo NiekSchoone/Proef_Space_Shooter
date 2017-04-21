@@ -29,10 +29,10 @@
     <Content Include="assets\Images\background_002.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Images\Placeholders\alienspaceship.png" />
     <Content Include="assets\Images\Placeholders\bullet.png" />
     <Content Include="assets\Images\Placeholders\ship_enemy.png" />
     <Content Include="assets\Images\Placeholders\ship_player.png" />
+    <Content Include="assets\SpriteSheets\player_ship_sheet.png" />
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
     <Content Include="Phaser\phaser.min.js" />
@@ -42,6 +42,7 @@
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
+    <TypeScriptCompile Include="src\GameStates\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
     <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
@@ -69,7 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\Audio\" />
-    <Folder Include="assets\SpriteSheets\" />
     <Folder Include="src\Player\" />
   </ItemGroup>
   <PropertyGroup>
@@ -116,6 +116,17 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
+    <TypeScriptTarget>ES6</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>System</TypeScriptModuleKind>
+    <TypeScriptOutFile>app.js</TypeScriptOutFile>
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

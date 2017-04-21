@@ -14,6 +14,10 @@
     public onPickup() {
 
     }
+
+    public update() {
+
+    }
 }
 
 enum PickupType {

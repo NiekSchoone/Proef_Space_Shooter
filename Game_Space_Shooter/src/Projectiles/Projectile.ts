@@ -38,6 +38,7 @@
         this.active = true;
     }
 
+    // Set targets this projectile can hit
     public setTarget(_targets: Array<Ship>) {
         this.targets = _targets;
     }
@@ -62,6 +63,7 @@
         }
     }
 
+    // On hitting a target the projectile will return to the pool and apply damage on the target
     protected onHit(_target: Ship) {
         _target.onHit(this.damageAmount);
         this.returnToPool(this);
