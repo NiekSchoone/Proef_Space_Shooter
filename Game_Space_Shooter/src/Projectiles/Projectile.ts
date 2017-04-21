@@ -17,7 +17,6 @@
         this.loadTexture(_tex);
         this.returnToPool = _toPool;
         this.anchor.set(0.5);
-        this.targets = new Array<Ship>();
     }
 
     public update() {
@@ -70,6 +69,7 @@
     // Reset the values of this projectile to their default values
     public resetValues() {
         this.visible = false;
+        this.targets = null;
         this.active = false;
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
