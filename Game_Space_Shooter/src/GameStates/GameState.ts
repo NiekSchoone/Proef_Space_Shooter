@@ -22,7 +22,6 @@
 
         this.enemyManager = new EnemyManager(this.projectilePools);
         this.enemyManager.setPlayer(this.player);
-        this.enemyManager.createEnemy(EnemyType.FIGHTER, 1, 0.2);
 
         this.player.setTargets(this.enemyManager.getEnemies());
 
@@ -31,5 +30,6 @@
 
     update() {
         this.level.update();
+        this.enemyManager.update();
     }
 }
