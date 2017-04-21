@@ -21,8 +21,8 @@
         newEnemy.addWeapon(0.5, this.projectilePools[0], [this.player]);
         this.enemies.push(newEnemy);
     }
-    public update()
-    {
+
+    public update() {
         this.timer -= game.time.elapsedMS;
         if (this.timer < 0) {
             this.timer = 2 * Phaser.Timer.SECOND;
@@ -40,20 +40,17 @@
             }
         }
     }
-    public setPlayer(_player: Player){
+
+    public setPlayer(_player: Player) {
         this.player = _player;
     }
+
     private killEnemy(_enemy: Enemy) {
-        console.log(this.enemies);
         let index = this.enemies.indexOf(_enemy, _enemy.id);
         this.enemies.splice(index, 1);
         _enemy.destroy();
-        if (this.enemiesMade > 4)
-        {
-            alert("You Win");
-        }
-
     }
+
     public getEnemies(): Array<Enemy> {
         return this.enemies;
     }

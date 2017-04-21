@@ -15,7 +15,8 @@
 
     public update() {
         this.fireTimer -= game.time.elapsedMS;
-        if (this.fireTimer < 0) {
+        // Fire a projectile when the fire timer lands at 0
+        if (this.fireTimer <= 0) {
             this.fireTimer = this.cooldown;
             let newProj = this.projectilePool.getProjectile();
             newProj.setTarget(this.targets);
@@ -23,6 +24,7 @@
         }
     }
 
+    // Set the angle the projectiles will fire from
     public setAngle(_angle: number) {
         this.fireAngle = _angle;
     }

@@ -17,9 +17,9 @@
     public getProjectile(): Projectile {
         let projectile;
         if (this.available.length != 0) {
-            projectile = this.available.pop();
+            projectile = this.available.pop(); // If there are any previously created projectiles available pop the last one and assign it to "projectile"
         } else {
-            projectile = this.addProjectile();
+            projectile = this.addProjectile(); // If there are no available projectiles, make a new one
         }
         if (projectile != null) {
             this.inUse.push(projectile);
@@ -48,8 +48,8 @@
             throw "Incorrect type specified for object pool";
         }
         if (newProjectile != null) {
-            newProjectile.projectileIndex = this.projectileCount;
-            game.add.existing(newProjectile);
+            newProjectile.projectileIndex = this.projectileCount; // Give the projectile an index number to find it in the array
+            game.add.existing(newProjectile); // Add the projectile to the game
             this.projectileCount++;
             return newProjectile;
         }

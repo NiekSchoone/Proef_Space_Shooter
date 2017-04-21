@@ -22,6 +22,8 @@
             this.die();
         }
     }
+
+    // Add a weapon for this ship with cooldown 
     public addWeapon(cooldown: number, projectilePool: ProjectilePool, _targets: Array<Ship>) {
         let newWeapon = new Weapon(cooldown, projectilePool, _targets);
         newWeapon.setAngle(this.fireAngle);
