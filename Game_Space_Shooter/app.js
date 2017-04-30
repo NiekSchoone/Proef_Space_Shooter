@@ -211,6 +211,7 @@ class Ship extends Phaser.Sprite {
     constructor(_collisionRadius) {
         super(game, 0, 0);
         this.game = game;
+        this.weaponOffset = 10;
         this.collisionRadius = _collisionRadius;
         this.weapons = new Array();
         this.vectorPosition = new Vector2();
@@ -230,7 +231,16 @@ class Ship extends Phaser.Sprite {
     update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         for (let i = 0; i < this.weapons.length; i++) {
+            let relativePositionX;
+            let weaponSlot = i + 1;
+            if (weaponSlot % 2 == 0) {
+                relativePositionX = this.weaponOffset * -(weaponSlot - 1);
+            }
+            else {
+                relativePositionX = this.weaponOffset * weaponSlot;
+            }
             this.weapons[i].vectorPosition = Vector2.copy(this.vectorPosition);
+            this.weapons[i].vectorPosition.X += relativePositionX;
             this.weapons[i].update();
         }
     }
@@ -293,6 +303,7 @@ class Player extends Ship {
     setTargets(_targets) {
         this.enemies = _targets;
         this.addWeapon(0.35, this.projectilePools[0], this.enemies); // Create a weapon for the player
+        this.addWeapon(0.35, this.projectilePools[0], this.enemies);
     }
 }
 var EnemyType;

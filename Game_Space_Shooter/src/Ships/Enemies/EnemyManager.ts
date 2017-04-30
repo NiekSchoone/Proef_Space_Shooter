@@ -6,6 +6,7 @@
     private player: Player;
     private enemiesMade: number;
     private timer: number;
+
     constructor(_projectilePools: ProjectilePool[])
     {
         this.patterns = new MovementPatterns();

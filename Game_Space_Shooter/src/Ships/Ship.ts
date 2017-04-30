@@ -6,11 +6,13 @@
     public collisionRadius: number;
     protected weapons: Array<Weapon>;
     protected fireAngle: number;
-
+    private weaponOffset: number;
     constructor(_collisionRadius: number)
     {
+        
         super(game, 0, 0);
         this.game = game;
+        this.weaponOffset = 10;
         this.collisionRadius = _collisionRadius;
         this.weapons = new Array<Weapon>();
         this.vectorPosition = new Vector2();
@@ -33,7 +35,16 @@
     public update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         for (let i = 0; i < this.weapons.length; i++) {
+            let relativePositionX: number;
+            let weaponSlot: number = i + 1;
+            if (weaponSlot % 2 == 0 ) {
+                relativePositionX = this.weaponOffset * -(weaponSlot - 1);
+            }
+            else {
+                relativePositionX = this.weaponOffset * weaponSlot;
+            }
             this.weapons[i].vectorPosition = Vector2.copy(this.vectorPosition);
+            this.weapons[i].vectorPosition.X += relativePositionX;
             this.weapons[i].update();
         }
     }
