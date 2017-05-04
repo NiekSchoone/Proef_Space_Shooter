@@ -1,7 +1,26 @@
-﻿body {
+﻿html {
+    width:100%;
+    height:100%;
+}
+
+body {
     font-family: 'Segoe UI', sans-serif;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    background-image: url("assets/Images/Backgrounds/browser_background.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
 }
 
 span {
     font-style: italic;
+}
+
+#content {
+    padding: 0px;
+    left:0; right:0;
+    top:0; bottom:0;
+	margin:auto;
 }

@@ -23,15 +23,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
-    <Content Include="assets\Images\background_001.png">
+    <Content Include="assets\Images\Backgrounds\menu_background.jpg" />
+    <Content Include="assets\Images\Backgrounds\game_background_001.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="assets\Images\background_002.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="assets\Images\Backgrounds\browser_background.jpg" />
     <Content Include="assets\Images\Placeholders\bullet.png" />
     <Content Include="assets\Images\Placeholders\ship_enemy.png" />
-    <Content Include="assets\Images\Placeholders\ship_player.png" />
+    <Content Include="assets\Images\UI\Buttons\button_arrow.png" />
+    <Content Include="assets\Images\UI\Buttons\button_back.png" />
+    <Content Include="assets\Images\UI\Portraits\portrait_4.png" />
+    <Content Include="assets\Images\UI\Portraits\portrait_1.png" />
+    <Content Include="assets\Images\UI\Portraits\portrait_2.png" />
+    <Content Include="assets\Images\UI\Portraits\portrait_3.png" />
+    <Content Include="assets\Images\UI\Buttons\button_start.png" />
+    <Content Include="assets\SpriteSheets\Animations\explosion.png" />
     <Content Include="assets\SpriteSheets\player_ship_sheet.png" />
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
@@ -70,8 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\Audio\" />
-    <Folder Include="assets\Images\UI\Buttons\" />
-    <Folder Include="assets\Images\UI\Portraits\" />
     <Folder Include="src\Player\" />
   </ItemGroup>
   <PropertyGroup>

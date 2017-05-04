@@ -6,21 +6,29 @@
     public collisionRadius: number;
     protected weapons: Array<Weapon>;
     protected fireAngle: number;
+    protected active: boolean;
+    protected explosion: Phaser.Sprite;
     private weaponOffset: number;
+
     constructor(_collisionRadius: number)
     {
-        
         super(game, 0, 0);
         this.game = game;
         this.weaponOffset = 10;
         this.collisionRadius = _collisionRadius;
         this.weapons = new Array<Weapon>();
         this.vectorPosition = new Vector2();
+
+        this.active = true;
+
+        this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
+        this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
+        this.explosion.anchor.set(0.5);
     }
 
     public onHit(_amount: number) {
         this.health -= _amount;
-        if (this.health <= 0) {
+        if (this.health <= 0 && this.active) {
             this.die();
         }
     }
@@ -50,6 +58,10 @@
     }
 
     protected die() {
+        this.active = false;
+        this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);
+        this.game.add.existing(this.explosion);
+        this.explosion.animations.play("explode");
         //this.destroy();
     }
 }
