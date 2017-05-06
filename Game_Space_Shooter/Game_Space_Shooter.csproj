@@ -44,6 +44,7 @@
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\GameStates\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
+    <TypeScriptCompile Include="src\Ships\Enemies\EnemyUnit.ts" />
     <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
     <TypeScriptCompile Include="src\Pickups\Pickup.ts" />
@@ -72,7 +73,6 @@
     <Folder Include="assets\Audio\" />
     <Folder Include="assets\Images\UI\Buttons\" />
     <Folder Include="assets\Images\UI\Portraits\" />
-    <Folder Include="src\Player\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

@@ -9,6 +9,7 @@
     private weaponOffset: number;
     private weaponSlot: number;
     private weaponsMade: number;
+    protected active: boolean;
     constructor(_collisionRadius: number)
     {
         super(game, 0, 0);
@@ -18,17 +19,18 @@
         this.weapons = new Array<Weapon>();
         this.vectorPosition = new Vector2();
         this.weaponSlot = 1;
+        this.active = true;
     }
 
     public onHit(_amount: number) {
         this.health -= _amount;
-        if (this.health <= 0) {
+        if (this.health <= 0 && this.active) {
             this.die();
         }
     }
 
     // Add a weapon for this ship with cooldown 
-    public addWeapon(cooldown: number, projectilePool: ProjectilePool, _targets: Array<Ship>, _relativePosition: Vector2 = null) {
+    public addWeapon(_weapon: Weapon, _relativePosition: Vector2 = null) {
         let fixedPosition: boolean = true;
         if (_relativePosition == null) {
             _relativePosition = new Vector2();
@@ -41,10 +43,9 @@
             fixedPosition = false;
             this.weaponSlot++;
         }
-        let newWeapon = new Weapon(cooldown, projectilePool, _targets, this.vectorPosition, _relativePosition, this.weaponsMade, this.removeWeapon, fixedPosition);
         this.weaponsMade++;
-        newWeapon.setAngle(this.fireAngle);
-        this.weapons.push(newWeapon);
+        _weapon.setAngle(this.fireAngle);
+        this.weapons.push(_weapon);
     }
     public removeWeapon(_weapon: Weapon) {
         let id = this.weapons.indexOf(_weapon, _weapon.id);
@@ -78,6 +79,6 @@
     }
 
     protected die() {
-        //this.destroy();
+        this.active = false;
     }
 }

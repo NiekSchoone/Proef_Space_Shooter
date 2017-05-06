@@ -32,7 +32,5 @@
     // Set targets that the player's weapon can hit
     public setTargets(_targets: Array<Enemy>) {
         this.enemies = _targets;
-        this.addWeapon(0.35, this.projectilePools[0], this.enemies); // Create a weapon for the player
-        this.addWeapon(0.35, this.projectilePools[0], this.enemies);
     }
 }

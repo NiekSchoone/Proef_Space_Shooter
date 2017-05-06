@@ -7,7 +7,7 @@
     public pattern05: Vector2[];
     constructor() {
         this.pattern01 = new Array<Vector2>();
-        let point0: Vector2 = new Vector2(100, -20);
+        let point0: Vector2 = new Vector2(500, 500);
         this.pattern01.push(point0);
         let point1: Vector2 = new Vector2(150, 1000);
         this.pattern01.push(point1);

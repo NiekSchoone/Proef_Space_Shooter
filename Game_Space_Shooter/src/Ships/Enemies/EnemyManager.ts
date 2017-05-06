@@ -6,40 +6,47 @@
     private player: Player;
     private enemiesMade: number;
     private timer: number;
-
+    private waves: EnemyUnit[][];
+    private currentWave: number;
+    private nextUnit: number;
+    private spawning: boolean;
     constructor(_projectilePools: ProjectilePool[])
     {
         this.patterns = new MovementPatterns();
         this.enemies = new Array<Enemy>();
         this.projectilePools = _projectilePools;
-        this.enemiesMade = 0
-        this.timer = 2 * Phaser.Timer.SECOND;
+        this.enemiesMade = 0;
+        this.timer = 0;
+        this.currentWave = 0;
+        this.nextUnit = 0;
+        this.setWaves();
+        this.spawning = true;
+        
     }
+    private setWaves() {
+        this.waves = [];
+        let waveOne = new Array<EnemyUnit>();
+        this.waves.push(waveOne);
+        let unitOne = new EnemyUnit(5000);
+        waveOne.push(unitOne);
+        let enemyOne = this.createEnemy(EnemyType.FIGHTER, 20, 2, this.patterns.pattern01);
+        let enemyTwo = this.createEnemy(EnemyType.FIGHTER, 20, 2, this.patterns.pattern01);
+        unitOne.addEnemy(enemyOne);
+        unitOne.addEnemy(enemyTwo);
+        this.waves[0][0].spawn();
 
-    public createEnemy(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[]) {
+    }
+    public createEnemy(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[]): Enemy {
         let newEnemy = new Enemy(type, healthMod, speedMod, pattern, 70, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
-        newEnemy.addWeapon(0.5, this.projectilePools[0], [this.player]);
         this.enemies.push(newEnemy);
+        return newEnemy;
     }
 
     public update() {
-        this.timer -= game.time.elapsedMS;
-        if (this.timer < 0) {
-            this.timer = 2 * Phaser.Timer.SECOND;
-            switch (this.enemiesMade) {
-                case 0: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern01);
-                    break;
-                case 1: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern02);
-                    break;
-                case 2: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern03);
-                    break;
-                case 3: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern04);
-                    break;
-                case 4: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern05);
-                    break;
-            }
-        }
+        
+       
+
     }
 
     public setPlayer(_player: Player) {

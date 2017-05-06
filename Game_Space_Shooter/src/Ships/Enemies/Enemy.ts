@@ -14,7 +14,7 @@ class Enemy extends Ship
     private killEnemy: Function;
     public id: number;
 
-    constructor(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
+    constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
     {
         super(_collisionRadius);
         this.moveDir = new Vector2(0, 0);
@@ -23,29 +23,28 @@ class Enemy extends Ship
         this.movementPattern = pattern;
         this.vectorPosition.X = this.movementPattern[0].X;
         this.vectorPosition.Y = this.movementPattern[0].Y;
-        this.notdead = true;
+        console.log(this.vectorPosition);
         this.currentMove = 1;
-        switch (type) {
+        this.anchor.set(0.5);
+        this.fireAngle = 180;
+        switch (this.enemyType) {
             case EnemyType.FIGHTER:
-                this.setStats(2 * healthMod, 5 * speedMod);
                 this.loadTexture("ship_enemy");
                 break;
             case EnemyType.BOMBER:
-                this.setStats(20 * healthMod, 2 * speedMod);
                 this.loadTexture("ship_enemy");
                 break;
             case EnemyType.BOSS:
-                this.setStats(100 * healthMod, 5 * speedMod);
                 this.loadTexture("ship_enemy");
                 break;
         }
         game.add.existing(this);
-        this.anchor.set(0.5);
-        this.fireAngle = 180;
+        this.active = false;
     }
     
     public update() {
-        if (this.notdead) {
+        if (this.active) {
+            
             this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
             this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
             this.moveDir.normalize();
@@ -62,14 +61,11 @@ class Enemy extends Ship
         }
         
     }
-
-    private setStats(_health: number, _speed: number) {
-        this.health = _health;
-        this.speed = _speed;
+    public spawn() {
+        
+        this.active = true;
     }
-
     protected die() {
-        this.notdead = false;
         this.killEnemy(this);
     }
 }
