@@ -1,18 +1,39 @@
 class MenuState extends Phaser.State {
     create() {
-        this.background.loadTexture('menu_background');
-        this.startButton.loadTexture('button_start');
-        this.rightButton.loadTexture('button_right');
-        this.leftButton.loadTexture('button_left');
+        this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
+        this.startButton = new Phaser.Button(game, 0, 532, 'menu_button_start', function () { this.startGame(); }, this);
+        this.previousButton = new Phaser.Button(game, 18, 542, 'menu_button_arrow', function () { this.changeCharacter(-1); }, this);
+        this.nextButton = new Phaser.Button(game, 494, 542, 'menu_button_arrow', function () { this.changeCharacter(1); }, this);
+        this.nextButton.scale.set(-1, 1);
         this.portraits = new Array();
-        this.playerPortrait1.loadTexture('portrait_1');
-        this.playerPortrait1.loadTexture('portrait_2');
-        this.playerPortrait1.loadTexture('portrait_3');
-        this.playerPortrait1.loadTexture('portrait_4');
+        this.playerPortrait1 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_1');
+        this.playerPortrait2 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_2');
+        this.playerPortrait3 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_3');
+        this.playerPortrait4 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_4');
         this.portraits.push(this.playerPortrait1);
         this.portraits.push(this.playerPortrait2);
         this.portraits.push(this.playerPortrait3);
         this.portraits.push(this.playerPortrait4);
+        this.currentCharacterNumber = 0;
+        this.currentPortrait = new Phaser.Sprite(game, 0, 0, this.portraits[this.currentCharacterNumber].texture);
+        this.game.add.existing(this.background);
+        this.game.add.existing(this.startButton);
+        this.game.add.existing(this.previousButton);
+        this.game.add.existing(this.nextButton);
+        this.game.add.existing(this.currentPortrait);
+    }
+    changeCharacter(_changeFactor) {
+        this.currentCharacterNumber += _changeFactor;
+        if (this.currentCharacterNumber < 0) {
+            this.currentCharacterNumber = this.portraits.length - 1;
+        }
+        else if (this.currentCharacterNumber > this.portraits.length - 1) {
+            this.currentCharacterNumber = 0;
+        }
+        this.currentPortrait.loadTexture(this.portraits[this.currentCharacterNumber].texture);
+    }
+    startGame() {
+        game.state.start("Game", true, false, this.currentCharacterNumber);
     }
 }
 class EnemyManager {
@@ -219,13 +240,32 @@ class Vector2 {
     }
 }
 class Pickup extends Phaser.Sprite {
-    constructor(_x, _y, _type) {
+    constructor(_player, _x, _y, _type) {
         super(game, _x, _y);
+        this.player = _player;
         this.vectorPosition = new Vector2(_x, _y);
-    }
-    onPickup() {
+        this.velocity = new Vector2(0, 1);
     }
     update() {
+        this.vectorPosition.add(this.velocity);
+        this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
+        this.checkCollision();
+        this.checkBounds();
+    }
+    onHit() {
+        this.player.handlePickup(this.pickupType);
+        this.destroy();
+    }
+    checkBounds() {
+        if (this.vectorPosition.Y < -20 || this.vectorPosition.Y > game.height + 20 || this.vectorPosition.X > game.width + 20 || this.vectorPosition.X < -20) {
+            this.destroy();
+        }
+    }
+    checkCollision() {
+        let distance = Vector2.distance(this.vectorPosition, this.player.vectorPosition);
+        if (distance < this.player.collisionRadius) {
+            this.onHit();
+        }
     }
 }
 var PickupType;
@@ -242,6 +282,10 @@ class Ship extends Phaser.Sprite {
         this.collisionRadius = _collisionRadius;
         this.weapons = new Array();
         this.vectorPosition = new Vector2();
+        this.active = true;
+        this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
+        this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
+        this.explosion.anchor.set(0.5);
         this.weaponSlot = 1;
         this.active = true;
     }
@@ -299,6 +343,10 @@ class Ship extends Phaser.Sprite {
     }
     die() {
         this.active = false;
+        this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);
+        this.game.add.existing(this.explosion);
+        this.explosion.animations.play("explode");
+        //this.destroy();
     }
 }
 class MovementPatterns {
@@ -333,6 +381,7 @@ class MovementPatterns {
 class Player extends Ship {
     constructor(_projectilePools, _collisionRadius) {
         super(_collisionRadius);
+        this.comboMode = false;
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", 3);
         this.speed = 10;
@@ -341,11 +390,64 @@ class Player extends Ship {
         game.physics.arcade.enable(this);
         this.moveDir = new Vector2();
         this.enemies = new Array();
+        this.targetEnemies = new Array();
+        this.targetIDs = new Array();
         this.fireAngle = 0;
     }
+    handlePickup(type) {
+    }
+    checkCollision() {
+        if (this.enemies != null) {
+            for (let i = 0; i < this.enemies.length; i++) {
+                let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.enemies[i].vectorPosition);
+                if (distance < this.enemies[i].collisionRadius) {
+                    return this.enemies[i];
+                }
+            }
+        }
+    }
     update() {
+        // If mouse goes down on top of an enemy
+        if (this.checkCollision() != null && game.input.mousePointer.isDown) {
+            // Check if there's already targets
+            if (this.targetEnemies.length != 0) {
+                let noDuplicate = true;
+                // Loop through all target enemies and check if duplicate.
+                for (var i = 0; i < this.targetEnemies.length; i++) {
+                    if (this.checkCollision().id == this.targetEnemies[i].id) {
+                        noDuplicate = false;
+                    }
+                }
+                // If there's no duplicate add it to tha target array. 
+                if (noDuplicate == true) {
+                    this.targetEnemies.push(this.checkCollision());
+                }
+            }
+            else {
+                // If it's the first target skip checking duplicates. 
+                this.targetEnemies.push(this.checkCollision());
+                this.comboMode = true;
+            }
+        }
+        // When button is released.
+        if (this.comboMode == true && game.input.mousePointer.isDown == false) {
+            this.comboMode = false;
+            // Check if more than one enemy is selected. 
+            if (this.targetEnemies.length > 1) {
+                // Loop through the enemies and kill them
+                for (var i = 0; i <= this.targetEnemies.length; i++) {
+                    if (this.targetEnemies[i] != null) {
+                        this.targetEnemies[i].onHit(666);
+                    }
+                }
+            }
+            // Empty the target array.
+            for (var i = 0; i <= this.targetEnemies.length; i++) {
+                this.targetEnemies.splice(i);
+            }
+        }
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
-        if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
+        if (game.input.pointer1.isDown || game.input.mousePointer.isDown && this.comboMode == false) {
             this.moveDir.X = (game.input.x - this.vectorPosition.X) / 100;
             this.moveDir.Y = (game.input.y - this.vectorPosition.Y) / 100;
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
@@ -404,12 +506,18 @@ class Enemy extends Ship {
             }
             super.update();
         }
+        else {
+            if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
+                this.killEnemy(this);
+            }
+        }
     }
     spawn() {
         this.active = true;
     }
     die() {
         this.killEnemy(this);
+        super.die();
     }
 }
 class Level {
@@ -417,7 +525,7 @@ class Level {
         this.scrollSpeed = 15.0;
         this.scrollY = 0;
         this.backgroundGroup = game.add.group();
-        this.backgroundGroup.createMultiple(1, 'background', [1, 2, 3, 4], true);
+        this.backgroundGroup.createMultiple(1, 'game_background', [1, 2, 3, 4], true);
         this.backgroundGroup.align(1, 4, 512, 2048);
         this.backgroundGroup.y = -4096;
     }
@@ -567,6 +675,9 @@ class ProjectilePool {
     }
 }
 class GameState extends Phaser.State {
+    init(_characterNumber) {
+        this.characterNumber = _characterNumber;
+    }
     create() {
         this.level = new Level();
         this.projectilePools = new Array();
@@ -590,17 +701,26 @@ class GameState extends Phaser.State {
 class Preloader extends Phaser.State {
     // Preload all assets
     preload() {
-        // Images
-        game.load.image("background", "assets/Images/background_001.png");
+        // Images menu
+        game.load.image("menu_background", "assets/Images/Backgrounds/menu_background.jpg");
+        game.load.image("menu_portrait_1", "assets/Images/UI/Portraits/portrait_1.png");
+        game.load.image("menu_portrait_2", "assets/Images/UI/Portraits/portrait_2.png");
+        game.load.image("menu_portrait_3", "assets/Images/UI/Portraits/portrait_3.png");
+        game.load.image("menu_portrait_4", "assets/Images/UI/Portraits/portrait_4.png");
+        game.load.image("menu_button_start", "assets/Images/UI/Buttons/button_start.png");
+        game.load.image("menu_button_arrow", "assets/Images/UI/Buttons/button_arrow.png");
+        // Images game
         game.load.image("plasma_bullet", "assets/Images/Placeholders/bullet.png");
         game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
         // Spritesheets
+        game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background_001.png", 512, 2048, 4);
         game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
+        game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/explosion.png", 256, 256, 24);
         // Audio
     }
     // After the preload function is done, the create function is called which starts the GameState
     create() {
-        game.state.start("Game");
+        game.state.start("Menu");
     }
 }
 class App {
@@ -609,9 +729,11 @@ class App {
         game.stage = new Phaser.Stage(game);
     }
     create() {
+        game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
         game.physics.startSystem(Phaser.Physics.ARCADE); // Start the arcade physics system
         // Add the various states the game goes through
         game.state.add("Preload", Preloader);
+        game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         // Start the preload state
         game.state.start("Preload");

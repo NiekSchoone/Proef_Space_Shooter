@@ -7,10 +7,13 @@ class App {
     }
 
     create() {
+        game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
+
         game.physics.startSystem(Phaser.Physics.ARCADE); // Start the arcade physics system
 
         // Add the various states the game goes through
         game.state.add("Preload", Preloader);
+        game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         // Start the preload state
         game.state.start("Preload");

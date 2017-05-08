@@ -7,9 +7,10 @@
     private ShipPosition: Vector2;
     private relativePosition: Vector2;
     private fireAngle: number;
-    public id: number
     private removeWeapon: Function;
     public fixedPosition: boolean;
+    public id: number
+
     constructor(_cooldown: number, _projectilePool: ProjectilePool, _targets: Array<Ship>, _ShipPosition: Vector2, _relativePosition: Vector2, _id: number, _removeWeapon: Function, _fixedPosition: boolean = false) {
         this.cooldown = _cooldown * Phaser.Timer.SECOND;
         this.projectilePool = _projectilePool;

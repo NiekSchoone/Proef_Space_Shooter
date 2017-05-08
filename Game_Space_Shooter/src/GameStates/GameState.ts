@@ -9,6 +9,12 @@
 
     private enemyManager: EnemyManager;
 
+    private characterNumber: number;
+
+    init(_characterNumber) {
+        this.characterNumber = _characterNumber;
+    }
+
     create() {
         this.level = new Level();
         this.projectilePools = new Array<ProjectilePool>();

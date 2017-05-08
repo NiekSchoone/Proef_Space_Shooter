@@ -44,7 +44,6 @@ class Enemy extends Ship
     
     public update() {
         if (this.active) {
-            
             this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
             this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
             this.moveDir.normalize();
@@ -58,8 +57,11 @@ class Enemy extends Ship
                 }
             }
             super.update();
+        } else {
+            if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
+                this.killEnemy(this);
+            }
         }
-        
     }
     public spawn() {
         
@@ -67,5 +69,7 @@ class Enemy extends Ship
     }
     protected die() {
         this.killEnemy(this);
+        super.die();
     }
+
 }
