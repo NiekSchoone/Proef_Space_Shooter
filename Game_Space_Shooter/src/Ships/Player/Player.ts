@@ -69,15 +69,14 @@
                 if (noDuplicate == true)
                 {
                     this.targetEnemies.push(this.checkCollision());
-                    console.log("Start pos : " + this.targetEnemies[this.targetEnemies.length - 2].vectorPosition.X + " : " + this.targetEnemies[this.targetEnemies.length - 2].vectorPosition.Y);
-                    console.log("End pos : " + this.targetEnemies[this.targetEnemies.length - 1].vectorPosition.X + " : " + this.targetEnemies[this.targetEnemies.length - 1].vectorPosition.Y);
-                                    }
+                    this.checkCollision().toggleComboTarget();
+                }
             }
             else
             {
                 // If it's the first target skip checking duplicates. 
                 this.targetEnemies.push(this.checkCollision());
-                
+                this.checkCollision().toggleComboTarget();
                 this.comboMode = true;
             }
         }
@@ -113,17 +112,13 @@
                             game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true); 
                         }       
                     }
-                    
                 }
-
-
             }
             // Empty the target array.
             for (var i = 0; i <= this.targetEnemies.length; i++)
             {
                 this.targetEnemies.splice(i);
             }
-            
         }
 
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
@@ -158,7 +153,6 @@
         {
             game.time.desiredFps += 1;
             game.time.events.add(200, this.reverseSlowmo, this); 
-
         }
     } 
 }                       

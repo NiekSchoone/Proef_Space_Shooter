@@ -12,6 +12,7 @@ class Enemy extends Ship
     private moveDir: Vector2;
     private notdead: boolean;
     private killEnemy: Function;
+    private comboSprite: Phaser.Sprite;
     public id: number;
 
     constructor(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
@@ -20,11 +21,13 @@ class Enemy extends Ship
         this.moveDir = new Vector2(0, 0);
         this.id = _id;
         this.killEnemy = _killEnemy;
-        this.movementPattern = pattern;
+        this.movementPattern = pattern;                   
         this.vectorPosition.X = this.movementPattern[0].X;
         this.vectorPosition.Y = this.movementPattern[0].Y;
         this.notdead = true;
         this.currentMove = 1;
+        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
+        
         switch (type) {
             case EnemyType.FIGHTER:
                 this.setStats(2 * healthMod, 5 * speedMod);
@@ -73,6 +76,11 @@ class Enemy extends Ship
 
     protected die() {
         super.die();
+    }
+
+    public toggleComboTarget()
+    {
+        this.addChild(this.comboSprite);  
     }
 
 }
