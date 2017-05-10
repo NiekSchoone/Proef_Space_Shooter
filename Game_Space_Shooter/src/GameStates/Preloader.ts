@@ -23,6 +23,8 @@
 
         game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/explosion.png", 256, 256, 24);
+        game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
+        
 
         // Audio
 

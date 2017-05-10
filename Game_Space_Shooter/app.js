@@ -97,6 +97,7 @@ class Preloader extends Phaser.State {
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background_001.png", 512, 2048, 4);
         game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/explosion.png", 256, 256, 24);
+        game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
         // Audio
     }
     // After the preload function is done, the create function is called which starts the GameState
@@ -311,6 +312,7 @@ class Enemy extends Ship {
         this.currentMove = 1;
         this.speed = speed;
         this.enemyType = type;
+        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
         this.fireAngle = 180;
         this.active = false;
@@ -355,6 +357,9 @@ class Enemy extends Ship {
         this.dead = true;
         super.die();
         this.killEnemy(this);
+    }
+    toggleComboTarget() {
+        this.addChild(this.comboSprite);
     }
 }
 class EnemyManager {
@@ -466,6 +471,7 @@ class Player extends Ship {
     constructor(_projectilePools, _collisionRadius) {
         super(_collisionRadius);
         this.comboMode = false;
+        this.slowMo = true;
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", 3);
         this.speed = 10;
@@ -504,16 +510,24 @@ class Player extends Ship {
                         noDuplicate = false;
                     }
                 }
-                // If there's no duplicate add it to tha target array. 
+                // If there's no duplicate add it to the target array. 
                 if (noDuplicate == true) {
                     this.targetEnemies.push(this.checkCollision());
+                    this.checkCollision().toggleComboTarget();
                 }
             }
             else {
                 // If it's the first target skip checking duplicates. 
                 this.targetEnemies.push(this.checkCollision());
+                this.checkCollision().toggleComboTarget();
                 this.comboMode = true;
             }
+        }
+        if (game.input.mousePointer.isDown && this.comboMode == false) {
+            this.reverseSlowmo();
+        }
+        else if (game.input.mousePointer.isDown == false) {
+            this.smoothSlowmo();
         }
         // When button is released.
         if (this.comboMode == true && game.input.mousePointer.isDown == false) {
@@ -524,6 +538,12 @@ class Player extends Ship {
                 for (var i = 0; i <= this.targetEnemies.length; i++) {
                     if (this.targetEnemies[i] != null) {
                         this.targetEnemies[i].onHit(666);
+                        if (this.targetEnemies[i - 1] != null) {
+                            this.graphics = game.add.graphics(this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i - 1].vectorPosition.Y);
+                            this.graphics.lineStyle(15, 0xff0000, 0.6);
+                            this.graphics.lineTo(this.targetEnemies[i].vectorPosition.X - this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i].vectorPosition.Y - this.targetEnemies[i - 1].vectorPosition.Y);
+                            game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true);
+                        }
                     }
                 }
             }
@@ -544,6 +564,18 @@ class Player extends Ship {
     setTargets(_targets) {
         this.enemies = _targets;
         this.addWeapon(1, this.projectilePools[0], this.enemies);
+    }
+    smoothSlowmo() {
+        if (game.time.desiredFps > 40) {
+            game.time.desiredFps -= 1;
+            game.time.events.add(30, this.smoothSlowmo, this);
+        }
+    }
+    reverseSlowmo() {
+        if (this.game.time.desiredFps < 60) {
+            game.time.desiredFps += 1;
+            game.time.events.add(200, this.reverseSlowmo, this);
+        }
     }
 }
 class Ship extends Phaser.Sprite {
