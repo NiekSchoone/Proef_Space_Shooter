@@ -22,6 +22,8 @@
         this.targetEnemies = new Array<Enemy>();
         this.targetIDs = new Array<number>();
         this.fireAngle = 0;
+        this.vectorPosition.X = 200;
+        this.vectorPosition.Y = 500;
     }
 
     public handlePickup(type: PickupType)
@@ -115,5 +117,6 @@
     // Set targets that the player's weapon can hit
     public setTargets(_targets: Array<Enemy>) {
         this.enemies = _targets;
+        this.addWeapon(1, this.projectilePools[0], this.enemies);
     }
 }                       

@@ -21,8 +21,6 @@
         this.weapons = new Array<Weapon>();
         this.vectorPosition = new Vector2();
 
-        this.active = true;
-
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
         this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
         this.explosion.anchor.set(0.5);
@@ -39,7 +37,7 @@
     }
 
     // Add a weapon for this ship with cooldown 
-    public addWeapon(_weapon: Weapon, _relativePosition: Vector2 = null) {
+    public addWeapon(_weaponCooldown: number, _projectiles: ProjectilePool, _targets: Array<Ship>, _relativePosition: Vector2 = null) {
         let fixedPosition: boolean = true;
         if (_relativePosition == null) {
             _relativePosition = new Vector2();
@@ -52,9 +50,10 @@
             fixedPosition = false;
             this.weaponSlot++;
         }
+        let weapon = new Weapon(_weaponCooldown, _projectiles, _targets, this.vectorPosition, _relativePosition, this.weaponsMade, this.removeWeapon, fixedPosition);
         this.weaponsMade++;
-        _weapon.setAngle(this.fireAngle);
-        this.weapons.push(_weapon);
+        weapon.setAngle(this.fireAngle);
+        this.weapons.push(weapon);
     }
     public removeWeapon(_weapon: Weapon) {
         let id = this.weapons.indexOf(_weapon, _weapon.id);
@@ -91,6 +90,5 @@
         this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);
         this.game.add.existing(this.explosion);
         this.explosion.animations.play("explode");
-        //this.destroy();
     }
 }

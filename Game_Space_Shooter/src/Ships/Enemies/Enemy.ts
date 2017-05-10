@@ -13,7 +13,7 @@ class Enemy extends Ship
     private notdead: boolean;
     private killEnemy: Function;
     public id: number;
-
+    private dead: Boolean;
     constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
     {
         super(_collisionRadius);
@@ -23,23 +23,13 @@ class Enemy extends Ship
         this.movementPattern = pattern;
         this.vectorPosition.X = this.movementPattern[0].X;
         this.vectorPosition.Y = this.movementPattern[0].Y;
-        console.log(this.vectorPosition);
         this.currentMove = 1;
+        this.speed = speed;
+        this.enemyType = type;
         this.anchor.set(0.5);
         this.fireAngle = 180;
-        switch (this.enemyType) {
-            case EnemyType.FIGHTER:
-                this.loadTexture("ship_enemy");
-                break;
-            case EnemyType.BOMBER:
-                this.loadTexture("ship_enemy");
-                break;
-            case EnemyType.BOSS:
-                this.loadTexture("ship_enemy");
-                break;
-        }
-        game.add.existing(this);
         this.active = false;
+        this.dead = true;
     }
     
     public update() {
@@ -57,19 +47,31 @@ class Enemy extends Ship
                 }
             }
             super.update();
-        } else {
+        } else if(this.dead) {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this);
             }
         }
     }
     public spawn() {
-        
+        switch (this.enemyType) {
+            case EnemyType.FIGHTER:
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOMBER:
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOSS:
+                this.loadTexture("ship_enemy");
+                break;
+        }
+        game.add.existing(this);
         this.active = true;
     }
     protected die() {
-        this.killEnemy(this);
+        this.dead = true;
         super.die();
+        this.killEnemy(this);
     }
 
 }
