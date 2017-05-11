@@ -1,7 +1,7 @@
 ﻿class GameState extends Phaser.State {
     private player: Player;
     private level: Level;
-    private playerSprite: Phaser.Sprite;
+    private healthIndicator: HealthIndicator;
 
     private plasmaBulletPool: ProjectilePool;
     private missilePool: ProjectilePool;
@@ -33,6 +33,8 @@
         this.enemyManager.setPlayer(this.player);
 
         this.player.setTargets(this.enemyManager.getEnemies());
+
+        this.healthIndicator = new HealthIndicator();
     }
 
     update() {

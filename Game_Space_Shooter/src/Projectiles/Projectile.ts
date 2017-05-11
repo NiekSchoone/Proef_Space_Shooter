@@ -36,6 +36,10 @@
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
         this.vectorPosition = _pos;
         this.active = true;
+
+        if (this.animations != null) {
+            this.animations.play(this.key as string);
+        }
     }
 
     // Set targets this projectile can hit
@@ -76,6 +80,8 @@
         this.targets = new Array<Ship>();
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
+        this.animations.stop();
+        this.animations.frame = 0;
     }
 }
 
