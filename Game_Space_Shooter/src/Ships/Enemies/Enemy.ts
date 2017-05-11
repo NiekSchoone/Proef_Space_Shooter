@@ -12,36 +12,26 @@ class Enemy extends Ship
     private moveDir: Vector2;
     private notdead: boolean;
     private killEnemy: Function;
+    private comboSprite: Phaser.Sprite;
     public id: number;
-
-    constructor(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
+    private dead: Boolean;
+    constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
     {
         super(_collisionRadius);
         this.moveDir = new Vector2(0, 0);
         this.id = _id;
         this.killEnemy = _killEnemy;
-        this.movementPattern = pattern;
+        this.movementPattern = pattern;                   
         this.vectorPosition.X = this.movementPattern[0].X;
         this.vectorPosition.Y = this.movementPattern[0].Y;
-        this.notdead = true;
         this.currentMove = 1;
-        switch (type) {
-            case EnemyType.FIGHTER:
-                this.setStats(2 * healthMod, 5 * speedMod);
-                this.loadTexture("ship_enemy");
-                break;
-            case EnemyType.BOMBER:
-                this.setStats(20 * healthMod, 2 * speedMod);
-                this.loadTexture("ship_enemy");
-                break;
-            case EnemyType.BOSS:
-                this.setStats(100 * healthMod, 5 * speedMod);
-                this.loadTexture("ship_enemy");
-                break;
-        }
-        game.add.existing(this);
+        this.speed = speed;
+        this.enemyType = type;
+        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
         this.fireAngle = 180;
+        this.active = false;
+        this.dead = true;
     }
     
     public update() {
@@ -59,20 +49,36 @@ class Enemy extends Ship
                 }
             }
             super.update();
-        } else {
+        } else if(this.dead) {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this);
             }
         }
     }
-
-    private setStats(_health: number, _speed: number) {
-        this.health = _health;
-        this.speed = _speed;
+    public spawn() {
+        switch (this.enemyType) {
+            case EnemyType.FIGHTER:
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOMBER:
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOSS:
+                this.loadTexture("ship_enemy");
+                break;
+        }
+        game.add.existing(this);
+        this.active = true;
+    }
+    protected die() {
+        this.dead = true;
+        super.die();
+        this.killEnemy(this);
     }
 
-    protected die() {
-        super.die();
+    public toggleComboTarget()
+    {
+        this.addChild(this.comboSprite);  
     }
 
 }

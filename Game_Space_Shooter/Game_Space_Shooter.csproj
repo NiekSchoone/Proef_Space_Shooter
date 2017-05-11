@@ -59,6 +59,7 @@
     <TypeScriptCompile Include="src\States\BootState.ts" />
     <TypeScriptCompile Include="src\States\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
+    <TypeScriptCompile Include="src\Ships\Enemies\EnemyUnit.ts" />
     <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\AnimationHandler.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />

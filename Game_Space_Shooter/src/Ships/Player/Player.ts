@@ -7,6 +7,8 @@
     private comboMode: boolean = false;
     private targetEnemies: Enemy[];
     private targetIDs: Array<number>;
+    private graphics: Phaser.Graphics;
+    private slowMo: boolean = true; 
 
     constructor(_projectilePools: ProjectilePool[], _collisionRadius: number)
     {
@@ -22,6 +24,8 @@
         this.targetEnemies = new Array<Enemy>();
         this.targetIDs = new Array<number>();
         this.fireAngle = 0;
+        this.vectorPosition.X = 200;
+        this.vectorPosition.Y = 500;
     }
 
     public handlePickup(type: PickupType)
@@ -63,19 +67,29 @@
                         noDuplicate = false;            
                     }
                 }
-                // If there's no duplicate add it to tha target array. 
+                // If there's no duplicate add it to the target array. 
                 if (noDuplicate == true)
                 {
                     this.targetEnemies.push(this.checkCollision());
+                    this.checkCollision().toggleComboTarget();
                 }
             }
             else
             {
                 // If it's the first target skip checking duplicates. 
                 this.targetEnemies.push(this.checkCollision());
-                
+                this.checkCollision().toggleComboTarget();
                 this.comboMode = true;
             }
+        }
+
+        if (game.input.mousePointer.isDown && this.comboMode == false)
+        {
+            this.reverseSlowmo();
+        }
+        else if(game.input.mousePointer.isDown == false)
+        {
+            this.smoothSlowmo();
         }
 
         // When button is released.
@@ -90,7 +104,15 @@
                 {
                     if (this.targetEnemies[i] != null)
                     {
-                        this.targetEnemies[i].onHit(666);       
+                        this.targetEnemies[i].onHit(666);
+
+                        if (this.targetEnemies[i - 1] != null)
+                        {
+                            this.graphics = game.add.graphics(this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i - 1].vectorPosition.Y);
+                            this.graphics.lineStyle(15, 0xff0000, 0.6);
+                            this.graphics.lineTo(this.targetEnemies[i].vectorPosition.X - this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i].vectorPosition.Y - this.targetEnemies[i - 1].vectorPosition.Y);
+                            game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true); 
+                        }       
                     }
                 }
             }
@@ -99,7 +121,6 @@
             {
                 this.targetEnemies.splice(i);
             }
-            
         }
 
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
@@ -117,4 +138,23 @@
         this.enemies = _targets;
         this.addWeapon(0.80, this.projectilePools[1], this.enemies);
     }
-}
+
+    private smoothSlowmo()
+    {    
+        if (game.time.desiredFps > 40)
+        {
+            game.time.desiredFps -= 1;
+            game.time.events.add(30, this.smoothSlowmo, this);
+        }
+    }
+
+    private reverseSlowmo()
+    {
+        if (this.game.time.desiredFps < 60)
+        {
+            game.time.desiredFps += 1;
+            game.time.events.add(200, this.reverseSlowmo, this); 
+        }
+    } 
+}                       
+>>>>>>> origin/master

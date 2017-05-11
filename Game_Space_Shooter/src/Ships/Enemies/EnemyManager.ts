@@ -6,38 +6,67 @@
     private player: Player;
     private enemiesMade: number;
     private timer: number;
-
+    private waves: EnemyUnit[][];
+    private currentWave: number;
+    private nextUnit: number;
+    private spawning: boolean;
     constructor(_projectilePools: ProjectilePool[])
     {
         this.patterns = new MovementPatterns();
         this.enemies = new Array<Enemy>();
         this.projectilePools = _projectilePools;
-        this.enemiesMade = 0
-        this.timer = 2 * Phaser.Timer.SECOND;
+        this.enemiesMade = 0;
+        this.timer = 0;
+        this.currentWave = 0;
+        this.nextUnit = 0;
+        this.setWaves();
+        this.spawning = true;
+        
     }
+    private setWaves() {
+        this.waves = [];
+        this.waves[0] = [];
+        let e1 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern01);
+        let e2 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern02);
+        let u1 = new EnemyUnit(100, [e1, e2]);
+        this.waves[0][0] = u1;
+        let e3 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern01);
+        let e4 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern02);
+        let u2 = new EnemyUnit(500, [e3, e4]);
+        this.waves[0][1] = u2;
+        let e5 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern01);
+        let e6 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern02);
+        let u3 = new EnemyUnit(1000, [e3, e4]);
+        this.waves[1] = [];
+        this.waves[1][0] = u3;
 
-    public createEnemy(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[]) {
-        let newEnemy = new Enemy(type, healthMod, speedMod, pattern, 70, this.killEnemy.bind(this), this.enemiesMade);
+    }
+    public createEnemy(type: EnemyType, healthMod: number, speedMod: number, pattern: Vector2[]): Enemy {
+        let newEnemy = new Enemy(type, healthMod, speedMod, pattern, 20, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
-        newEnemy.addWeapon(0.5, this.projectilePools[0], [this.player]);
         this.enemies.push(newEnemy);
+        return newEnemy;
     }
 
     public update() {
-        this.timer -= game.time.elapsedMS;
-        if (this.timer < 0) {
-            this.timer = 2 * Phaser.Timer.SECOND;
-            switch (this.enemiesMade) {
-                case 0: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern01);
-                    break;
-                case 1: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern02);
-                    break;
-                case 2: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern03);
-                    break;
-                case 3: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern04);
-                    break;
-                case 4: this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern05);
-                    break;
+        if (this.spawning) {
+            this.timer += game.time.elapsedMS;
+            if (this.timer <= this.waves[this.currentWave][this.nextUnit].time)
+            {
+                console.log("spawning" + this.currentWave+":"+ this.nextUnit)
+                this.waves[this.currentWave][this.nextUnit].spawn();
+                this.nextUnit++;
+
+                if (this.nextUnit == this.waves[this.currentWave].length)
+                {
+                    this.currentWave++;
+                    this.timer = 0;
+                    this.nextUnit = 0;
+                    if (this.currentWave == this.waves.length)
+                    {
+                        this.spawning = false;
+                    }
+                }
             }
         }
     }
