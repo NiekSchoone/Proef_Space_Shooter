@@ -26,7 +26,7 @@ class Enemy extends Ship
         this.vectorPosition.Y = this.movementPattern[0].Y;
         this.notdead = true;
         this.currentMove = 1;
-        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
+        this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         
         switch (type) {
             case EnemyType.FIGHTER:
@@ -80,6 +80,9 @@ class Enemy extends Ship
 
     public toggleComboTarget()
     {
+        this.comboSprite.anchor.setTo(0.5);
+        let anim = this.comboSprite.animations.add("indicated", [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], 24, false);
+        anim.play();
         this.addChild(this.comboSprite);  
     }
 
