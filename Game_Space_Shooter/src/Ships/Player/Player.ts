@@ -24,7 +24,8 @@
         this.targetEnemies = new Array<Enemy>();
         this.targetIDs = new Array<number>();
         this.fireAngle = 0;
-        game.time.slowMotion = 1;
+        this.vectorPosition.X = 200;
+        this.vectorPosition.Y = 500;
     }
 
     public handlePickup(type: PickupType)
@@ -139,8 +140,7 @@
     public setTargets(_targets: Array<Enemy>)
     {
         this.enemies = _targets;
-        //this.addWeapon(0.35, this.projectilePools[0], this.enemies); // Create a weapon for the player
-        //this.addWeapon(0.35, this.projectilePools[0], this.enemies);
+        this.addWeapon(0.80, this.projectilePools[1], this.enemies);
     }
 
     // Smoothly slowdown time. 
@@ -179,4 +179,4 @@
             }
         }
     }
-}                       
+}

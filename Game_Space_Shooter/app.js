@@ -97,6 +97,7 @@ class Preloader extends Phaser.State {
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background_001.png", 512, 2048, 4);
         game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/explosion.png", 256, 256, 24);
+        game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
         // Audio
     }
     // After the preload function is done, the create function is called which starts the GameState
@@ -141,7 +142,7 @@ class Pickup extends Phaser.Sprite {
         this.checkBounds();
     }
     onHit() {
-        //this.player.handlePickup(this.pickupType);
+        this.player.handlePickup(this.pickupType);
         this.destroy();
     }
     checkBounds() {
@@ -300,7 +301,7 @@ var EnemyType;
     EnemyType[EnemyType["BOSS"] = 2] = "BOSS";
 })(EnemyType || (EnemyType = {}));
 class Enemy extends Ship {
-    constructor(type, healthMod, speedMod, pattern, _collisionRadius, _killEnemy, _id) {
+    constructor(type, health, speed, pattern, _collisionRadius, _killEnemy, _id) {
         super(_collisionRadius);
         this.moveDir = new Vector2(0, 0);
         this.id = _id;
@@ -308,25 +309,14 @@ class Enemy extends Ship {
         this.movementPattern = pattern;
         this.vectorPosition.X = this.movementPattern[0].X;
         this.vectorPosition.Y = this.movementPattern[0].Y;
-        this.notdead = true;
         this.currentMove = 1;
-        switch (type) {
-            case EnemyType.FIGHTER:
-                this.setStats(2 * healthMod, 5 * speedMod);
-                this.loadTexture("ship_enemy");
-                break;
-            case EnemyType.BOMBER:
-                this.setStats(20 * healthMod, 2 * speedMod);
-                this.loadTexture("ship_enemy");
-                break;
-            case EnemyType.BOSS:
-                this.setStats(100 * healthMod, 5 * speedMod);
-                this.loadTexture("ship_enemy");
-                break;
-        }
-        game.add.existing(this);
+        this.speed = speed;
+        this.enemyType = type;
+        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
         this.fireAngle = 180;
+        this.active = false;
+        this.dead = true;
     }
     update() {
         if (this.active) {
@@ -342,18 +332,34 @@ class Enemy extends Ship {
             }
             super.update();
         }
-        else {
+        else if (this.dead) {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this);
             }
         }
     }
-    setStats(_health, _speed) {
-        this.health = _health;
-        this.speed = _speed;
+    spawn() {
+        switch (this.enemyType) {
+            case EnemyType.FIGHTER:
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOMBER:
+                this.loadTexture("ship_enemy");
+                break;
+            case EnemyType.BOSS:
+                this.loadTexture("ship_enemy");
+                break;
+        }
+        game.add.existing(this);
+        this.active = true;
     }
     die() {
+        this.dead = true;
         super.die();
+        this.killEnemy(this);
+    }
+    toggleComboTarget() {
+        this.addChild(this.comboSprite);
     }
 }
 class EnemyManager {
@@ -362,34 +368,50 @@ class EnemyManager {
         this.enemies = new Array();
         this.projectilePools = _projectilePools;
         this.enemiesMade = 0;
-        this.timer = 2 * Phaser.Timer.SECOND;
+        this.timer = 0;
+        this.currentWave = 0;
+        this.nextUnit = 0;
+        this.setWaves();
+        this.spawning = true;
+    }
+    setWaves() {
+        this.waves = [];
+        this.waves[0] = [];
+        let e1 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern01);
+        let e2 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern02);
+        let u1 = new EnemyUnit(100, [e1, e2]);
+        this.waves[0][0] = u1;
+        let e3 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern01);
+        let e4 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern02);
+        let u2 = new EnemyUnit(500, [e3, e4]);
+        this.waves[0][1] = u2;
+        let e5 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern01);
+        let e6 = this.createEnemy(EnemyType.FIGHTER, 10, .5, this.patterns.pattern02);
+        let u3 = new EnemyUnit(1000, [e3, e4]);
+        this.waves[1] = [];
+        this.waves[1][0] = u3;
     }
     createEnemy(type, healthMod, speedMod, pattern) {
-        let newEnemy = new Enemy(type, healthMod, speedMod, pattern, 70, this.killEnemy.bind(this), this.enemiesMade);
+        let newEnemy = new Enemy(type, healthMod, speedMod, pattern, 20, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
-        newEnemy.addWeapon(0.5, this.projectilePools[0], [this.player]);
         this.enemies.push(newEnemy);
+        return newEnemy;
     }
     update() {
-        this.timer -= game.time.elapsedMS;
-        if (this.timer < 0) {
-            this.timer = 2 * Phaser.Timer.SECOND;
-            switch (this.enemiesMade) {
-                case 0:
-                    this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern01);
-                    break;
-                case 1:
-                    this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern02);
-                    break;
-                case 2:
-                    this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern03);
-                    break;
-                case 3:
-                    this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern04);
-                    break;
-                case 4:
-                    this.createEnemy(EnemyType.FIGHTER, 1, .5, this.patterns.pattern05);
-                    break;
+        if (this.spawning) {
+            this.timer += game.time.elapsedMS;
+            if (this.timer <= this.waves[this.currentWave][this.nextUnit].time) {
+                console.log("spawning" + this.currentWave + ":" + this.nextUnit);
+                this.waves[this.currentWave][this.nextUnit].spawn();
+                this.nextUnit++;
+                if (this.nextUnit == this.waves[this.currentWave].length) {
+                    this.currentWave++;
+                    this.timer = 0;
+                    this.nextUnit = 0;
+                    if (this.currentWave == this.waves.length) {
+                        this.spawning = false;
+                    }
+                }
             }
         }
     }
@@ -405,12 +427,23 @@ class EnemyManager {
         return this.enemies;
     }
 }
+class EnemyUnit {
+    constructor(_time, _enemies) {
+        this.time = _time;
+        this.enemies = _enemies;
+    }
+    spawn() {
+        for (let i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].spawn();
+        }
+    }
+}
 class MovementPatterns {
     constructor() {
         this.pattern01 = new Array();
-        let point0 = new Vector2(100, -20);
+        let point0 = new Vector2(200, 200);
         this.pattern01.push(point0);
-        let point1 = new Vector2(150, 1000);
+        let point1 = new Vector2(1000, 1000);
         this.pattern01.push(point1);
         this.pattern02 = new Array();
         let point2 = new Vector2(400, -20);
@@ -437,6 +470,8 @@ class MovementPatterns {
 class Player extends Ship {
     constructor(_projectilePools, _collisionRadius) {
         super(_collisionRadius);
+        this.comboMode = false;
+        this.slowMo = true;
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", 3);
         this.speed = 10;
@@ -445,11 +480,80 @@ class Player extends Ship {
         game.physics.arcade.enable(this);
         this.moveDir = new Vector2();
         this.enemies = new Array();
+        this.targetEnemies = new Array();
+        this.targetIDs = new Array();
         this.fireAngle = 0;
+        this.vectorPosition.X = 200;
+        this.vectorPosition.Y = 500;
+    }
+    handlePickup(type) {
+    }
+    checkCollision() {
+        if (this.enemies != null) {
+            for (let i = 0; i < this.enemies.length; i++) {
+                let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.enemies[i].vectorPosition);
+                if (distance < this.enemies[i].collisionRadius) {
+                    return this.enemies[i];
+                }
+            }
+        }
     }
     update() {
+        // If mouse goes down on top of an enemy
+        if (this.checkCollision() != null && game.input.mousePointer.isDown) {
+            // Check if there's already targets
+            if (this.targetEnemies.length != 0) {
+                let noDuplicate = true;
+                // Loop through all target enemies and check if duplicate.
+                for (var i = 0; i < this.targetEnemies.length; i++) {
+                    if (this.checkCollision().id == this.targetEnemies[i].id) {
+                        noDuplicate = false;
+                    }
+                }
+                // If there's no duplicate add it to the target array. 
+                if (noDuplicate == true) {
+                    this.targetEnemies.push(this.checkCollision());
+                    this.checkCollision().toggleComboTarget();
+                }
+            }
+            else {
+                // If it's the first target skip checking duplicates. 
+                this.targetEnemies.push(this.checkCollision());
+                this.checkCollision().toggleComboTarget();
+                this.comboMode = true;
+            }
+        }
+        if (game.input.mousePointer.isDown && this.comboMode == false) {
+            this.reverseSlowmo();
+        }
+        else if (game.input.mousePointer.isDown == false) {
+            this.smoothSlowmo();
+        }
+        // When button is released.
+        if (this.comboMode == true && game.input.mousePointer.isDown == false) {
+            this.comboMode = false;
+            // Check if more than one enemy is selected. 
+            if (this.targetEnemies.length > 1) {
+                // Loop through the enemies and kill them
+                for (var i = 0; i <= this.targetEnemies.length; i++) {
+                    if (this.targetEnemies[i] != null) {
+                        this.targetEnemies[i].onHit(666);
+                        if (this.targetEnemies[i - 1] != null) {
+                            this.graphics = game.add.graphics(this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i - 1].vectorPosition.Y);
+                            this.graphics.lineStyle(15, 0xff0000, 0.6);
+                            this.graphics.lineTo(this.targetEnemies[i].vectorPosition.X - this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i].vectorPosition.Y - this.targetEnemies[i - 1].vectorPosition.Y);
+                            game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true);
+                        }
+                    }
+                }
+            }
+            // Empty the target array.
+            for (var i = 0; i <= this.targetEnemies.length; i++) {
+                this.targetEnemies.splice(i);
+            }
+        }
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
-        if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
+        if (game.input.pointer1.isDown || game.input.mousePointer.isDown && this.comboMode == false) {
             this.moveDir.X = (game.input.x - this.vectorPosition.X) / 100;
             this.moveDir.Y = (game.input.y - this.vectorPosition.Y) / 100;
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
@@ -459,8 +563,19 @@ class Player extends Ship {
     // Set targets that the player's weapon can hit
     setTargets(_targets) {
         this.enemies = _targets;
-        this.addWeapon(0.35, this.projectilePools[0], this.enemies); // Create a weapon for the player
-        this.addWeapon(0.35, this.projectilePools[0], this.enemies);
+        this.addWeapon(1, this.projectilePools[0], this.enemies);
+    }
+    smoothSlowmo() {
+        if (game.time.desiredFps > 40) {
+            game.time.desiredFps -= 1;
+            game.time.events.add(30, this.smoothSlowmo, this);
+        }
+    }
+    reverseSlowmo() {
+        if (this.game.time.desiredFps < 60) {
+            game.time.desiredFps += 1;
+            game.time.events.add(200, this.reverseSlowmo, this);
+        }
     }
 }
 class Ship extends Phaser.Sprite {
@@ -471,10 +586,11 @@ class Ship extends Phaser.Sprite {
         this.collisionRadius = _collisionRadius;
         this.weapons = new Array();
         this.vectorPosition = new Vector2();
-        this.active = true;
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
         this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
         this.explosion.anchor.set(0.5);
+        this.weaponSlot = 1;
+        this.active = true;
     }
     onHit(_amount) {
         this.health -= _amount;
@@ -483,24 +599,49 @@ class Ship extends Phaser.Sprite {
         }
     }
     // Add a weapon for this ship with cooldown 
-    addWeapon(cooldown, projectilePool, _targets) {
-        let newWeapon = new Weapon(cooldown, projectilePool, _targets);
-        newWeapon.setAngle(this.fireAngle);
-        this.weapons.push(newWeapon);
+    addWeapon(_weaponCooldown, _projectiles, _targets, _relativePosition = null) {
+        let fixedPosition = true;
+        if (_relativePosition == null) {
+            _relativePosition = new Vector2();
+            if (this.weaponSlot % 2 == 0) {
+                _relativePosition.X = this.weaponOffset * -(this.weaponSlot - 1);
+            }
+            else {
+                _relativePosition.X = this.weaponOffset * this.weaponSlot;
+            }
+            fixedPosition = false;
+            this.weaponSlot++;
+        }
+        let weapon = new Weapon(_weaponCooldown, _projectiles, _targets, this.vectorPosition, _relativePosition, this.weaponsMade, this.removeWeapon, fixedPosition);
+        this.weaponsMade++;
+        weapon.setAngle(this.fireAngle);
+        this.weapons.push(weapon);
+    }
+    removeWeapon(_weapon) {
+        let id = this.weapons.indexOf(_weapon, _weapon.id);
+        this.weapons.splice(id, 1);
+        _weapon = null;
+        this.resetWeaponPos();
+    }
+    resetWeaponPos() {
+        this.weaponSlot = 1;
+        for (let i = 0; i < this.weapons.length; i++) {
+            if (this.weapons[i].fixedPosition = false) {
+                let relativePosition = new Vector2();
+                if (this.weaponSlot % 2 == 0) {
+                    relativePosition.X = this.weaponOffset * -(this.weaponSlot - 1);
+                }
+                else {
+                    relativePosition.X = this.weaponOffset * this.weaponSlot;
+                }
+                this.weaponSlot++;
+                this.weapons[i].setPosition(relativePosition);
+            }
+        }
     }
     update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         for (let i = 0; i < this.weapons.length; i++) {
-            let relativePositionX;
-            let weaponSlot = i + 1;
-            if (weaponSlot % 2 == 0) {
-                relativePositionX = this.weaponOffset * -(weaponSlot - 1);
-            }
-            else {
-                relativePositionX = this.weaponOffset * weaponSlot;
-            }
-            this.weapons[i].vectorPosition = Vector2.copy(this.vectorPosition);
-            this.weapons[i].vectorPosition.X += relativePositionX;
             this.weapons[i].update();
         }
     }
@@ -509,25 +650,35 @@ class Ship extends Phaser.Sprite {
         this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);
         this.game.add.existing(this.explosion);
         this.explosion.animations.play("explode");
-        //this.destroy();
     }
 }
 class Weapon {
-    constructor(_cooldown, _projectilePool, _targets) {
+    constructor(_cooldown, _projectilePool, _targets, _ShipPosition, _relativePosition, _id, _removeWeapon, _fixedPosition = false) {
         this.cooldown = _cooldown * Phaser.Timer.SECOND;
         this.projectilePool = _projectilePool;
         this.fireTimer = _cooldown;
+        this.ShipPosition = _ShipPosition;
+        this.relativePosition = _relativePosition;
         this.targets = _targets;
+        this.id = _id;
+        this.removeWeapon = _removeWeapon;
+        this.fixedPosition = _fixedPosition;
+    }
+    setPosition(_relativePosition) {
+        this.relativePosition = _relativePosition;
     }
     update() {
         this.fireTimer -= game.time.elapsedMS;
-        // Fire a projectile when the fire timer lands at 0
+        this.vectorPosition = Vector2.copy(this.ShipPosition).add(this.relativePosition);
         if (this.fireTimer <= 0) {
             this.fireTimer = this.cooldown;
             let newProj = this.projectilePool.getProjectile();
             newProj.setTarget(this.targets);
             newProj.fire(this.vectorPosition, this.fireAngle);
         }
+    }
+    destroyWeapon() {
+        this.removeWeapon(this);
     }
     // Set the angle the projectiles will fire from
     setAngle(_angle) {

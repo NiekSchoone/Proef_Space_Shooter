@@ -59,6 +59,12 @@
         return this;
     }
 
+    mutliplyByNumber(magnitude: number): Vector2 {
+        this.x *= magnitude;
+        this.y *= magnitude;
+        return this;
+    }
+
     divide(vector: Vector2): Vector2 {
         this.x /= vector.x;
         this.y /= vector.y;

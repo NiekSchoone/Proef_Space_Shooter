@@ -7,9 +7,9 @@
     public pattern05: Vector2[];
     constructor() {
         this.pattern01 = new Array<Vector2>();
-        let point0: Vector2 = new Vector2(100, -20);
+        let point0: Vector2 = new Vector2(200, 200);
         this.pattern01.push(point0);
-        let point1: Vector2 = new Vector2(150, 1000);
+        let point1: Vector2 = new Vector2(1000, 1000);
         this.pattern01.push(point1);
 
         this.pattern02 = new Array<Vector2>();
