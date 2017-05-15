@@ -252,6 +252,7 @@ class Enemy extends Ship {
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
+        this.inBounds = false;
         this.anchor.set(0.5);
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
@@ -272,10 +273,17 @@ class Enemy extends Ship {
         if (this.active) {
             this.moveDir.X = 0;
             this.moveDir.Y = 1;
+            if (this.vectorPosition.Y > 1000) {
+                this.die();
+            }
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
             super.update();
-            if (this.shooting == false) {
-                this.shooting = (this.vectorPosition.Y > 0);
+            if (this.inBounds == false && this.checkBounds()) {
+                this.inBounds = true;
+                this.shooting = true;
+            }
+            else if (this.inBounds && this.checkBounds() == false) {
+                this.die();
             }
         }
         else {
@@ -284,11 +292,12 @@ class Enemy extends Ship {
             }
         }
     }
-    spawn() {
-    }
     die() {
         super.die();
         this.killEnemy(this);
+    }
+    checkBounds() {
+        return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576);
     }
     toggleComboTarget() {
         this.comboSprite.anchor.setTo(0.5);
@@ -310,18 +319,13 @@ class EnemyManager {
         this.wave = 0;
         this.level = 0;
         this.waves.push(game.add.tilemap("wave01"));
-        /*this.waves.push(game.add.tilemap("wave02"));
+        this.waves.push(game.add.tilemap("wave02"));
         this.waves.push(game.add.tilemap("wave03"));
         this.waves.push(game.add.tilemap("wave04"));
         this.waves.push(game.add.tilemap("wave05"));
-        this.waves.push(game.add.tilemap("wave06"));
-        this.waves.push(game.add.tilemap("wave07"));
-        this.waves.push(game.add.tilemap("wave08"));
-        this.waves.push(game.add.tilemap("wave09"));
-        this.waves.push(game.add.tilemap("wave10"));*/
     }
     createEnemy(type, healthMod, speedMod, start) {
-        let newEnemy = new Enemy(type, healthMod, speedMod, start, 20, this.killEnemy.bind(this), this.enemiesMade);
+        let newEnemy = new Enemy(type, healthMod, speedMod, start, 50, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
         this.enemies.push(newEnemy);
         return newEnemy;
@@ -330,7 +334,7 @@ class EnemyManager {
         if (this.activeLevel == false) {
             this.timer -= game.time.elapsedMS;
             if (this.timer <= 0) {
-                this.timer = 3000;
+                this.timer = 1000;
                 this.activeLevel = true;
             }
         }
@@ -340,29 +344,34 @@ class EnemyManager {
                 enemiesInScreen = (enemiesInScreen == true && this.enemies[e].shooting == true);
             }
             if (enemiesInScreen == true || this.enemies.length == 0) {
-                this.wave++;
-                this.spawnWave();
-                if (this.wave == 5) {
-                    this.wave = 0;
-                    this.activeLevel = false;
-                    this.level++;
+                this.timer -= game.time.elapsedMS;
+                if (this.timer <= 0) {
+                    this.wave++;
+                    this.timer = 1000;
+                    this.spawnWave();
+                    if (this.wave == 5) {
+                        this.wave = 0;
+                        this.timer = 3000;
+                        this.activeLevel = false;
+                        this.level++;
+                    }
                 }
             }
         }
     }
     spawnWave() {
-        let waveToSpawn = 0; //Math.floor(Math.random() * 9);
+        let waveToSpawn = Math.floor(Math.random() * 4);
+        console.log(waveToSpawn);
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
                     let EnemyF = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyF.addWeapon(1, this.projectilePools[0], [this.player]);
-                    EnemyF.addWeapon(1, this.projectilePools[0], [this.player]);
+                    EnemyF.addWeapon(1, this.projectilePools[0], [this.player], 180, new Vector2(-10, 0));
+                    EnemyF.addWeapon(1, this.projectilePools[0], [this.player], 180, new Vector2(10, 0));
                     break;
                 case "bomber":
-                    let EnemyB = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyB.addWeapon(2, this.projectilePools[1], [this.player]);
-                    EnemyB.addWeapon(2, this.projectilePools[1], [this.player]);
+                    let EnemyB = this.createEnemy(EnemyType.BOMBER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    EnemyB.addWeapon(1, this.projectilePools[1], [this.player], 180);
                     break;
             }
         }
@@ -696,6 +705,7 @@ class Ship extends Phaser.Sprite {
         this.plasmaWeapons = new Array();
         this.missileWeapons = new Array();
         this.vectorPosition = new Vector2();
+        this.weaponOffset = 30;
         this.maxHP = _maxHP;
         this.currentHP = this.maxHP;
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
@@ -710,46 +720,12 @@ class Ship extends Phaser.Sprite {
         }
     }
     // Add a weapon for this ship with cooldown 
-    addWeapon(_weaponCooldown, _projectiles, _targets, _relativePosition = null) {
+    addWeapon(_weaponCooldown, _projectiles, _targets, _angle, _relativePosition = new Vector2()) {
         let fixedPosition = true;
-        _relativePosition = new Vector2();
-        if (_relativePosition == null) {
-            _relativePosition = new Vector2();
-            if (this.weaponSlot % 2 == 0) {
-                _relativePosition.X = this.weaponOffset * -(this.weaponSlot - 1);
-            }
-            else {
-                _relativePosition.X = this.weaponOffset * this.weaponSlot;
-            }
-            fixedPosition = false;
-            this.weaponSlot++;
-        }
-        let weapon = new Weapon(_weaponCooldown, _projectiles, _targets, this.vectorPosition, _relativePosition, this.weaponsMade, this.removeWeapon, fixedPosition);
+        let weapon = new NewWeapon(_relativePosition, this.vectorPosition, _weaponCooldown, _angle, _projectiles, _targets);
         this.weaponsMade++;
-        //this.weapons.push(weapon);
+        this.plasmaWeapons.push(weapon);
     }
-    removeWeapon(_weapon) {
-        /*let id = this.weapons.indexOf(_weapon, _weapon.id);
-        this.weapons.splice(id, 1);
-        _weapon = null;
-        this.resetWeaponPos();*/
-    }
-    /* private resetWeaponPos() {
-          this.weaponSlot = 1;
-          for (let i = 0; i < this.weapons.length; i++) {
-              if (this.weapons[i].fixedPosition = false) {
-                  let relativePosition = new Vector2();
-                  if (this.weaponSlot % 2 == 0) {
-                      relativePosition.X = this.weaponOffset * -(this.weaponSlot - 1);
-                  }
-                  else {
-                      relativePosition.X = this.weaponOffset * this.weaponSlot;
-                  }
-                  this.weaponSlot++;
-                  this.weapons[i].setPosition(relativePosition);
-              }
-          }
-      }*/
     update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         if (this.shooting) {
@@ -924,6 +900,10 @@ class Preloader extends Phaser.State {
         // Audio
         // EnemyWaves
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON);
     }
     // After the preload function is done, the create function is called which starts the GameState
     create() {

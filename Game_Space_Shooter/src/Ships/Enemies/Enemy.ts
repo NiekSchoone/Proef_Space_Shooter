@@ -14,7 +14,7 @@ class Enemy extends Ship {
     private comboSprite: Phaser.Sprite;
     public id: number;
     private dead: Boolean;
-
+    private inBounds: boolean;
 
     constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number) {
         super(_collisionRadius, _maxHP);
@@ -27,7 +27,7 @@ class Enemy extends Ship {
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
-
+        this.inBounds = false;
         this.anchor.set(0.5);
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
@@ -49,14 +49,20 @@ class Enemy extends Ship {
         if (this.active) {
             this.moveDir.X = 0
             this.moveDir.Y = 1
-            
 
+            if (this.vectorPosition.Y > 1000)
+            {
+                this.die();
+            }
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
 
             super.update();
-            if (this.shooting == false)
-            {
-                this.shooting = (this.vectorPosition.Y > 0);
+            if (this.inBounds == false && this.checkBounds()) {
+                this.inBounds = true;
+                this.shooting = true;
+            }
+            else if (this.inBounds && this.checkBounds() == false) {
+                this.die();
             }
         } else {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
@@ -65,15 +71,13 @@ class Enemy extends Ship {
         }
     }
 
-    public spawn() {
-        
-    }
-
     protected die() {
         super.die();
         this.killEnemy(this);
     }
-
+    private checkBounds(): boolean {
+        return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
+    }
     public toggleComboTarget()
     {
         this.comboSprite.anchor.setTo(0.5);
