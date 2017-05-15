@@ -4,17 +4,13 @@
     private barSections: Array<Phaser.Sprite>;
     private player: Player;
 
-    private maxHp: number;
-
     constructor(_player: Player) {
-        super(game, 446, 828, "health_circle");
+        super(game, 0, 0, "ui_overlay");
 
         this.player = _player;
-        this.maxHp = this.player.maxHealth;
         this.bars = 8;
         this.barSections = new Array<Phaser.Sprite>();
         this.setSprites();
-        this.anchor.set(0.5);
         game.add.existing(this);
 
         this.onHealthChange();
@@ -24,8 +20,8 @@
         var angle = -0.95;
         var step = (Math.PI) / 7.15;
         for (var i = 0; i < this.bars; i++) {
-            var x = this.x-13.5 + 57.5 * Math.cos(angle);
-            var y = this.y-1.5 + 57.5 * Math.sin(angle);
+            var x = 434 + (57.5 * Math.cos(angle));
+            var y = 804 + (57.5 * Math.sin(angle));
 
             var bar = new Phaser.Sprite(game, x, y, "health_bar");
             bar.rotation = angle;
@@ -41,7 +37,7 @@
     // Executed on a change in the players HP
     public onHealthChange() {
         // Calculate the number of health blocks that will be set invisible;
-        let sum = Math.ceil((this.currentHp / this.maxHp) * 8);
+        let sum = Math.ceil((this.player.currentHP / this.player.maxHP) * 8);
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {

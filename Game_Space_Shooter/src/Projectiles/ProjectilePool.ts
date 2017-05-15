@@ -30,10 +30,12 @@
 
     // Returns a given projectile to the pool of available projectiles
     private returnProjectile(projectile: Projectile) {
-        projectile.resetValues(); 
+        projectile.resetValues();
         let index = this.inUse.indexOf(projectile, projectile.projectileIndex); // Find the projectile in the "inUse" array by the identifier it has
         this.inUse.splice(index, 1); // Splice the projectile out of the array
-        this.available.push(projectile); // Place the projectile back in the array of available projectiles
+        if (!this.containsProjectileByIndex(projectile.projectileIndex, this.available)) {
+            this.available.push(projectile); // Place the projectile back in the array of available projectiles
+        }
     }
 
     // Adds a projectile to the pool ready for use
@@ -41,9 +43,9 @@
         let newProjectile;
         // Check which type is defined for this pool and make a new projectile based on that type
         if (this.poolType == ProjectileType.PLASMABULLET) {
-            newProjectile = new PlasmaBullet('plasma_bullet', this.returnProjectile.bind(this));
+            newProjectile = new PlasmaBullet('plasma_bullet', this.returnProjectile.bind(this), "bullet_hit");
         } else if (this.poolType == ProjectileType.MISSILE) {
-            newProjectile = new Missile('missile', this.returnProjectile.bind(this));
+            newProjectile = new Missile('missile', this.returnProjectile.bind(this), "missile_hit");
         } else {
             throw "Incorrect type specified for object pool";
         }
@@ -53,5 +55,14 @@
             this.projectileCount++;
             return newProjectile;
         }
+    }
+
+    private containsProjectileByIndex(index, list) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].projectileIndex === index) {
+                return true;
+            }
+        }
+        return false;
     }
 }
