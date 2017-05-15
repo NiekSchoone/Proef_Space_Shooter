@@ -5,5 +5,6 @@
         this.projectileType = ProjectileType.MISSILE;
         this.speed = 5;
         this.damageAmount = 5;
+        this.animations.add("missile");
     }
 }

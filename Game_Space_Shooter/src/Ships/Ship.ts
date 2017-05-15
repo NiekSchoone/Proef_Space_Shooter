@@ -88,7 +88,6 @@
         }
         
     }
-
     protected die() {
         this.active = false;
         this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);

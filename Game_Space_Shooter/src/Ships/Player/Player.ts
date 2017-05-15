@@ -8,7 +8,7 @@
     private targetEnemies: Enemy[];
     private targetIDs: Array<number>;
     private graphics: Phaser.Graphics;
-    private slowMo: boolean = true; 
+    private slowMo: boolean = false;
 
     constructor(_projectilePools: ProjectilePool[], _collisionRadius: number)
     {
@@ -17,7 +17,7 @@
         this.loadTexture("ships_player", 3);
         this.speed = 10;
         this.anchor.set(0.5);
-        game.add.existing(this);                
+        game.add.existing(this);
         game.physics.arcade.enable(this);
         this.moveDir = new Vector2();
         this.enemies = new Array<Enemy>();
@@ -34,6 +34,7 @@
 
     }
 
+    // Check's if the pointer is colliding with an enemy. 
     private checkCollision()
     {
         if (this.enemies != null)
@@ -62,10 +63,10 @@
 
                 // Loop through all target enemies and check if duplicate.
                 for (var i = 0; i < this.targetEnemies.length; i++)
-                {  
+                {
                     if (this.checkCollision().id == this.targetEnemies[i].id)
                     {
-                        noDuplicate = false;            
+                        noDuplicate = false;
                     }
                 }
                 // If there's no duplicate add it to the target array. 
@@ -84,11 +85,12 @@
             }
         }
 
+        // Handle slowmotion inputs.
         if (game.input.mousePointer.isDown && this.comboMode == false)
         {
             this.reverseSlowmo();
         }
-        else if(game.input.mousePointer.isDown == false)
+        else if (game.input.mousePointer.isDown == false)
         {
             this.smoothSlowmo();
         }
@@ -112,8 +114,8 @@
                             this.graphics = game.add.graphics(this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i - 1].vectorPosition.Y);
                             this.graphics.lineStyle(15, 0xff0000, 0.6);
                             this.graphics.lineTo(this.targetEnemies[i].vectorPosition.X - this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i].vectorPosition.Y - this.targetEnemies[i - 1].vectorPosition.Y);
-                            game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true); 
-                        }       
+                            game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true);
+                        }
                     }
                 }
             }
@@ -131,30 +133,51 @@
             this.moveDir.Y = (game.input.y - this.vectorPosition.Y) / 100;
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
         }
+
         super.update();
     }
 
     // Set targets that the player's weapon can hit
-    public setTargets(_targets: Array<Enemy>) {
+    public setTargets(_targets: Array<Enemy>)
+    {
         this.enemies = _targets;
-        this.addWeapon(1, this.projectilePools[0], this.enemies);
+        this.addWeapon(0.80, this.projectilePools[1], this.enemies);
     }
 
+    // Smoothly slowdown time. 
     private smoothSlowmo()
-    {    
-        if (game.time.desiredFps > 40)
+    {
+        if (this.slowMo == false)
         {
-            game.time.desiredFps -= 1;
-            game.time.events.add(30, this.smoothSlowmo, this);
+            if (game.time.slowMotion < 1.5)
+            {
+                game.time.slowMotion += 0.0125;
+                game.time.events.add(200, this.smoothSlowmo, this);
+            }
+            else if (game.time.slowMotion > 1.5)
+            {
+                game.time.slowMotion = 1.5;
+                this.slowMo = true;
+            }
         }
+
     }
 
+    // Smoothly reverts time back to normal.
     private reverseSlowmo()
     {
-        if (this.game.time.desiredFps < 60)
+        if (this.slowMo == true)
         {
-            game.time.desiredFps += 1;
-            game.time.events.add(200, this.reverseSlowmo, this); 
+            if (this.game.time.slowMotion > 1.0)
+            {
+                game.time.slowMotion -= 0.05;
+                game.time.events.add(200, this.reverseSlowmo, this);
+            }
+            else if (game.time.slowMotion < 1.0)
+            {
+                game.time.slowMotion = 1.0;
+                this.slowMo = false;
+            }
         }
-    } 
-}                       
+    }
+}

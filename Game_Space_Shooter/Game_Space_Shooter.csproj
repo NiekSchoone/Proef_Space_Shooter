@@ -28,16 +28,23 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\Images\Backgrounds\browser_background.jpg" />
-    <Content Include="assets\Images\Placeholders\bullet.png" />
+    <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_coin_text.png" />
+    <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_background.jpg" />
+    <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_title.png" />
+    <Content Include="assets\Images\Projectiles\bullet.png" />
     <Content Include="assets\Images\Placeholders\ship_enemy.png" />
     <Content Include="assets\Images\UI\Buttons\button_arrow.png" />
     <Content Include="assets\Images\UI\Buttons\button_back.png" />
+    <Content Include="assets\Images\UI\Indicators\health_bar.png" />
+    <Content Include="assets\Images\UI\Indicators\health_circle.png" />
     <Content Include="assets\Images\UI\Portraits\portrait_4.png" />
     <Content Include="assets\Images\UI\Portraits\portrait_1.png" />
     <Content Include="assets\Images\UI\Portraits\portrait_2.png" />
     <Content Include="assets\Images\UI\Portraits\portrait_3.png" />
     <Content Include="assets\Images\UI\Buttons\button_start.png" />
-    <Content Include="assets\SpriteSheets\Animations\explosion.png" />
+    <Content Include="assets\SpriteSheets\Animations\Explosions\hit_missile_explosion.png" />
+    <Content Include="assets\SpriteSheets\Animations\Explosions\death_explosion.png" />
+    <Content Include="assets\SpriteSheets\Animations\projectile_missile.png" />
     <Content Include="assets\SpriteSheets\player_ship_sheet.png" />
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
@@ -48,9 +55,12 @@
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
-    <TypeScriptCompile Include="src\GameStates\MenuState.ts" />
+    <TypeScriptCompile Include="src\Ships\Player\HealthIndicator.ts" />
+    <TypeScriptCompile Include="src\States\BootState.ts" />
+    <TypeScriptCompile Include="src\States\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
     <TypeScriptCompile Include="src\Ships\Weapon.ts" />
+    <TypeScriptCompile Include="src\Utils\AnimationHandler.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
     <TypeScriptCompile Include="src\Pickups\Pickup.ts" />
     <TypeScriptCompile Include="src\Ships\Ship.ts" />
@@ -62,8 +72,8 @@
     <TypeScriptCompile Include="src\Projectiles\Missile.ts" />
     <TypeScriptCompile Include="src\Projectiles\PlasmaBullet.ts" />
     <TypeScriptCompile Include="src\Projectiles\ProjectilePool.ts" />
-    <TypeScriptCompile Include="src\GameStates\GameState.ts" />
-    <TypeScriptCompile Include="src\GameStates\Preloader.ts" />
+    <TypeScriptCompile Include="src\States\GameState.ts" />
+    <TypeScriptCompile Include="src\States\Preloader.ts" />
     <TypeScriptCompile Include="App.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -76,7 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\Audio\" />
-    <Folder Include="src\Player\" />
+    <Folder Include="assets\Images\Pickups\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

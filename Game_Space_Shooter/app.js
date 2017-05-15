@@ -1,3 +1,65 @@
+class HealthIndicator extends Phaser.Sprite {
+    constructor(_player) {
+        super(game, 446, 828, "health_circle");
+        this.player = _player;
+        this.maxHp = this.player.maxHealth;
+        this.bars = 8;
+        this.barSections = new Array();
+        this.setSprites();
+        this.anchor.set(0.5);
+        game.add.existing(this);
+        this.onHealthChange();
+    }
+    setSprites() {
+        var angle = -0.95;
+        var step = (Math.PI) / 7.15;
+        for (var i = 0; i < this.bars; i++) {
+            var x = this.x - 13.5 + 57.5 * Math.cos(angle);
+            var y = this.y - 1.5 + 57.5 * Math.sin(angle);
+            var bar = new Phaser.Sprite(game, x, y, "health_bar");
+            bar.rotation = angle;
+            bar.anchor.set(0.5);
+            game.add.existing(bar);
+            this.barSections.push(bar);
+            angle += step;
+        }
+    }
+    // Executed on a change in the players HP
+    onHealthChange() {
+        // Calculate the number of health blocks that will be set invisible;
+        let sum = 8; //Math.ceil((this.currentHp / this.maxHp) * 8);
+        let arrayBars = this.bars - 1;
+        for (var i = 0; i < this.bars; i++) {
+            if (i < sum) {
+                this.barSections[arrayBars - i].visible = true;
+            }
+            else {
+                this.barSections[arrayBars - i].visible = false;
+            }
+        }
+    }
+}
+class BootState extends Phaser.State {
+    create() {
+        this.background = new Phaser.Sprite(game, 0, 0, 'startscreen_background');
+        this.title = new Phaser.Sprite(game, 0, -400, 'startscreen_title');
+        this.insertCoin = new Phaser.Sprite(game, game.width / 2, 460, 'insert_coin_text');
+        this.insertCoin.anchor.set(0.5);
+        game.add.tween(this.title).to({ y: -60 }, 2400, Phaser.Easing.Bounce.Out, true);
+        game.add.tween(this.insertCoin).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+        this.game.add.existing(this.background);
+        this.game.add.existing(this.title);
+        this.game.add.existing(this.insertCoin);
+    }
+    update() {
+        if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
+            this.startMenu();
+        }
+    }
+    startMenu() {
+        game.state.start("Menu", true, false);
+    }
+}
 class MenuState extends Phaser.State {
     create() {
         this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
@@ -153,6 +215,14 @@ class Weapon {
         this.fireAngle = _angle;
     }
 }
+class AnimationHandler {
+    static addAnimation(_anim) {
+        this.animations.push(_anim);
+    }
+    static getAnimation() {
+        return this.animations[0];
+    }
+}
 class Vector2 {
     constructor(_x = 0, _y = 0) {
         this.x = _x;
@@ -194,6 +264,11 @@ class Vector2 {
     multiply(vector) {
         this.x *= vector.x;
         this.y *= vector.y;
+        return this;
+    }
+    mutliplyByNumber(magnitude) {
+        this.x *= magnitude;
+        this.y *= magnitude;
         return this;
     }
     divide(vector) {
@@ -402,7 +477,7 @@ class Player extends Ship {
     constructor(_projectilePools, _collisionRadius) {
         super(_collisionRadius);
         this.comboMode = false;
-        this.slowMo = true;
+        this.slowMo = false;
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", 3);
         this.speed = 10;
@@ -420,6 +495,7 @@ class Player extends Ship {
     }
     handlePickup(type) {
     }
+    // Check's if the pointer is colliding with an enemy. 
     checkCollision() {
         if (this.enemies != null) {
             for (let i = 0; i < this.enemies.length; i++) {
@@ -455,6 +531,7 @@ class Player extends Ship {
                 this.comboMode = true;
             }
         }
+        // Handle slowmotion inputs.
         if (game.input.mousePointer.isDown && this.comboMode == false) {
             this.reverseSlowmo();
         }
@@ -495,18 +572,32 @@ class Player extends Ship {
     // Set targets that the player's weapon can hit
     setTargets(_targets) {
         this.enemies = _targets;
-        this.addWeapon(1, this.projectilePools[0], this.enemies);
+        this.addWeapon(0.80, this.projectilePools[1], this.enemies);
     }
+    // Smoothly slowdown time. 
     smoothSlowmo() {
-        if (game.time.desiredFps > 40) {
-            game.time.desiredFps -= 1;
-            game.time.events.add(30, this.smoothSlowmo, this);
+        if (this.slowMo == false) {
+            if (game.time.slowMotion < 1.5) {
+                game.time.slowMotion += 0.0125;
+                game.time.events.add(200, this.smoothSlowmo, this);
+            }
+            else if (game.time.slowMotion > 1.5) {
+                game.time.slowMotion = 1.5;
+                this.slowMo = true;
+            }
         }
     }
+    // Smoothly reverts time back to normal.
     reverseSlowmo() {
-        if (this.game.time.desiredFps < 60) {
-            game.time.desiredFps += 1;
-            game.time.events.add(200, this.reverseSlowmo, this);
+        if (this.slowMo == true) {
+            if (this.game.time.slowMotion > 1.0) {
+                game.time.slowMotion -= 0.05;
+                game.time.events.add(200, this.reverseSlowmo, this);
+            }
+            else if (game.time.slowMotion < 1.0) {
+                game.time.slowMotion = 1.0;
+                this.slowMo = false;
+            }
         }
     }
 }
@@ -525,6 +616,7 @@ class Enemy extends Ship {
         this.vectorPosition.X = start.X;
         this.vectorPosition.Y = start.Y;
         this.currentMove = 1;
+        this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         this.speed = speed;
         this.enemyType = type;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
@@ -568,6 +660,9 @@ class Enemy extends Ship {
         this.killEnemy(this);
     }
     toggleComboTarget() {
+        this.comboSprite.anchor.setTo(0.5);
+        let anim = this.comboSprite.animations.add("indicated", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], 24, false);
+        anim.play();
         this.addChild(this.comboSprite);
     }
 }
@@ -618,6 +713,9 @@ class Projectile extends Phaser.Sprite {
         this.velocity = new Vector2(angleVelocity.x, angleVelocity.y);
         this.vectorPosition = _pos;
         this.active = true;
+        if (this.animations != null) {
+            this.animations.play(this.key);
+        }
     }
     // Set targets this projectile can hit
     setTarget(_targets) {
@@ -652,6 +750,8 @@ class Projectile extends Phaser.Sprite {
         this.targets = new Array();
         this.vectorPosition = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
+        this.animations.stop();
+        this.animations.frame = 0;
     }
 }
 var ProjectileType;
@@ -665,6 +765,7 @@ class Missile extends Projectile {
         this.projectileType = ProjectileType.MISSILE;
         this.speed = 5;
         this.damageAmount = 5;
+        this.animations.add("missile");
     }
 }
 class PlasmaBullet extends Projectile {
@@ -743,6 +844,7 @@ class GameState extends Phaser.State {
         this.enemyManager = new EnemyManager(this.projectilePools);
         this.enemyManager.setPlayer(this.player);
         this.player.setTargets(this.enemyManager.getEnemies());
+        //this.healthIndicator = new HealthIndicator();
     }
     update() {
         this.level.update();
@@ -753,6 +855,9 @@ class Preloader extends Phaser.State {
     // Preload all assets
     preload() {
         // Images menu
+        game.load.image("startscreen_background", "assets/Images/Backgrounds/StartScreen/startscreen_background.jpg");
+        game.load.image("startscreen_title", "assets/Images/Backgrounds/StartScreen/startscreen_title.png");
+        game.load.image("insert_coin_text", "assets/Images/Backgrounds/StartScreen/startscreen_coin_text.png");
         game.load.image("menu_background", "assets/Images/Backgrounds/menu_background.jpg");
         game.load.image("menu_portrait_1", "assets/Images/UI/Portraits/portrait_1.png");
         game.load.image("menu_portrait_2", "assets/Images/UI/Portraits/portrait_2.png");
@@ -761,20 +866,25 @@ class Preloader extends Phaser.State {
         game.load.image("menu_button_start", "assets/Images/UI/Buttons/button_start.png");
         game.load.image("menu_button_arrow", "assets/Images/UI/Buttons/button_arrow.png");
         // Images game
-        game.load.image("plasma_bullet", "assets/Images/Placeholders/bullet.png");
+        game.load.image("plasma_bullet", "assets/Images/Projectiles/bullet.png");
         game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
+        game.load.image("health_circle", "assets/Images/UI/Indicators/health_circle.png");
+        game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
         // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background_001.png", 512, 2048, 4);
         game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
-        game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/explosion.png", 256, 256, 24);
+        game.load.spritesheet("missile", "assets/SpriteSheets/Animations/projectile_missile.png", 64, 64, 22);
+        game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
+        game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 12);
         game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
+        game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/Indicator.png", 256, 256);
         // Audio
         // EnemyWaves
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
     }
     // After the preload function is done, the create function is called which starts the GameState
     create() {
-        game.state.start("Menu");
+        game.state.start("Game");
     }
 }
 class App {
@@ -787,6 +897,7 @@ class App {
         game.physics.startSystem(Phaser.Physics.ARCADE); // Start the arcade physics system
         // Add the various states the game goes through
         game.state.add("Preload", Preloader);
+        game.state.add("Boot", BootState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         // Start the preload state
