@@ -72,14 +72,14 @@
                 if (noDuplicate == true)
                 {
                     this.targetEnemies.push(this.checkCollision());
-                    this.checkCollision().toggleComboTarget();
+                    this.checkCollision().toggleComboTarget(true);
                 }
             }
             else
             {
                 // If it's the first target skip checking duplicates. 
                 this.targetEnemies.push(this.checkCollision());
-                this.checkCollision().toggleComboTarget();
+                this.checkCollision().toggleComboTarget(true);
                 this.comboMode = true;
             }
         }
@@ -101,6 +101,7 @@
             // Check if more than one enemy is selected. 
             if (this.targetEnemies.length > 1)
             {
+                console.log("ASDDDDDDDDDDDDDDDDDDDDDDDDDDDDd");
                 // Loop through the enemies and kill them
                 for (var i = 0; i <= this.targetEnemies.length; i++)
                 {
@@ -116,6 +117,13 @@
                             game.add.tween(this.graphics).to({ alpha: 0 }, 350, Phaser.Easing.Linear.None, true);
                         }
                     }
+                }
+            }
+            else
+            {
+                if (this.targetEnemies.length != 0)
+                {
+                    this.targetEnemies[0].toggleComboTarget(false);
                 }
             }
             // Empty the target array.

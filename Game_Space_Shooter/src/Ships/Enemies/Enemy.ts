@@ -15,6 +15,8 @@ class Enemy extends Ship
     private comboSprite: Phaser.Sprite;
     public id: number;
     private dead: Boolean;
+    private indicator: Phaser.Graphics;
+
     constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
     {
         super(_collisionRadius);
@@ -29,7 +31,6 @@ class Enemy extends Ship
 
         this.speed = speed;
         this.enemyType = type;
-        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
         this.fireAngle = 180;
         this.active = false;
@@ -78,12 +79,26 @@ class Enemy extends Ship
         this.killEnemy(this);
     }
 
-    public toggleComboTarget()
+    public toggleComboTarget(activate : boolean)
     {
-        this.comboSprite.anchor.setTo(0.5);
-        let anim = this.comboSprite.animations.add("indicated", [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], 24, false);
-        anim.play();
-        this.addChild(this.comboSprite);  
+        if (activate == true)
+        {
+            this.comboSprite.anchor.setTo(0.5);
+            let anim = this.comboSprite.animations.add("indicator", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], 24, false);
+            anim.play();
+            this.addChild(this.comboSprite);
+        }
+        else
+        {
+            this.removeChild(this.comboSprite);
+        }
     }
 
+    public indicateTarget()
+    {
+        //this.indicator = game.add.graphics(this.vectorPosition.X - 60, this.vectorPosition.Y - 60);
+        //this.indicator.lineStyle(5, 0xff0000);
+        //this.indicator.lineTo(this.vectorPosition.X - 50, this.vectorPosition.Y - 50);
+        //console.log("HELLCHEA");
+    }
 }

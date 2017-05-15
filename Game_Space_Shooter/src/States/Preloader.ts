@@ -36,7 +36,7 @@
         game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 12);
 
         game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
-        game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/Indicator.png", 256, 256);
+        game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
         
         // Audio
 
