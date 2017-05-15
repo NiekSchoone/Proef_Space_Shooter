@@ -36,14 +36,12 @@
         this.currentHP -= _amount;
     }
 
-    //Add a weapon for this ship with cooldown 
-    public addWeapon(_weaponCooldown: number, _projectiles: ProjectilePool, _targets: Array<Ship>, _relativePosition: Vector2 = null) {
-        let fixedPosition: boolean = true;
-        let weapon = new NewWeapon(_relativePosition, this.vectorPosition,_weaponCooldown, 180, _projectiles, _targets);
+    //Add a weapon for this ship with cooldown
+    public addWeapon(_weaponCooldown: number, _projectiles: ProjectilePool, _angle: number, _targets: Array<Ship>, _relativePosition: Vector2 = null) {
+        let weapon = new NewWeapon(_relativePosition, this.vectorPosition,_weaponCooldown, _angle, _projectiles, _targets);
         this.weaponsMade++;
         this.plasmaWeapons.push(weapon);
     }
-
     /*public removeWeapon(_weapon: Weapon) {
         let id = this.weapons.indexOf(_weapon, _weapon.id);
         this.weapons.splice(id, 1);
@@ -67,7 +65,6 @@
             }
         }
     }*/
-
     public update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         if (this.shooting) {
