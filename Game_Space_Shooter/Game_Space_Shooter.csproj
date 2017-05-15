@@ -23,6 +23,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\Font\font.css" />
+    <Content Include="assets\Images\Backgrounds\game_background.jpg" />
     <Content Include="assets\Images\Backgrounds\menu_background.jpg" />
     <Content Include="assets\Images\Backgrounds\game_background_001.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -31,8 +33,9 @@
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_coin_text.png" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_background.jpg" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_title.png" />
-    <Content Include="assets\Images\Projectiles\bullet.png" />
     <Content Include="assets\Images\Placeholders\ship_enemy.png" />
+    <Content Include="assets\Images\Projectiles\bullet_enemy.png" />
+    <Content Include="assets\Images\Projectiles\bullet_player.png" />
     <Content Include="assets\Images\UI\Buttons\button_arrow.png" />
     <Content Include="assets\Images\UI\Buttons\button_back.png" />
     <Content Include="assets\Images\UI\Indicators\health_bar.png" />
@@ -42,8 +45,11 @@
     <Content Include="assets\Images\UI\Portraits\portrait_2.png" />
     <Content Include="assets\Images\UI\Portraits\portrait_3.png" />
     <Content Include="assets\Images\UI\Buttons\button_start.png" />
+    <Content Include="assets\Images\UI\ui_overlay.png" />
+    <Content Include="assets\SpriteSheets\Animations\hit_bullet_blue.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\hit_missile_explosion.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\death_explosion.png" />
+    <Content Include="assets\SpriteSheets\Animations\player_exhaust.png" />
     <Content Include="assets\SpriteSheets\Animations\projectile_missile.png" />
     <Content Include="assets\SpriteSheets\player_ship_sheet.png" />
     <Content Include="index.html" />
@@ -56,6 +62,8 @@
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\Ships\Player\HealthIndicator.ts" />
+    <TypeScriptCompile Include="src\Ships\Player\PlayerUpgrades.ts" />
+    <TypeScriptCompile Include="src\Ships\NewWeapon.ts" />
     <TypeScriptCompile Include="src\States\BootState.ts" />
     <TypeScriptCompile Include="src\States\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
@@ -77,6 +85,9 @@
     <TypeScriptCompile Include="App.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\Font\OCRAExtended.eot" />
+    <Content Include="assets\Font\OCRAExtended.ttf" />
+    <Content Include="assets\Font\OCRAExtended.woff" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

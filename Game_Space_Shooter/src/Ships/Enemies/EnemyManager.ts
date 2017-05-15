@@ -6,23 +6,18 @@
     private player: Player;
     private enemiesMade: number;
     private timer: number;
-    private currentWave: number;
-    private nextUnit: number;
     private spawning: boolean;
     private waves: Array<Phaser.Tilemap>;
     private wave: number;
     private level: number;
     private activeLevel: boolean;
     constructor(_projectilePools: ProjectilePool[]) {
-
         this.patterns = new MovementPatterns();
         this.enemies = new Array<Enemy>();
         this.projectilePools = _projectilePools;
         this.enemiesMade = 0;
         this.timer = 3000;
         this.activeLevel = false;
-        this.currentWave = 0;
-        this.nextUnit = 0;
         this.spawning = true;
         this.waves = new Array<Phaser.Tilemap>();
         this.wave = 0;
@@ -47,7 +42,6 @@
     }
 
     public update() {
-
         if (this.activeLevel == false) {
             this.timer -= game.time.elapsedMS;
             if (this.timer <= 0) {

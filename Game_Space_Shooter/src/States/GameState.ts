@@ -2,14 +2,11 @@
     private player: Player;
     private level: Level;
     private healthIndicator: HealthIndicator;
-
     private plasmaBulletPool: ProjectilePool;
     private missilePool: ProjectilePool;
     private projectilePools: ProjectilePool[];
-
     private enemyManager: EnemyManager;
-
-    private characterNumber: number;
+    private characterNumber: number = 0;
 
     init(_characterNumber) {
         this.characterNumber = _characterNumber;
@@ -26,7 +23,7 @@
         this.projectilePools.push(this.missilePool);
 
         // Create a player
-        this.player = new Player(this.projectilePools, 50);
+        this.player = new Player(this.characterNumber, this.projectilePools, 80, 50);
 
         // Create the manager that keeps track of all the enemies in the game
         this.enemyManager = new EnemyManager(this.projectilePools);
@@ -34,7 +31,11 @@
 
         this.player.setTargets(this.enemyManager.getEnemies());
 
-        this.healthIndicator = new HealthIndicator();
+        this.healthIndicator = new HealthIndicator(this.player);
+
+        var style = { font: "normal 30px ocra", fill: "#b3ffe2", align: "center" };
+
+        var text = game.add.text(20, 20, "10000", style);
     }
 
     update() {

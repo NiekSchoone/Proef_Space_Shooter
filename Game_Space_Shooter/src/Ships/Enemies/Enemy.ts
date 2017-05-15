@@ -4,9 +4,7 @@
     BOMBER,
     BOSS
 }
-
-class Enemy extends Ship
-{
+class Enemy extends Ship {
     private enemyType: EnemyType;
     private movementPattern: Vector2[];
     private currentMove: number;
@@ -18,22 +16,19 @@ class Enemy extends Ship
     private dead: Boolean;
 
 
-    constructor(type: EnemyType, health: number, speed: number, start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number)
-    {
-        super(_collisionRadius);
+    constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number) {
+        super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
         this.id = _id;
+        this.enemyType = _type;
         this.killEnemy = _killEnemy;
-        this.vectorPosition.X = start.X;
-        this.vectorPosition.Y = start.Y;              
+        this.vectorPosition.X = _start.X;
+        this.vectorPosition.Y = _start.Y;              
         this.currentMove = 1;
+        this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
 
-        this.speed = speed;
-        this.enemyType = type;
-        this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
-        this.fireAngle = 180;
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ship_enemy");
@@ -49,7 +44,7 @@ class Enemy extends Ship
         this.active = true;
         this.shooting = false;
     }
-    
+
     public update() {
         if (this.active) {
             this.moveDir.X = 0
@@ -69,9 +64,11 @@ class Enemy extends Ship
             }
         }
     }
+
     public spawn() {
         
     }
+
     protected die() {
         super.die();
         this.killEnemy(this);
@@ -82,7 +79,6 @@ class Enemy extends Ship
         this.comboSprite.anchor.setTo(0.5);
         let anim = this.comboSprite.animations.add("indicated", [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], 24, false);
         anim.play();
-        this.addChild(this.comboSprite);  
+        this.addChild(this.comboSprite);
     }
-
 }
