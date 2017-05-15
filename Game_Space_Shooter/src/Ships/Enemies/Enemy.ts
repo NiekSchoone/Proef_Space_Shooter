@@ -15,11 +15,7 @@ class Enemy extends Ship {
     public id: number;
     private dead: Boolean;
     private indicator: Phaser.Graphics;
-
-    constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
-    {
-        super(_collisionRadius);
-
+    private anim: any;
 
     constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number) {
         super(_collisionRadius, _maxHP);
@@ -32,10 +28,11 @@ class Enemy extends Ship {
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
-
-        this.speed = speed;
-        this.enemyType = type;
+        this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
+        this.speed = _speed;
+        this.enemyType = _type;
         this.anchor.set(0.5);
+        this.comboSprite.anchor.setTo(0.5);
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ship_enemy");
@@ -85,9 +82,7 @@ class Enemy extends Ship {
     {
         if (activate == true)
         {
-            this.comboSprite.anchor.setTo(0.5);
-            let anim = this.comboSprite.animations.add("indicator", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], 24, false);
-            anim.play();
+            this.anim.play();
             this.addChild(this.comboSprite);
         }
         else
