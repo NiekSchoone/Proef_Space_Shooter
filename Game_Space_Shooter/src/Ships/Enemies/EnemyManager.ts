@@ -23,17 +23,12 @@
         this.waves = new Array<Phaser.Tilemap>();
         this.wave = 0;
         this.level = 0;
-        this.waves.push(game.add.tilemap("wave01"));
 
-        /*this.waves.push(game.add.tilemap("wave02"));
+        this.waves.push(game.add.tilemap("wave01"));
+        this.waves.push(game.add.tilemap("wave02"));
         this.waves.push(game.add.tilemap("wave03"));
         this.waves.push(game.add.tilemap("wave04"));
         this.waves.push(game.add.tilemap("wave05"));
-        this.waves.push(game.add.tilemap("wave06"));
-        this.waves.push(game.add.tilemap("wave07"));
-        this.waves.push(game.add.tilemap("wave08"));
-        this.waves.push(game.add.tilemap("wave09"));
-        this.waves.push(game.add.tilemap("wave10"));*/
     }
 
     public createEnemy(type: EnemyType, healthMod: number, speedMod: number, start: Vector2): Enemy {
@@ -47,7 +42,7 @@
         if (this.activeLevel == false) {
             this.timer -= game.time.elapsedMS;
             if (this.timer <= 0) {
-                this.timer = 3000;
+                this.timer = 1000;
                 this.activeLevel = true;
             }
         }
@@ -57,19 +52,26 @@
                 enemiesInScreen = (enemiesInScreen == true && this.enemies[e].shooting == true)
             }
             if (enemiesInScreen == true || this.enemies.length == 0) {
-                this.wave++;
-                this.spawnWave();
-                if (this.wave == 5) {
-                    this.wave = 0;
-                    this.activeLevel = false;
-                    this.level++;
+                this.timer -= game.time.elapsedMS;
+                if (this.timer <= 0) {
+                    this.wave++;
+                    this.timer = 1000;
+                    this.spawnWave();
+                    if (this.wave == 5) {
+                        this.wave = 0;
+                        this.timer = 3000;
+                        this.activeLevel = false;
+                        this.level++;
+                    }
                 }
+                
             }
         }
     }
 
     private spawnWave() {
-        let waveToSpawn: number = 0; //Math.floor(Math.random() * 9);
+        let waveToSpawn: number = Math.floor(Math.random() * 4);
+
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":

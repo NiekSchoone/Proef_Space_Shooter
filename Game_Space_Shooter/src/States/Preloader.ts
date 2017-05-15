@@ -36,12 +36,16 @@
         game.load.spritesheet("bullet_hit", "assets/SpriteSheets/Animations/hit_bullet_blue.png", 64, 64, 5);
 
         game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
-        game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/Indicator.png", 256, 256);
+        game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
         
         // Audio
 
         // EnemyWaves
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON)
+        game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON)
+        game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON)
+        game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON)
+        game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON)
 
     }
 
