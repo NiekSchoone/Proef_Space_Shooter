@@ -4,8 +4,7 @@
     BOMBER,
     BOSS
 }
-class Enemy extends Ship
-{
+class Enemy extends Ship {
     private enemyType: EnemyType;
     private movementPattern: Vector2[];
     private currentMove: number;
@@ -15,25 +14,24 @@ class Enemy extends Ship
     private comboSprite: Phaser.Sprite;
     public id: number;
     private dead: Boolean;
-    constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
-    {
-        super(_collisionRadius);
+
+    constructor(_type: EnemyType, _maxHP: number, _speed: number, _pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number) {
+        super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
         this.id = _id;
+        this.enemyType = _type;
         this.killEnemy = _killEnemy;
-        this.movementPattern = pattern;                   
+        this.movementPattern = _pattern;
         this.vectorPosition.X = this.movementPattern[0].X;
         this.vectorPosition.Y = this.movementPattern[0].Y;
         this.currentMove = 1;
-        this.speed = speed;
-        this.enemyType = type;
+        this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
-        this.fireAngle = 180;
         this.active = false;
         this.dead = true;
     }
-    
+
     public update() {
         if (this.active) {
             this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
@@ -49,7 +47,7 @@ class Enemy extends Ship
                 }
             }
             super.update();
-        } else if(this.dead) {
+        } else if (this.dead) {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this);
             }
@@ -76,9 +74,7 @@ class Enemy extends Ship
         this.killEnemy(this);
     }
 
-    public toggleComboTarget()
-    {
-        this.addChild(this.comboSprite);  
+    public toggleComboTarget() {
+        this.addChild(this.comboSprite);
     }
-
 }

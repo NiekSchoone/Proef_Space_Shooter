@@ -7,7 +7,7 @@
     private bgTileSprite: Phaser.TileSprite;
 
     constructor() {
-        this.scrollSpeed = 15.0;
+        this.scrollSpeed = 20.0;
         this.scrollY = 0;
 
         this.backgroundGroup = game.add.group();
