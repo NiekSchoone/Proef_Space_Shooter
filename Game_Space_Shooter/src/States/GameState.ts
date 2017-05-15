@@ -32,6 +32,7 @@
         this.player.setTargets(this.enemyManager.getEnemies());
 
         this.healthIndicator = new HealthIndicator(this.player);
+        this.player.healthIndicator = this.healthIndicator;
 
         var style = { font: "normal 30px ocra", fill: "#b3ffe2", align: "center" };
 

@@ -51,6 +51,6 @@
 
     // After the preload function is done, the create function is called which starts the GameState
     create() {
-        game.state.start("Game");
+        game.state.start("Boot");
     }
 }

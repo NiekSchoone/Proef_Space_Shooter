@@ -1,9 +1,8 @@
-﻿class Player extends Ship
-{
+﻿class Player extends Ship {
     private mouseDown: boolean;
     private moveDir: Vector2;
     private comboMode: boolean = false;
-    private moving: boolean = false;    
+    private moving: boolean = false;
     private targetEnemies: Enemy[];
     private targetIDs: Array<number>;
     private graphics: Phaser.Graphics;
@@ -13,8 +12,9 @@
     public projectilePools: Array<ProjectilePool>;
     public enemies: Array<Enemy>;
 
-    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number)
-    {
+    public healthIndicator: HealthIndicator;
+
+    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number) {
         super(_collisionRadius, _maxHP);
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
@@ -39,19 +39,19 @@
         this.playerUpgrades = new PlayerUpgrades(this);
     }
 
-    public handlePickup(_pickupType: PickupType)
-    {
-        if (_pickupType == PickupType.REPAIR)
-        {
-            if (this.maxHP <= 60)
-            {
+    public onHit(_amount: number) {
+        super.onHit(_amount);
+        this.healthIndicator.onHealthChange();
+    }
+
+    public handlePickup(_pickupType: PickupType) {
+        if (_pickupType == PickupType.REPAIR) {
+            if (this.maxHP <= 60) {
                 this.currentHP += 20;
-            } else
-            {
+            } else {
                 this.currentHP = this.maxHP;
             }
-        } else if (_pickupType == PickupType.UPGRADEPLASMA)
-        {
+        } else if (_pickupType == PickupType.UPGRADEPLASMA) {
 
         }
     }
@@ -62,22 +62,18 @@
             for (let i = 0; i < this.enemies.length; i++) {
                 let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.enemies[i].vectorPosition);
 
-                if (distance < this.enemies[i].collisionRadius + 25)
-                {
+                if (distance < this.enemies[i].collisionRadius + 25) {
                     return this.enemies[i];
                 }
             }
         }
     }
 
-    public update()
-    {
+    public update() {
         // If mouse goes down on top of an enemy
-        if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false)
-        {
+        if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false) {
             // Check if there's already targets
-            if (this.targetEnemies.length != 0)
-            {
+            if (this.targetEnemies.length != 0) {
                 let noDuplicate: boolean = true;
 
                 // Loop through all target enemies and check if duplicate.
@@ -87,18 +83,14 @@
                     }
                 }
                 // If there's no duplicate add it to the target array. 
-                if (noDuplicate == true)
-                {
-                    if (this.checkCollision != null)
-                    {
+                if (noDuplicate == true) {
+                    if (this.checkCollision != null) {
                         this.targetEnemies.push(this.checkCollision());
                         this.checkCollision().toggleComboTarget(true);
                     }
-                    
                 }
             }
-            else
-            {
+            else {
                 // If it's the first target, skip checking duplicates. 
                 this.targetEnemies.push(this.checkCollision());
                 this.checkCollision().toggleComboTarget(true);
@@ -106,8 +98,7 @@
             }
         }
 
-        if (game.input.mousePointer.isDown && this.comboMode == false)
-        {
+        if (game.input.mousePointer.isDown && this.comboMode == false) {
             this.reverseSlowmo();
         }
         // Handle slowmotion inputs.
@@ -119,21 +110,16 @@
         }
 
         // When button is released.
-        if (this.comboMode == true && game.input.mousePointer.isDown == false)
-        {
+        if (this.comboMode == true && game.input.mousePointer.isDown == false) {
             this.comboMode = false;
             // Check if more than one enemy is selected. 
-            if (this.targetEnemies.length > 1)
-            {
+            if (this.targetEnemies.length > 1) {
                 // Loop through the enemies and kill them
-                for (var i = 0; i <= this.targetEnemies.length; i++)
-                {
-                    if (this.targetEnemies[i] != null)
-                    {
+                for (var i = 0; i <= this.targetEnemies.length; i++) {
+                    if (this.targetEnemies[i] != null) {
                         this.targetEnemies[i].onHit(666);
 
-                        if (this.targetEnemies[i - 1] != null)
-                        {
+                        if (this.targetEnemies[i - 1] != null) {
                             this.graphics = game.add.graphics(this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i - 1].vectorPosition.Y);
                             this.graphics.lineStyle(15, 0xff0000, 0.6);
                             this.graphics.lineTo(this.targetEnemies[i].vectorPosition.X - this.targetEnemies[i - 1].vectorPosition.X, this.targetEnemies[i].vectorPosition.Y - this.targetEnemies[i - 1].vectorPosition.Y);
@@ -142,29 +128,24 @@
                     }
                 }
             }
-            else if (this.targetEnemies.length <= 1)
-            {
-                if (this.targetEnemies.length != 0)
-                {
+            else if (this.targetEnemies.length <= 1) {
+                if (this.targetEnemies.length != 0) {
                     this.targetEnemies[0].toggleComboTarget(false);
                 }
             }
             // Empty the target array.
-            for (var i = 0; i <= this.targetEnemies.length; i++)
-            {
+            for (var i = 0; i <= this.targetEnemies.length; i++) {
                 this.targetEnemies.splice(i);
             }
         }
 
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
-        if ((game.input.pointer1.isDown || game.input.mousePointer.isDown) && this.comboMode == false)
-        {
+        if ((game.input.pointer1.isDown || game.input.mousePointer.isDown) && this.comboMode == false) {
             this.moving = true;
             this.moveDir.X = (game.input.x - this.vectorPosition.X) / 100;
             this.moveDir.Y = (game.input.y - this.vectorPosition.Y) / 100;
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-        } else if ((game.input.pointer1.isDown == false || game.input.mousePointer.isDown == false) && this.comboMode == false)
-        {
+        } else if ((game.input.pointer1.isDown == false || game.input.mousePointer.isDown == false) && this.comboMode == false) {
             this.moving = false;
         }
         this.exhaustAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
@@ -174,7 +155,7 @@
     // Set targets that the player's weapon can hit
     public setTargets(_targets: Array<Enemy>) {
         this.enemies = _targets;
-        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeThree();
+        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeTwo();
         this.missileWeapons = this.playerUpgrades.missileUpgradeTwo();
     }
 
@@ -190,7 +171,6 @@
                 this.slowMo = true;
             }
         }
-
     }
 
     // Smoothly reverts time back to normal.
@@ -205,5 +185,10 @@
                 this.slowMo = false;
             }
         }
+    }
+
+    protected die() {
+        super.die();
+        game.state.start("Menu");
     }
 }

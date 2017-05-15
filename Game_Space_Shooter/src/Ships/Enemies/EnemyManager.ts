@@ -76,11 +76,11 @@
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":
                     let EnemyF = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-
+                    EnemyF.addWeapon(0.2, this.projectilePools[0], [this.player], new Vector2());
                     break;
                 case "bomber":
                     let EnemyB = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-
+                    EnemyB.addWeapon(0.2, this.projectilePools[0], [this.player], new Vector2());
                     break;
             }
         }

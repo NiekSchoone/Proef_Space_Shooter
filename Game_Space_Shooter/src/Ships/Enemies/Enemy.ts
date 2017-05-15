@@ -59,7 +59,7 @@ class Enemy extends Ship {
 
             if (this.shooting == false) {
                 this.shooting = (this.vectorPosition.Y > 0);
-	    }
+            }
             if (this.inBounds == false && this.checkBounds()) {
                 this.inBounds = true;
                 this.shooting = true;
@@ -80,26 +80,22 @@ class Enemy extends Ship {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
 
-    public toggleComboTarget(activate : boolean)
-    {
-        if (activate == true)
-        {
+    public toggleComboTarget(activate: boolean) {
+        if (activate == true) {
             this.anim.play();
             this.addChild(this.comboSprite);
         }
-        else
-        {
+        else {
             this.removeChild(this.comboSprite);
         }
     }
 
-    public indicateTarget()
-    {
+    public indicateTarget() {
         //this.indicator = game.add.graphics(this.vectorPosition.X - 60, this.vectorPosition.Y - 60);
         //this.indicator.lineStyle(5, 0xff0000);
         //this.indicator.lineTo(this.vectorPosition.X - 50, this.vectorPosition.Y - 50);
         //console.log("HELLCHEA");
-    
+
         this.comboSprite.anchor.setTo(0.5);
         let anim = this.comboSprite.animations.add("indicated", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         anim.play();
