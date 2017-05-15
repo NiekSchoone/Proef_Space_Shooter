@@ -41,7 +41,7 @@
     // Executed on a change in the players HP
     public onHealthChange() {
         // Calculate the number of health blocks that will be set invisible;
-        let sum = 8//Math.ceil((this.currentHp / this.maxHp) * 8);
+        let sum = Math.ceil((this.currentHp / this.maxHp) * 8);
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {

@@ -34,7 +34,7 @@
 
         this.player.setTargets(this.enemyManager.getEnemies());
 
-        //this.healthIndicator = new HealthIndicator();
+        this.healthIndicator = new HealthIndicator();
     }
 
     update() {
