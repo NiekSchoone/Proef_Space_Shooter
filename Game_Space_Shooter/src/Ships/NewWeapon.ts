@@ -19,7 +19,6 @@
         this.projectilePool = _projectilePool;
         this.targets = _targets;
         this.behaviour = _behaviour;
-
         this.timer = _cooldown;
     }
 

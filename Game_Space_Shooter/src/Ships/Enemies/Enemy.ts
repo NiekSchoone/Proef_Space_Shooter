@@ -15,7 +15,6 @@ class Enemy extends Ship {
     public id: number;
     private dead: Boolean;
 
-
     constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
@@ -23,7 +22,7 @@ class Enemy extends Ship {
         this.enemyType = _type;
         this.killEnemy = _killEnemy;
         this.vectorPosition.X = _start.X;
-        this.vectorPosition.Y = _start.Y;              
+        this.vectorPosition.Y = _start.Y;
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
@@ -49,15 +48,14 @@ class Enemy extends Ship {
         if (this.active) {
             this.moveDir.X = 0
             this.moveDir.Y = 1
-            
 
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
 
-            super.update();
-            if (this.shooting == false)
-            {
+            if (this.shooting == false) {
                 this.shooting = (this.vectorPosition.Y > 0);
             }
+
+            super.update();
         } else {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this);
@@ -65,19 +63,9 @@ class Enemy extends Ship {
         }
     }
 
-    public spawn() {
-        
-    }
-
-    protected die() {
-        super.die();
-        this.killEnemy(this);
-    }
-
-    public toggleComboTarget()
-    {
+    public toggleComboTarget() {
         this.comboSprite.anchor.setTo(0.5);
-        let anim = this.comboSprite.animations.add("indicated", [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], 24, false);
+        let anim = this.comboSprite.animations.add("indicated", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         anim.play();
         this.addChild(this.comboSprite);
     }

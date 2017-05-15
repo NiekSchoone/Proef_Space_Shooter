@@ -49,12 +49,9 @@
     }
 
     // Check's if the pointer is colliding with an enemy. 
-    private checkCollision()
-    {
-        if (this.enemies != null)
-        {
-            for (let i = 0; i < this.enemies.length; i++)
-            {
+    private checkCollision() {
+        if (this.enemies != null) {
+            for (let i = 0; i < this.enemies.length; i++) {
                 let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.enemies[i].vectorPosition);
 
                 if (distance < this.enemies[i].collisionRadius) {
@@ -72,10 +69,8 @@
                 let noDuplicate: boolean = true;
 
                 // Loop through all target enemies and check if duplicate.
-                for (var i = 0; i < this.targetEnemies.length; i++)
-                {
-                    if (this.checkCollision().id == this.targetEnemies[i].id)
-                    {
+                for (var i = 0; i < this.targetEnemies.length; i++) {
+                    if (this.checkCollision().id == this.targetEnemies[i].id) {
                         noDuplicate = false;
                     }
                 }
@@ -97,12 +92,10 @@
             this.reverseSlowmo();
         }
         // Handle slowmotion inputs.
-        if (game.input.mousePointer.isDown && this.comboMode == false)
-        {
+        if (game.input.mousePointer.isDown && this.comboMode == false) {
             this.reverseSlowmo();
         }
-        else if (game.input.mousePointer.isDown == false)
-        {
+        else if (game.input.mousePointer.isDown == false) {
             this.smoothSlowmo();
         }
 
@@ -137,32 +130,25 @@
             this.moveDir.Y = (game.input.y - this.vectorPosition.Y) / 100;
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
         }
-
         this.exhaustAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
-
         super.update();
     }
 
     // Set targets that the player's weapon can hit
-    public setTargets(_targets: Array<Enemy>)
-    {
+    public setTargets(_targets: Array<Enemy>) {
         this.enemies = _targets;
         this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeThree();
-        this.missileWeapons = this.playerUpgrades.missileUpgradeThree();
+        this.missileWeapons = this.playerUpgrades.missileUpgradeTwo();
     }
 
     // Smoothly slowdown time. 
-    private smoothSlowmo()
-    {
-        if (this.slowMo == false)
-        {
-            if (game.time.slowMotion < 1.5)
-            {
+    private smoothSlowmo() {
+        if (this.slowMo == false) {
+            if (game.time.slowMotion < 1.5) {
                 game.time.slowMotion += 0.0125;
                 game.time.events.add(200, this.smoothSlowmo, this);
             }
-            else if (game.time.slowMotion > 1.5)
-            {
+            else if (game.time.slowMotion > 1.5) {
                 game.time.slowMotion = 1.5;
                 this.slowMo = true;
             }
@@ -171,17 +157,13 @@
     }
 
     // Smoothly reverts time back to normal.
-    private reverseSlowmo()
-    {
-        if (this.slowMo == true)
-        {
-            if (this.game.time.slowMotion > 1.0)
-            {
+    private reverseSlowmo() {
+        if (this.slowMo == true) {
+            if (this.game.time.slowMotion > 1.0) {
                 game.time.slowMotion -= 0.05;
                 game.time.events.add(200, this.reverseSlowmo, this);
             }
-            else if (game.time.slowMotion < 1.0)
-            {
+            else if (game.time.slowMotion < 1.0) {
                 game.time.slowMotion = 1.0;
                 this.slowMo = false;
             }

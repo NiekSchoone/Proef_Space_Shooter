@@ -91,7 +91,6 @@
     public resetValues() {
         this.active = false;
         this.visible = false;
-        this.targets = new Array<Ship>();
         this.vectorPosition = new Vector2(-100, -100);
         this.velocity = new Vector2(0, 0);
         this.animations.stop();

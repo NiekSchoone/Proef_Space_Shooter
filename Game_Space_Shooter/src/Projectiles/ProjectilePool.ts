@@ -31,9 +31,8 @@
     // Returns a given projectile to the pool of available projectiles
     private returnProjectile(projectile: Projectile) {
         projectile.resetValues();
-        let index = this.inUse.indexOf(projectile, projectile.projectileIndex); // Find the projectile in the "inUse" array by the identifier it has
-        this.inUse.splice(index, 1); // Splice the projectile out of the array
-        if (!this.containsProjectileByIndex(projectile.projectileIndex, this.available)) {
+        ArrayMethods.removeObject(this.inUse, projectile); // Remove the projectile from the "inUse" array.
+        if (!ArrayMethods.containsObject(this.available, projectile)) {
             this.available.push(projectile); // Place the projectile back in the array of available projectiles
         }
     }
@@ -55,14 +54,5 @@
             this.projectileCount++;
             return newProjectile;
         }
-    }
-
-    private containsProjectileByIndex(index, list) {
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].projectileIndex === index) {
-                return true;
-            }
-        }
-        return false;
     }
 }
