@@ -26,6 +26,7 @@
         this.fireAngle = 0;
         this.vectorPosition.X = 200;
         this.vectorPosition.Y = 500;
+        this.shooting = true;
     }
 
     public handlePickup(type: PickupType)

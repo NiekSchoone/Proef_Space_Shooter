@@ -50,7 +50,6 @@
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\GameStates\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
-    <TypeScriptCompile Include="src\Ships\Enemies\EnemyUnit.ts" />
     <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
     <TypeScriptCompile Include="src\Pickups\Pickup.ts" />

@@ -4,6 +4,7 @@
     BOMBER,
     BOSS
 }
+
 class Enemy extends Ship
 {
     private enemyType: EnemyType;
@@ -15,47 +16,22 @@ class Enemy extends Ship
     private comboSprite: Phaser.Sprite;
     public id: number;
     private dead: Boolean;
-    constructor(type: EnemyType, health: number, speed: number, pattern: Vector2[], _collisionRadius: number, _killEnemy: Function, _id: number)
+
+
+    constructor(type: EnemyType, health: number, speed: number, start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number)
     {
         super(_collisionRadius);
         this.moveDir = new Vector2(0, 0);
         this.id = _id;
         this.killEnemy = _killEnemy;
-        this.movementPattern = pattern;                   
-        this.vectorPosition.X = this.movementPattern[0].X;
-        this.vectorPosition.Y = this.movementPattern[0].Y;
+        this.vectorPosition.X = start.X;
+        this.vectorPosition.Y = start.Y;              
         this.currentMove = 1;
         this.speed = speed;
         this.enemyType = type;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "combo02");
         this.anchor.set(0.5);
         this.fireAngle = 180;
-        this.active = false;
-        this.dead = true;
-    }
-    
-    public update() {
-        if (this.active) {
-            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
-            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
-            this.moveDir.normalize();
-
-            this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-
-            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
-                this.currentMove++;
-                if (this.currentMove == this.movementPattern.length) {
-                    this.die();
-                }
-            }
-            super.update();
-        } else if(this.dead) {
-            if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
-                this.killEnemy(this);
-            }
-        }
-    }
-    public spawn() {
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ship_enemy");
@@ -69,9 +45,32 @@ class Enemy extends Ship
         }
         game.add.existing(this);
         this.active = true;
+        this.shooting = false;
+    }
+    
+    public update() {
+        if (this.active) {
+            this.moveDir.X = 0
+            this.moveDir.Y = 1
+            
+
+            this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+
+            super.update();
+            if (this.shooting == false)
+            {
+                this.shooting = (this.vectorPosition.Y > 0);
+            }
+        } else {
+            if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
+                this.killEnemy(this);
+            }
+        }
+    }
+    public spawn() {
+        
     }
     protected die() {
-        this.dead = true;
         super.die();
         this.killEnemy(this);
     }

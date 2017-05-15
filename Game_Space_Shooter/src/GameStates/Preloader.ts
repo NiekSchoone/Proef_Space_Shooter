@@ -18,6 +18,7 @@
         game.load.image("plasma_bullet", "assets/Images/Placeholders/bullet.png");
         game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
 
+
         // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background_001.png", 512, 2048, 4);
 
@@ -27,6 +28,9 @@
         
 
         // Audio
+
+        // EnemyWaves
+        game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON)
 
     }
 

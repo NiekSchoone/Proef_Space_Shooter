@@ -11,6 +11,7 @@
     private weaponOffset: number;
     private weaponSlot: number;
     private weaponsMade: number;
+    public shooting: boolean;
 
     constructor(_collisionRadius: number)
     {
@@ -80,9 +81,12 @@
     }
     public update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
-        for (let i = 0; i < this.weapons.length; i++) {
-            this.weapons[i].update();
+        if (this.shooting) {
+            for (let i = 0; i < this.weapons.length; i++) {
+                this.weapons[i].update();
+            }
         }
+        
     }
 
     protected die() {
