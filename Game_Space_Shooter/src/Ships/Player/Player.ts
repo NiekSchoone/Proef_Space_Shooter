@@ -8,8 +8,7 @@
     private slowMo: boolean = true;
     private exhaustAnimation: Phaser.Sprite;
     private playerUpgrades: PlayerUpgrades;
-
-    public projectilePools: ProjectilePool[];
+    public projectilePools: Array<ProjectilePool>;
     public enemies: Array<Enemy>;
 
     constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number) {
@@ -48,9 +47,13 @@
         }
     }
 
-    private checkCollision() {
-        if (this.enemies != null) {
-            for (let i = 0; i < this.enemies.length; i++) {
+    // Check's if the pointer is colliding with an enemy. 
+    private checkCollision()
+    {
+        if (this.enemies != null)
+        {
+            for (let i = 0; i < this.enemies.length; i++)
+            {
                 let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.enemies[i].vectorPosition);
 
                 if (distance < this.enemies[i].collisionRadius) {
@@ -68,8 +71,10 @@
                 let noDuplicate: boolean = true;
 
                 // Loop through all target enemies and check if duplicate.
-                for (var i = 0; i < this.targetEnemies.length; i++) {
-                    if (this.checkCollision().id == this.targetEnemies[i].id) {
+                for (var i = 0; i < this.targetEnemies.length; i++)
+                {
+                    if (this.checkCollision().id == this.targetEnemies[i].id)
+                    {
                         noDuplicate = false;
                     }
                 }
@@ -90,7 +95,13 @@
         if (game.input.mousePointer.isDown && this.comboMode == false) {
             this.reverseSlowmo();
         }
-        else if (game.input.mousePointer.isDown == false) {
+        // Handle slowmotion inputs.
+        if (game.input.mousePointer.isDown && this.comboMode == false)
+        {
+            this.reverseSlowmo();
+        }
+        else if (game.input.mousePointer.isDown == false)
+        {
             this.smoothSlowmo();
         }
 
@@ -132,23 +143,47 @@
     }
 
     // Set targets that the player's weapon can hit
-    public setTargets(_targets: Array<Enemy>) {
+    public setTargets(_targets: Array<Enemy>)
+    {
         this.enemies = _targets;
         this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeThree();
         this.missileWeapons = this.playerUpgrades.missileUpgradeThree();
     }
 
-    private smoothSlowmo() {
-        if (game.time.desiredFps > 40) {
-            game.time.desiredFps -= 1;
-            game.time.events.add(30, this.smoothSlowmo, this);
+    // Smoothly slowdown time. 
+    private smoothSlowmo()
+    {
+        if (this.slowMo == false)
+        {
+            if (game.time.slowMotion < 1.5)
+            {
+                game.time.slowMotion += 0.0125;
+                game.time.events.add(200, this.smoothSlowmo, this);
+            }
+            else if (game.time.slowMotion > 1.5)
+            {
+                game.time.slowMotion = 1.5;
+                this.slowMo = true;
+            }
         }
+
     }
 
-    private reverseSlowmo() {
-        if (this.game.time.desiredFps < 60) {
-            game.time.desiredFps += 1;
-            game.time.events.add(200, this.reverseSlowmo, this);
+    // Smoothly reverts time back to normal.
+    private reverseSlowmo()
+    {
+        if (this.slowMo == true)
+        {
+            if (this.game.time.slowMotion > 1.0)
+            {
+                game.time.slowMotion -= 0.05;
+                game.time.events.add(200, this.reverseSlowmo, this);
+            }
+            else if (game.time.slowMotion < 1.0)
+            {
+                game.time.slowMotion = 1.0;
+                this.slowMo = false;
+            }
         }
     }
 }
