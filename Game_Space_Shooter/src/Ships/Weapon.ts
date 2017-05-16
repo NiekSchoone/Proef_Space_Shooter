@@ -21,7 +21,7 @@
     }
 
     public update() {
-        this.timer -= game.time.elapsedMS;
+        this.timer -= game.time.physicsElapsedMS;
         this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
         if (this.timer <= 0) {
             this.timer = this.cooldown;

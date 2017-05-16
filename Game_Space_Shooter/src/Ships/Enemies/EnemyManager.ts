@@ -46,7 +46,7 @@
 
     public update() {
         if (this.activeLevel == false) {
-            this.timer -= game.time.elapsedMS;
+            this.timer -= game.time.physicsElapsedMS;
             if (this.timer <= 0) {
                 this.timer = 1000;
                 this.activeLevel = true;
@@ -58,7 +58,7 @@
                 enemiesInScreen = (enemiesInScreen == true && this.enemies[e].shooting == true)
             }
             if (enemiesInScreen == true || this.enemies.length == 0) {
-                this.timer -= game.time.elapsedMS;
+                this.timer -= game.time.physicsElapsedMS;
                 if (this.timer <= 0) {
                     this.wave++;
                     this.timer = 2000;

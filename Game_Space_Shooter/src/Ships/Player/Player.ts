@@ -14,7 +14,7 @@
     public enemies: Array<Enemy>;
     public healthIndicator: HealthIndicator;
 
-    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number) {
+    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number, _targets: Array<Enemy>) {
         super(_collisionRadius, _maxHP);
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
@@ -30,6 +30,7 @@
         game.add.existing(this.exhaustAnimation);
         game.physics.arcade.enable(this);
 
+        this.enemies = _targets;
         this.moveDir = new Vector2();
         this.targetEnemies = new Array<Enemy>();
         this.targetIDs = new Array<number>();
@@ -38,6 +39,8 @@
         this.shooting = true;
 
         this.playerUpgrades = new PlayerUpgrades(this);
+
+        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
     }
 
     public onHit(_amount: number) {
@@ -155,12 +158,6 @@
         }
         this.exhaustAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         super.update();
-    }
-
-    // Set targets that the player's weapon can hit
-    public setTargets(_targets: Array<Enemy>) {
-        this.enemies = _targets;
-        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
     }
 
     // Smoothly slowdown time. 
