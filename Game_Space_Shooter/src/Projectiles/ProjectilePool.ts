@@ -3,14 +3,21 @@
     private available: Array<Projectile>;
     private inUse: Array<Projectile>;
     private poolType: ProjectileType;
-
     private projectileCount: number;
+    private spriteGroup: Phaser.Group;
 
-    constructor(_type: ProjectileType) {
+    private plasmaTexture: string;
+    private plasmaHitTexture: string;
+
+    constructor(_type: ProjectileType, _group: Phaser.Group, _tex?: string, _hitTex?: string) {
         this.poolType = _type;
         this.available = new Array<Projectile>();
         this.inUse = new Array<Projectile>();
         this.projectileCount = 0;
+        this.spriteGroup = _group;
+
+        this.plasmaTexture = _tex;
+        this.plasmaHitTexture = _hitTex;
     }
 
     // Get a projectile from the pool and return it
@@ -42,15 +49,16 @@
         let newProjectile;
         // Check which type is defined for this pool and make a new projectile based on that type
         if (this.poolType == ProjectileType.PLASMABULLET) {
-            newProjectile = new PlasmaBullet('plasma_bullet', this.returnProjectile.bind(this), "bullet_hit");
+            newProjectile = new PlasmaBullet(this.returnProjectile.bind(this), this.plasmaTexture, this.plasmaHitTexture);
         } else if (this.poolType == ProjectileType.MISSILE) {
-            newProjectile = new Missile('missile', this.returnProjectile.bind(this), "missile_hit");
+            newProjectile = new Missile(this.returnProjectile.bind(this), 'missile', "missile_hit");
         } else {
             throw "Incorrect type specified for object pool";
         }
         if (newProjectile != null) {
             newProjectile.projectileIndex = this.projectileCount; // Give the projectile an index number to find it in the array
             game.add.existing(newProjectile); // Add the projectile to the game
+            this.spriteGroup.add(newProjectile);
             this.projectileCount++;
             return newProjectile;
         }

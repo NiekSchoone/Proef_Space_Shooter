@@ -49,6 +49,7 @@
     <Content Include="assets\SpriteSheets\Animations\hit_bullet_blue.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\hit_missile_explosion.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\death_explosion.png" />
+    <Content Include="assets\SpriteSheets\Animations\hit_bullet_red.png" />
     <Content Include="assets\SpriteSheets\Animations\player_exhaust.png" />
     <Content Include="assets\SpriteSheets\Animations\projectile_missile.png" />
     <Content Include="assets\SpriteSheets\player_ship_sheet.png" />
@@ -61,13 +62,13 @@
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
-    <TypeScriptCompile Include="src\Ships\Player\HealthIndicator.ts" />
+    <TypeScriptCompile Include="src\Level\ScoreIndicator.ts" />
+    <TypeScriptCompile Include="src\Level\HealthIndicator.ts" />
     <TypeScriptCompile Include="src\Ships\Player\PlayerUpgrades.ts" />
-    <TypeScriptCompile Include="src\Ships\NewWeapon.ts" />
+    <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\States\BootState.ts" />
     <TypeScriptCompile Include="src\States\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
-    <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\AnimationHandler.ts" />
     <TypeScriptCompile Include="src\Utils\ArrayMethods.ts" />
     <TypeScriptCompile Include="src\Utils\ScreenShakeHandler.ts" />

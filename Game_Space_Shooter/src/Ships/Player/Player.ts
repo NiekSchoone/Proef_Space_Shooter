@@ -9,9 +9,9 @@
     private slowMo: boolean = true;
     private exhaustAnimation: Phaser.Sprite;
     private playerUpgrades: PlayerUpgrades;
+
     public projectilePools: Array<ProjectilePool>;
     public enemies: Array<Enemy>;
-
     public healthIndicator: HealthIndicator;
 
     constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number) {
@@ -21,20 +21,21 @@
         this.speed = 10;
         this.anchor.set(0.5);
 
+        this.exhaustAnimation = new Phaser.Sprite(game, this.vectorPosition.X, this.vectorPosition.Y, "player_exhaust");
+        this.exhaustAnimation.anchor.set(0.5, -0.8);
+        this.exhaustAnimation.animations.add("exhaust");
+        this.exhaustAnimation.play("exhaust", 24, true);
+
         game.add.existing(this);
+        game.add.existing(this.exhaustAnimation);
         game.physics.arcade.enable(this);
+
         this.moveDir = new Vector2();
         this.targetEnemies = new Array<Enemy>();
         this.targetIDs = new Array<number>();
         this.vectorPosition.X = 200;
         this.vectorPosition.Y = 500;
         this.shooting = true;
-
-        this.exhaustAnimation = new Phaser.Sprite(game, this.vectorPosition.X, this.vectorPosition.Y, "player_exhaust");
-        this.exhaustAnimation.anchor.set(0.5, -0.6);
-        this.exhaustAnimation.animations.add("exhaust");
-        game.add.existing(this.exhaustAnimation);
-        this.exhaustAnimation.play("exhaust", 24, true);
 
         this.playerUpgrades = new PlayerUpgrades(this);
     }
@@ -45,6 +46,7 @@
     }
 
     public handlePickup(_pickupType: PickupType) {
+        console.log("handling pickup: " + _pickupType);
         if (_pickupType == PickupType.REPAIR) {
             if (this.maxHP <= 60) {
                 this.currentHP += 20;
@@ -52,7 +54,9 @@
                 this.currentHP = this.maxHP;
             }
         } else if (_pickupType == PickupType.UPGRADEPLASMA) {
-
+            this.plasmaWeapons = this.playerUpgrades.nextPlasmaUpgrade();
+        } else if (_pickupType == PickupType.UPGRADEMISSILE) {
+            this.missileWeapons = this.playerUpgrades.nextMissileUpgrade();
         }
     }
 
@@ -70,6 +74,7 @@
     }
 
     public update() {
+
         // If mouse goes down on top of an enemy
         if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false) {
             // Check if there's already targets
@@ -155,8 +160,7 @@
     // Set targets that the player's weapon can hit
     public setTargets(_targets: Array<Enemy>) {
         this.enemies = _targets;
-        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeTwo();
-        this.missileWeapons = this.playerUpgrades.missileUpgradeTwo();
+        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
     }
 
     // Smoothly slowdown time. 

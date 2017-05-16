@@ -5,8 +5,8 @@
     public vectorPosition: Vector2;
     public collisionRadius: number;
 
-    protected plasmaWeapons: Array<NewWeapon>;
-    protected missileWeapons: Array<NewWeapon>;
+    protected plasmaWeapons: Array<Weapon>;
+    protected missileWeapons: Array<Weapon>;
     protected active: boolean;
     protected explosion: Phaser.Sprite;
     private weaponOffset: number;
@@ -18,8 +18,8 @@
         super(game, 0, 0);
         this.game = game;
         this.collisionRadius = _collisionRadius;
-        this.plasmaWeapons = new Array<NewWeapon>();
-        this.missileWeapons = new Array<NewWeapon>();
+        this.plasmaWeapons = new Array<Weapon>();
+        this.missileWeapons = new Array<Weapon>();
         this.vectorPosition = new Vector2();
         this.weaponOffset = 30;
         this.maxHP = _maxHP;
@@ -38,10 +38,11 @@
 
     //Add a weapon for this ship with cooldown
     public addWeapon(_weaponCooldown: number, _projectiles: ProjectilePool, _angle: number, _targets: Array<Ship>, _relativePosition: Vector2 = null) {
-        let weapon = new NewWeapon(_relativePosition, this.vectorPosition,_weaponCooldown, _angle, _projectiles, _targets);
+        let weapon = new Weapon(_relativePosition, this.vectorPosition,_weaponCooldown, _angle, _projectiles, _targets);
         this.weaponsMade++;
         this.plasmaWeapons.push(weapon);
     }
+
     /*public removeWeapon(_weapon: Weapon) {
         let id = this.weapons.indexOf(_weapon, _weapon.id);
         this.weapons.splice(id, 1);
