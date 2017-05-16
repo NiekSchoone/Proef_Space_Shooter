@@ -16,7 +16,7 @@ class Enemy extends Ship {
     private dead: Boolean;
 
     private inBounds: boolean;
-    private indicator: Phaser.Graphics;
+    private indicator: Phaser.Sprite;
     private anim: any;
 
     constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _id: number) {
@@ -30,10 +30,16 @@ class Enemy extends Ship {
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
+        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
+        this.indicator.anchor.setTo(0.5);
+        this.indicator.scale.setTo(1.5);
+        this.indicator.angle = 45;
+        this.addChild(this.indicator);
+
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ship_enemy");
@@ -90,15 +96,13 @@ class Enemy extends Ship {
         }
     }
 
-    public indicateTarget() {
-        //this.indicator = game.add.graphics(this.vectorPosition.X - 60, this.vectorPosition.Y - 60);
-        //this.indicator.lineStyle(5, 0xff0000);
-        //this.indicator.lineTo(this.vectorPosition.X - 50, this.vectorPosition.Y - 50);
-        //console.log("HELLCHEA");
+    public indicateTarget()
+    {
+        this.indicator.alpha = 0;
+        game.add.tween(this.indicator).to({ alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
+    }
 
-        this.comboSprite.anchor.setTo(0.5);
-        let anim = this.comboSprite.animations.add("indicated", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
-        anim.play();
-        this.addChild(this.comboSprite);
+    private tweenComplete()
+    {
     }
 }
