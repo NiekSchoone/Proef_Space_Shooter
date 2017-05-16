@@ -325,8 +325,8 @@ class EnemyManager {
         this.waves.push(game.add.tilemap("wave04"));
         this.waves.push(game.add.tilemap("wave05"));
     }
-    createEnemy(type, healthMod, speedMod, start) {
-        let newEnemy = new Enemy(type, healthMod, speedMod, start, 50, this.killEnemy.bind(this), this.enemiesMade);
+    createEnemy(_type, _health, _speed, _start) {
+        let newEnemy = new Enemy(_type, _health, _speed, _start, 50, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
         this.enemies.push(newEnemy);
         return newEnemy;
@@ -365,12 +365,14 @@ class EnemyManager {
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
-                    let EnemyF = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyF.addWeapon(0.2, this.projectilePools[0], [this.player], new Vector2());
+                    let EnemyF = this.createEnemy(EnemyType.FIGHTER, 50, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    EnemyF.addWeapon(0.2, this.projectilePools[0], 180, [this.player], new Vector2());
                     break;
                 case "bomber":
-                    let EnemyB = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyB.addWeapon(0.2, this.projectilePools[0], [this.player], new Vector2());
+                    let EnemyB = this.createEnemy(EnemyType.BOMBER, 50, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    EnemyB.addWeapon(0.2, this.projectilePools[0], 180, [this.player], new Vector2());
+                    EnemyB.addWeapon(1, this.projectilePools[1], 180, [this.player], new Vector2(-30, 0));
+                    EnemyB.addWeapon(1, this.projectilePools[1], 180, [this.player], new Vector2(30, 0));
                     break;
             }
         }
@@ -385,6 +387,8 @@ class EnemyManager {
     getEnemies() {
         return this.enemies;
     }
+}
+class EnemyWeapons {
 }
 class MovementPatterns {
     constructor() {
@@ -734,10 +738,9 @@ class Ship extends Phaser.Sprite {
     onHit(_amount) {
         this.currentHP -= _amount;
     }
-    //Add a weapon for this ship with cooldown 
-    addWeapon(_weaponCooldown, _projectiles, _targets, _relativePosition = null) {
-        let fixedPosition = true;
-        let weapon = new NewWeapon(_relativePosition, this.vectorPosition, _weaponCooldown, 180, _projectiles, _targets);
+    //Add a weapon for this ship with cooldown
+    addWeapon(_weaponCooldown, _projectiles, _angle, _targets, _relativePosition = null) {
+        let weapon = new NewWeapon(_relativePosition, this.vectorPosition, _weaponCooldown, _angle, _projectiles, _targets);
         this.weaponsMade++;
         this.plasmaWeapons.push(weapon);
     }
@@ -785,39 +788,6 @@ class Ship extends Phaser.Sprite {
         this.game.add.existing(this.explosion);
         this.explosion.animations.play("explode");
         ScreenShakeHandler.smallShake();
-    }
-}
-class Weapon {
-    constructor(_cooldown, _projectilePool, _targets, _ShipPosition, _relativePosition, _id, _removeWeapon, _fixedPosition = false) {
-        this.cooldown = _cooldown * Phaser.Timer.SECOND;
-        this.projectilePool = _projectilePool;
-        this.fireTimer = _cooldown;
-        this.ShipPosition = _ShipPosition;
-        this.relativePosition = _relativePosition;
-        this.targets = _targets;
-        this.id = _id;
-        this.removeWeapon = _removeWeapon;
-        this.fixedPosition = _fixedPosition;
-    }
-    setPosition(_relativePosition) {
-        this.relativePosition = _relativePosition;
-    }
-    update() {
-        this.fireTimer -= game.time.elapsedMS;
-        this.vectorPosition = Vector2.copy(this.ShipPosition).add(this.relativePosition);
-        if (this.fireTimer <= 0) {
-            this.fireTimer = this.cooldown;
-            let newProj = this.projectilePool.getProjectile();
-            newProj.setTarget(this.targets);
-            newProj.fire(this.vectorPosition, this.fireAngle);
-        }
-    }
-    destroyWeapon() {
-        this.removeWeapon(this);
-    }
-    // Set the angle the projectiles will fire from
-    setAngle(_angle) {
-        this.fireAngle = _angle;
     }
 }
 class BootState extends Phaser.State {

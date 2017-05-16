@@ -31,8 +31,8 @@
         this.waves.push(game.add.tilemap("wave05"));
     }
 
-    public createEnemy(type: EnemyType, healthMod: number, speedMod: number, start: Vector2): Enemy {
-        let newEnemy = new Enemy(type, healthMod, speedMod, start, 50, this.killEnemy.bind(this), this.enemiesMade);
+    public createEnemy(_type: EnemyType, _health: number, _speed: number, _start: Vector2): Enemy {
+        let newEnemy = new Enemy(_type, _health, _speed, _start, 50, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
         this.enemies.push(newEnemy);
         return newEnemy;
