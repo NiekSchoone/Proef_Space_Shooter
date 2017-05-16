@@ -13,29 +13,25 @@
         this.missileUpgradeCount = 0;
     }
 
-    public nextPlasmaUpgrade(): Array<Weapon> {
-        if (this.plasmaUpgradeCount <= 3) {
-            this.plasmaUpgradeCount++;
-            if (this.plasmaUpgradeCount == 1) {
+    public nextPlasmaUpgrade(_plasmaUpgradeCount) {
+        switch (_plasmaUpgradeCount) {
+            case 1:
                 return this.plasmaUpgradeOne();
-            } else if (this.plasmaUpgradeCount == 2) {
+            case 2:
                 return this.plasmaUpgradeTwo();
-            } else if (this.plasmaUpgradeCount == 3) {
+            case 3:
                 return this.plasmaUpgradeThree();
-            }
         }
     }
 
-    public nextMissileUpgrade(): Array<Weapon> {
-        if (this.missileUpgradeCount <= 3) {
-            this.missileUpgradeCount++;
-            if (this.missileUpgradeCount == 1) {
+    public nextMissileUpgrade(_missileUpgradeCount) {
+        switch (_missileUpgradeCount) {
+            case 1:
                 return this.missileUpgradeOne();
-            } else if (this.missileUpgradeCount == 2) {
+            case 2:
                 return this.missileUpgradeTwo();
-            } else if (this.missileUpgradeCount == 3) {
+            case 3:
                 return this.missileUpgradeThree();
-            }
         }
     }
 

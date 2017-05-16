@@ -67,6 +67,8 @@
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\Level\ScoreIndicator.ts" />
     <TypeScriptCompile Include="src\Level\HealthIndicator.ts" />
+    <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\EnemyMovements.ts" />
+    <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\EnemyWeapons.ts" />
     <TypeScriptCompile Include="src\Ships\Player\PlayerUpgrades.ts" />
     <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\States\BootState.ts" />
@@ -78,7 +80,6 @@
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
     <TypeScriptCompile Include="src\Pickups\Pickup.ts" />
     <TypeScriptCompile Include="src\Ships\Ship.ts" />
-    <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\MovementPatterns.ts" />
     <TypeScriptCompile Include="src\Ships\Player\Player.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\Enemy.ts" />
     <TypeScriptCompile Include="src\Level\Level.ts" />
