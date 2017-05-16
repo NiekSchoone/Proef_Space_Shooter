@@ -122,9 +122,6 @@
             }
         }
 
-        if (game.input.mousePointer.isDown && this.comboMode == false) {
-            this.reverseSlowmo();
-        }
         // Handle slowmotion inputs.
         if (game.input.mousePointer.isDown && this.comboMode == false) {
             this.reverseSlowmo();
