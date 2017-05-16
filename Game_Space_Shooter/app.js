@@ -50,6 +50,43 @@ class HealthIndicator extends Phaser.Sprite {
         }
     }
 }
+class EnemyMovements {
+    constructor() {
+        this.pattern01 = new Array();
+        let point0 = new Vector2(200, 200);
+        this.pattern01.push(point0);
+        let point1 = new Vector2(1000, 1000);
+        this.pattern01.push(point1);
+        this.pattern02 = new Array();
+        let point2 = new Vector2(400, -20);
+        this.pattern02.push(point2);
+        let point3 = new Vector2(400, 1000);
+        this.pattern02.push(point3);
+        this.pattern03 = new Array();
+        let point4 = new Vector2(200, -20);
+        this.pattern03.push(point4);
+        let point5 = new Vector2(300, 1000);
+        this.pattern03.push(point5);
+        this.pattern04 = new Array();
+        let point6 = new Vector2(300, -20);
+        this.pattern04.push(point6);
+        let point7 = new Vector2(300, 1000);
+        this.pattern04.push(point7);
+        this.pattern05 = new Array();
+        let point8 = new Vector2(200, -20);
+        this.pattern05.push(point8);
+        let point9 = new Vector2(250, 1000);
+        this.pattern05.push(point9);
+    }
+    getMovements(index) {
+        return new Array();
+    }
+}
+class EnemyWeapons {
+    returnWeapons(index) {
+        return new Array();
+    }
+}
 class PlayerUpgrades {
     constructor(_player) {
         this.angle = -30;
@@ -59,32 +96,24 @@ class PlayerUpgrades {
         this.plasmaUpgradeCount = 0;
         this.missileUpgradeCount = 0;
     }
-    nextPlasmaUpgrade() {
-        if (this.plasmaUpgradeCount <= 3) {
-            this.plasmaUpgradeCount++;
-            if (this.plasmaUpgradeCount == 1) {
+    nextPlasmaUpgrade(_plasmaUpgradeCount) {
+        switch (_plasmaUpgradeCount) {
+            case 1:
                 return this.plasmaUpgradeOne();
-            }
-            else if (this.plasmaUpgradeCount == 2) {
+            case 2:
                 return this.plasmaUpgradeTwo();
-            }
-            else if (this.plasmaUpgradeCount == 3) {
+            case 3:
                 return this.plasmaUpgradeThree();
-            }
         }
     }
-    nextMissileUpgrade() {
-        if (this.missileUpgradeCount <= 3) {
-            this.missileUpgradeCount++;
-            if (this.missileUpgradeCount == 1) {
+    nextMissileUpgrade(_missileUpgradeCount) {
+        switch (_missileUpgradeCount) {
+            case 1:
                 return this.missileUpgradeOne();
-            }
-            else if (this.missileUpgradeCount == 2) {
+            case 2:
                 return this.missileUpgradeTwo();
-            }
-            else if (this.missileUpgradeCount == 3) {
+            case 3:
                 return this.missileUpgradeThree();
-            }
         }
     }
     plasmaUpgradeZero() {
@@ -235,10 +264,10 @@ class MenuState extends Phaser.State {
 }
 class EnemyManager {
     constructor(_projectilePools, _group) {
-        this.patterns = new MovementPatterns();
+        this.movenments = new EnemyMovements();
+        this.weapons = new EnemyWeapons;
         this.enemies = new Array();
         this.projectilePools = _projectilePools;
-        this.enemiesMade = 0;
         this.timer = 3000;
         this.activeLevel = false;
         this.spawning = true;
@@ -253,8 +282,7 @@ class EnemyManager {
         this.waves.push(game.add.tilemap("wave05"));
     }
     createEnemy(_type, _health, _speed, _start) {
-        let newEnemy = new Enemy(_type, _health, _speed, _start, 50, this.killEnemy.bind(this), this.enemiesMade);
-        this.enemiesMade++;
+        let newEnemy = new Enemy(_type, _health, _speed, _start, 50, this.killEnemy.bind(this));
         this.enemies.push(newEnemy);
         this.spriteGroup.add(newEnemy);
         return newEnemy;
@@ -270,7 +298,7 @@ class EnemyManager {
         else {
             let enemiesInScreen = true;
             for (let e = 0; e < this.enemies.length; e++) {
-                enemiesInScreen = (enemiesInScreen == true && this.enemies[e].shooting == true);
+                enemiesInScreen = (enemiesInScreen == true && this.enemies[e].inBounds == true);
             }
             if (enemiesInScreen == true || this.enemies.length == 0) {
                 this.timer -= game.time.elapsedMS;
@@ -294,11 +322,9 @@ class EnemyManager {
             switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
                     let EnemyF = this.createEnemy(EnemyType.FIGHTER, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyF.addWeapon(1, this.projectilePools[0], 180, [this.player], new Vector2());
                     break;
                 case "bomber":
                     let EnemyB = this.createEnemy(EnemyType.BOMBER, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyB.addWeapon(2, this.projectilePools[1], 180, [this.player], new Vector2());
                     break;
             }
         }
@@ -308,6 +334,9 @@ class EnemyManager {
     }
     killEnemy(_enemy) {
         this.scoreCounter.onScoreChange(10);
+        //test
+        let pickup = new Pickup(this.player, new Vector2(_enemy.vectorPosition.X, _enemy.vectorPosition.Y), Math.floor(Math.random() * 3));
+        game.add.existing(pickup);
         ArrayMethods.removeObject(this.enemies, _enemy);
         _enemy.destroy();
     }
@@ -513,10 +542,7 @@ class Ship extends Phaser.Sprite {
         super(game, 0, 0);
         this.game = game;
         this.collisionRadius = _collisionRadius;
-        this.plasmaWeapons = new Array();
-        this.missileWeapons = new Array();
         this.vectorPosition = new Vector2();
-        this.weaponOffset = 30;
         this.maxHP = _maxHP;
         this.currentHP = this.maxHP;
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
@@ -527,45 +553,8 @@ class Ship extends Phaser.Sprite {
     onHit(_amount) {
         this.currentHP -= _amount;
     }
-    //Add a weapon for this ship with cooldown
-    addWeapon(_weaponCooldown, _projectiles, _angle, _targets, _relativePosition = null) {
-        let weapon = new Weapon(_relativePosition, this.vectorPosition, _weaponCooldown, _angle, _projectiles, _targets);
-        this.weaponsMade++;
-        this.plasmaWeapons.push(weapon);
-    }
-    /*public removeWeapon(_weapon: Weapon) {
-        let id = this.weapons.indexOf(_weapon, _weapon.id);
-        this.weapons.splice(id, 1);
-        _weapon = null;
-        this.resetWeaponPos();
-    }
-
-    private resetWeaponPos() {
-        this.weaponSlot = 1;
-        for (let i = 0; i < this.weapons.length; i++) {
-            if (this.weapons[i].fixedPosition = false) {
-                let relativePosition = new Vector2();
-                if (this.weaponSlot % 2 == 0) {
-                    relativePosition.X = this.weaponOffset * -(this.weaponSlot - 1);
-                }
-                else {
-                    relativePosition.X = this.weaponOffset * this.weaponSlot;
-                }
-                this.weaponSlot++;
-                this.weapons[i].setPosition(relativePosition);
-            }
-        }
-    }*/
     update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
-        if (this.shooting) {
-            for (let i = 0; i < this.plasmaWeapons.length; i++) {
-                this.plasmaWeapons[i].update();
-            }
-            for (let i = 0; i < this.missileWeapons.length; i++) {
-                this.missileWeapons[i].update();
-            }
-        }
         if (this.currentHP <= 0) {
             this.die();
         }
@@ -579,45 +568,18 @@ class Ship extends Phaser.Sprite {
         ScreenShakeHandler.smallShake();
     }
 }
-class MovementPatterns {
-    constructor() {
-        this.pattern01 = new Array();
-        let point0 = new Vector2(200, 200);
-        this.pattern01.push(point0);
-        let point1 = new Vector2(1000, 1000);
-        this.pattern01.push(point1);
-        this.pattern02 = new Array();
-        let point2 = new Vector2(400, -20);
-        this.pattern02.push(point2);
-        let point3 = new Vector2(400, 1000);
-        this.pattern02.push(point3);
-        this.pattern03 = new Array();
-        let point4 = new Vector2(200, -20);
-        this.pattern03.push(point4);
-        let point5 = new Vector2(300, 1000);
-        this.pattern03.push(point5);
-        this.pattern04 = new Array();
-        let point6 = new Vector2(300, -20);
-        this.pattern04.push(point6);
-        let point7 = new Vector2(300, 1000);
-        this.pattern04.push(point7);
-        this.pattern05 = new Array();
-        let point8 = new Vector2(200, -20);
-        this.pattern05.push(point8);
-        let point9 = new Vector2(250, 1000);
-        this.pattern05.push(point9);
-    }
-}
 class Player extends Ship {
     constructor(_charNumber, _projectilePools, _maxHP, _collisionRadius) {
         super(_collisionRadius, _maxHP);
         this.comboMode = false;
         this.moving = false;
-        this.slowMo = true;
+        this.slowMo = false;
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
         this.speed = 10;
         this.anchor.set(0.5);
+        this.plasmaWeapons = new Array();
+        this.missileWeapons = new Array();
         this.exhaustAnimation = new Phaser.Sprite(game, this.vectorPosition.X, this.vectorPosition.Y, "player_exhaust");
         this.exhaustAnimation.anchor.set(0.5, -0.8);
         this.exhaustAnimation.animations.add("exhaust");
@@ -630,8 +592,9 @@ class Player extends Ship {
         this.targetIDs = new Array();
         this.vectorPosition.X = 200;
         this.vectorPosition.Y = 500;
-        this.shooting = true;
         this.playerUpgrades = new PlayerUpgrades(this);
+        this.plasmaUpgradeCount = 0;
+        this.missileUpgradeCount = 0;
     }
     onHit(_amount) {
         super.onHit(_amount);
@@ -648,10 +611,16 @@ class Player extends Ship {
             }
         }
         else if (_pickupType == PickupType.UPGRADEPLASMA) {
-            this.plasmaWeapons = this.playerUpgrades.nextPlasmaUpgrade();
+            this.plasmaUpgradeCount++;
+            if (this.plasmaUpgradeCount <= 3) {
+                this.plasmaWeapons = this.playerUpgrades.nextPlasmaUpgrade(this.plasmaUpgradeCount);
+            }
         }
         else if (_pickupType == PickupType.UPGRADEMISSILE) {
-            this.missileWeapons = this.playerUpgrades.nextMissileUpgrade();
+            this.missileUpgradeCount++;
+            if (this.missileUpgradeCount <= 3) {
+                this.missileWeapons = this.playerUpgrades.nextMissileUpgrade(this.missileUpgradeCount);
+            }
         }
     }
     // Check's if the pointer is colliding with an enemy. 
@@ -666,6 +635,12 @@ class Player extends Ship {
         }
     }
     update() {
+        for (let i = 0; i < this.plasmaWeapons.length; i++) {
+            this.plasmaWeapons[i].update();
+        }
+        for (let i = 0; i < this.missileWeapons.length; i++) {
+            this.missileWeapons[i].update();
+        }
         // If mouse goes down on top of an enemy
         if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false) {
             // Check if there's already targets
@@ -673,7 +648,7 @@ class Player extends Ship {
                 let noDuplicate = true;
                 // Loop through all target enemies and check if duplicate.
                 for (var i = 0; i < this.targetEnemies.length; i++) {
-                    if (this.checkCollision().id == this.targetEnemies[i].id) {
+                    if (ArrayMethods.containsObject(this.targetEnemies, this.checkCollision)) {
                         noDuplicate = false;
                     }
                 }
@@ -786,14 +761,14 @@ var EnemyType;
     EnemyType[EnemyType["BOSS"] = 2] = "BOSS";
 })(EnemyType || (EnemyType = {}));
 class Enemy extends Ship {
-    constructor(_type, _maxHP, _speed, _start, _collisionRadius, _killEnemy, _id) {
+    constructor(_type, _maxHP, _speed, _start, _collisionRadius, _killEnemy) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
-        this.id = _id;
         this.enemyType = _type;
         this.killEnemy = _killEnemy;
         this.vectorPosition.X = _start.X;
         this.vectorPosition.Y = _start.Y;
+        this.weapons = new Array();
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
@@ -814,22 +789,22 @@ class Enemy extends Ship {
         }
         game.add.existing(this);
         this.active = true;
-        this.shooting = false;
     }
     update() {
         if (this.active) {
             this.moveDir.X = 0;
             this.moveDir.Y = 1;
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-            if (this.shooting == false) {
-                this.shooting = (this.vectorPosition.Y > 0);
+            if (this.inBounds) {
+                for (let i = 0; i < this.weapons.length; i++) {
+                    this.weapons[i].update();
+                }
+                if (this.checkBounds() == false) {
+                    this.killEnemy(this);
+                }
             }
-            if (this.inBounds == false && this.checkBounds()) {
+            else if (this.checkBounds()) {
                 this.inBounds = true;
-                this.shooting = true;
-            }
-            else if (this.inBounds && this.checkBounds() == false) {
-                this.killEnemy(this);
             }
             super.update();
         }
