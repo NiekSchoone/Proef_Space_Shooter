@@ -32,15 +32,14 @@
         this.enemyPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_enemy", "bullet_hit_red");
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE, this.missileGroup);
 
-        // Create a player
-        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40);
-        this.shipGroup.add(this.player);
-
         // Create the manager that keeps track of all the enemies in the game
         this.enemyManager = new EnemyManager([this.enemyPlasmaBulletPool, this.missilePool], this.shipGroup);
-        this.enemyManager.setPlayer(this.player);
 
-        this.player.setTargets(this.enemyManager.getEnemies());
+        // Create a player
+        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40, this.enemyManager.getEnemies());
+        this.shipGroup.add(this.player);
+
+        this.enemyManager.setPlayer(this.player);
 
         this.healthIndicator = new HealthIndicator(this.player);
         this.player.healthIndicator = this.healthIndicator;

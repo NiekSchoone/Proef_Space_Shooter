@@ -10,18 +10,28 @@
     private slowMo: boolean = false;
     private exhaustAnimation: Phaser.Sprite;
     private playerUpgrades: PlayerUpgrades;
-
+    private plasmaWeapons: Array<Weapon>;
+    private missileWeapons: Array<Weapon>;
     public projectilePools: Array<ProjectilePool>;
     public enemies: Array<Enemy>;
     public healthIndicator: HealthIndicator;
+    private plasmaUpgradeCount: number;
+    private missileUpgradeCount: number;
 
+<<<<<<< HEAD
     constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number)
     {
+=======
+    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number, _targets: Array<Enemy>) {
+>>>>>>> a7e999e940ccf4f73887a959f29c63bcfe44d717
         super(_collisionRadius, _maxHP);
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
         this.speed = 10;
         this.anchor.set(0.5);
+
+        this.plasmaWeapons = new Array<Weapon>();
+        this.missileWeapons = new Array<Weapon>();
 
         this.exhaustAnimation = new Phaser.Sprite(game, this.vectorPosition.X, this.vectorPosition.Y, "player_exhaust");
         this.exhaustAnimation.anchor.set(0.5, -0.8);
@@ -32,14 +42,18 @@
         game.add.existing(this.exhaustAnimation);
         game.physics.arcade.enable(this);
 
+        this.enemies = _targets;
         this.moveDir = new Vector2();
         this.targetEnemies = new Array<Enemy>();
         this.targetIDs = new Array<number>();
         this.vectorPosition.X = 200;
         this.vectorPosition.Y = 500;
-        this.shooting = true;
 
         this.playerUpgrades = new PlayerUpgrades(this);
+        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
+
+        this.plasmaUpgradeCount = 0;
+        this.missileUpgradeCount = 0;
     }
 
     public onHit(_amount: number)
@@ -60,12 +74,25 @@
             {
                 this.currentHP = this.maxHP;
             }
+<<<<<<< HEAD
         } else if (_pickupType == PickupType.UPGRADEPLASMA)
         {
             this.plasmaWeapons = this.playerUpgrades.nextPlasmaUpgrade();
         } else if (_pickupType == PickupType.UPGRADEMISSILE)
         {
             this.missileWeapons = this.playerUpgrades.nextMissileUpgrade();
+=======
+        } else if (_pickupType == PickupType.UPGRADEPLASMA) {
+            this.plasmaUpgradeCount++;
+            if (this.plasmaUpgradeCount <= 3) {
+                this.plasmaWeapons = this.playerUpgrades.nextPlasmaUpgrade(this.plasmaUpgradeCount);
+            }
+        } else if (_pickupType == PickupType.UPGRADEMISSILE) {
+            this.missileUpgradeCount++;
+            if (this.missileUpgradeCount <= 3) {
+                this.missileWeapons = this.playerUpgrades.nextMissileUpgrade(this.missileUpgradeCount);
+            }
+>>>>>>> a7e999e940ccf4f73887a959f29c63bcfe44d717
         }
     }
 
@@ -86,9 +113,19 @@
         }
     }
 
+<<<<<<< HEAD
     public update()
     {
 
+=======
+    public update() {
+        for (let i = 0; i < this.plasmaWeapons.length; i++) {
+            this.plasmaWeapons[i].update();
+        }
+        for (let i = 0; i < this.missileWeapons.length; i++) {
+            this.missileWeapons[i].update();
+        }
+>>>>>>> a7e999e940ccf4f73887a959f29c63bcfe44d717
         // If mouse goes down on top of an enemy
         if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false)
         {
@@ -98,10 +135,8 @@
                 let noDuplicate: boolean = true;
 
                 // Loop through all target enemies and check if duplicate.
-                for (var i = 0; i < this.targetEnemies.length; i++)
-                {
-                    if (this.checkCollision().id == this.targetEnemies[i].id)
-                    {
+                for (var i = 0; i < this.targetEnemies.length; i++) {
+                    if (ArrayMethods.containsObject(this.targetEnemies, this.checkCollision)) {
                         noDuplicate = false;
                     }
                 }

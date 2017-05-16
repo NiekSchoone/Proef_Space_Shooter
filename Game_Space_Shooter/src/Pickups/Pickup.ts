@@ -9,7 +9,7 @@
         super(game, _position.X, _position.Y);
         this.player = _player;
         this.vectorPosition = _position;
-        this.velocity = new Vector2(0, 0);
+        this.velocity = new Vector2(0, 1);
         this.pickupType = _type;
         switch (_type) {
             case PickupType.REPAIR:

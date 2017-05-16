@@ -27,9 +27,9 @@
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
         game.load.image("target_indicator","assets/Images/UI/Indicators/crosshair.png")
 
-        game.load.image("pickup_repair", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("pickup_plasma", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("pickup_missile", "assets/Images/Projectiles/bullet_enemy.png");
+        game.load.image("pickup_repair", "assets/Images/Pickups/pickup_health.png");
+        game.load.image("pickup_plasma", "assets/Images/Pickups/pickup_plasma.png");
+        game.load.image("pickup_missile", "assets/Images/Pickups/pickup_missile.png");
 
         // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background.jpg", 512, 2048, 4);
