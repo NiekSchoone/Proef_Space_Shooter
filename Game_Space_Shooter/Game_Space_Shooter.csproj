@@ -61,13 +61,13 @@
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
+    <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\EnemyWeapons.ts" />
     <TypeScriptCompile Include="src\Ships\Player\HealthIndicator.ts" />
     <TypeScriptCompile Include="src\Ships\Player\PlayerUpgrades.ts" />
     <TypeScriptCompile Include="src\Ships\NewWeapon.ts" />
     <TypeScriptCompile Include="src\States\BootState.ts" />
     <TypeScriptCompile Include="src\States\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
-    <TypeScriptCompile Include="src\Ships\Weapon.ts" />
     <TypeScriptCompile Include="src\Utils\AnimationHandler.ts" />
     <TypeScriptCompile Include="src\Utils\ArrayMethods.ts" />
     <TypeScriptCompile Include="src\Utils\ScreenShakeHandler.ts" />
