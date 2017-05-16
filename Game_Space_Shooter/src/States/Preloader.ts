@@ -19,11 +19,16 @@
         game.load.image("menu_button_arrow", "assets/Images/UI/Buttons/button_arrow.png");
 
         // Images game
-        game.load.image("plasma_bullet", "assets/Images/Projectiles/bullet_player.png");
+        game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
+        game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
         game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
 
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
+
+        game.load.image("pickup_repair", "assets/Images/Projectiles/bullet_enemy.png");
+        game.load.image("pickup_plasma", "assets/Images/Projectiles/bullet_enemy.png");
+        game.load.image("pickup_missile", "assets/Images/Projectiles/bullet_enemy.png");
 
         // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background.jpg", 512, 2048, 4);
@@ -33,7 +38,8 @@
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
         game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 13);
 
-        game.load.spritesheet("bullet_hit", "assets/SpriteSheets/Animations/hit_bullet_blue.png", 64, 64, 5);
+        game.load.spritesheet("bullet_hit_blue", "assets/SpriteSheets/Animations/hit_bullet_blue.png", 64, 64, 5);
+        game.load.spritesheet("bullet_hit_red", "assets/SpriteSheets/Animations/hit_bullet_red.png", 64, 64, 5);
 
         game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
         game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
