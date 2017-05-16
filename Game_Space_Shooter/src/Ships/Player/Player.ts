@@ -7,7 +7,7 @@
     private targetEnemies: Enemy[];
     private targetIDs: Array<number>;
     private graphics: Phaser.Graphics;
-    private slowMo: boolean = true;
+    private slowMo: boolean = false;
     private exhaustAnimation: Phaser.Sprite;
     private playerUpgrades: PlayerUpgrades;
     public projectilePools: Array<ProjectilePool>;
@@ -111,10 +111,6 @@
             }
         }
 
-        if (game.input.mousePointer.isDown && this.comboMode == false)
-        {
-            this.reverseSlowmo();
-        }
         // Handle slowmotion inputs.
         if (game.input.mousePointer.isDown && this.comboMode == false)
         {
@@ -214,7 +210,7 @@
         {
             if (this.game.time.slowMotion > 1.0)
             {
-                game.time.slowMotion -= 0.05;
+                game.time.slowMotion -= 0.056;
                 game.time.events.add(200, this.reverseSlowmo, this);
             }
             else if (game.time.slowMotion < 1.0)
