@@ -1,62 +1,92 @@
 ﻿class PlayerUpgrades {
 
     private player: Player;
-    private currentWeaponSet: Array<NewWeapon>;
+    private currentWeaponSet: Array<Weapon>;
+
+    private plasmaUpgradeCount: number;
+    private missileUpgradeCount: number;
 
     constructor(_player: Player) {
         this.player = _player;
-        this.currentWeaponSet = new Array<NewWeapon>();
+        this.currentWeaponSet = new Array<Weapon>();
+        this.plasmaUpgradeCount = 0;
+        this.missileUpgradeCount = 0;
     }
 
-    public plasmaUpgradeZero(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(1);
-        newWeaponSet[0] = new NewWeapon(new Vector2(), this.player.vectorPosition, 0.4, 0, this.player.projectilePools[0], this.player.enemies);
-        return newWeaponSet;
-    }
-    public plasmaUpgradeOne(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(2);
-        newWeaponSet[0] = new NewWeapon(new Vector2(-12, 0), this.player.vectorPosition, 0.4, 0, this.player.projectilePools[0], this.player.enemies);
-        newWeaponSet[1] = new NewWeapon(new Vector2(12, 0), this.player.vectorPosition, 0.4, 0, this.player.projectilePools[0], this.player.enemies);
-        return newWeaponSet;
-    }
-    public plasmaUpgradeTwo(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(3);
-        newWeaponSet[0] = new NewWeapon(new Vector2(), this.player.vectorPosition, 0.3, 0, this.player.projectilePools[0], this.player.enemies);
-        newWeaponSet[1] = new NewWeapon(new Vector2(-1, 0), this.player.vectorPosition, 0.4, -25, this.player.projectilePools[0], this.player.enemies);
-        newWeaponSet[2] = new NewWeapon(new Vector2(1, 0), this.player.vectorPosition, 0.4, 25, this.player.projectilePools[0], this.player.enemies);
-        return newWeaponSet;
-    }
-    public plasmaUpgradeThree(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(4);
-        newWeaponSet[0] = new NewWeapon(new Vector2(-12, 0), this.player.vectorPosition, 0.3, 0, this.player.projectilePools[0], this.player.enemies);
-        newWeaponSet[1] = new NewWeapon(new Vector2(12, 0), this.player.vectorPosition, 0.3, 0, this.player.projectilePools[0], this.player.enemies);
-        newWeaponSet[2] = new NewWeapon(new Vector2(-1, 0), this.player.vectorPosition, 0.4, -25, this.player.projectilePools[0], this.player.enemies);
-        newWeaponSet[3] = new NewWeapon(new Vector2(1, 0), this.player.vectorPosition, 0.4, 25, this.player.projectilePools[0], this.player.enemies);
-        return newWeaponSet;
+    public nextPlasmaUpgrade(): Array<Weapon> {
+        if (this.plasmaUpgradeCount <= 3) {
+            this.plasmaUpgradeCount++;
+            if (this.plasmaUpgradeCount == 1) {
+                return this.plasmaUpgradeOne();
+            } else if (this.plasmaUpgradeCount == 2) {
+                return this.plasmaUpgradeTwo();
+            } else if (this.plasmaUpgradeCount == 3) {
+                return this.plasmaUpgradeThree();
+            }
+        }
     }
 
-    public missileUpgradeOne(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(1);
-        newWeaponSet[0] = new NewWeapon(new Vector2(), this.player.vectorPosition, 0.4, 0, this.player.projectilePools[1], this.player.enemies);
-        return newWeaponSet;
+    public nextMissileUpgrade(): Array<Weapon> {
+        if (this.missileUpgradeCount <= 3) {
+            this.missileUpgradeCount++;
+            if (this.missileUpgradeCount == 1) {
+                return this.missileUpgradeOne();
+            } else if (this.missileUpgradeCount == 2) {
+                return this.missileUpgradeTwo();
+            } else if (this.missileUpgradeCount == 3) {
+                return this.missileUpgradeThree();
+            }
+        }
     }
-    public missileUpgradeTwo(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(1);
-        newWeaponSet[0] = new NewWeapon(new Vector2(-10, 0), this.player.vectorPosition, 0.35, 0, this.player.projectilePools[1], this.player.enemies);
-        newWeaponSet[0] = new NewWeapon(new Vector2(10, 0), this.player.vectorPosition, 0.35, 0, this.player.projectilePools[1], this.player.enemies);
-        return newWeaponSet;
+
+    public plasmaUpgradeZero(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(1);
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.15, 0, this.player.projectilePools[0], this.player.enemies);
+        return weaponSet;
     }
-    public missileUpgradeThree(): Array<NewWeapon> {
-        let newWeaponSet = new Array<NewWeapon>(1);
-        newWeaponSet[0] = new NewWeapon(new Vector2(), this.player.vectorPosition, 0.2, -30, this.player.projectilePools[1], this.player.enemies, function () {
-            this.missileUpgradeThreeBehaviour(newWeaponSet[0]);
+    public plasmaUpgradeOne(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(2);
+        weaponSet[0] = new Weapon(new Vector2(-12, 0), this.player.vectorPosition, 0.15, 0, this.player.projectilePools[0], this.player.enemies);
+        weaponSet[1] = new Weapon(new Vector2(12, 0), this.player.vectorPosition, 0.15, 0, this.player.projectilePools[0], this.player.enemies);
+        return weaponSet;
+    }
+    public plasmaUpgradeTwo(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(3);
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.1, 0, this.player.projectilePools[0], this.player.enemies);
+        weaponSet[1] = new Weapon(new Vector2(-1, 0), this.player.vectorPosition, 0.15, -25, this.player.projectilePools[0], this.player.enemies);
+        weaponSet[2] = new Weapon(new Vector2(1, 0), this.player.vectorPosition, 0.15, 25, this.player.projectilePools[0], this.player.enemies);
+        return weaponSet;
+    }
+    public plasmaUpgradeThree(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(4);
+        weaponSet[0] = new Weapon(new Vector2(-12, 0), this.player.vectorPosition, 0.1, 0, this.player.projectilePools[0], this.player.enemies);
+        weaponSet[1] = new Weapon(new Vector2(12, 0), this.player.vectorPosition, 0.1, 0, this.player.projectilePools[0], this.player.enemies);
+        weaponSet[2] = new Weapon(new Vector2(-1, 0), this.player.vectorPosition, 0.15, -25, this.player.projectilePools[0], this.player.enemies);
+        weaponSet[3] = new Weapon(new Vector2(1, 0), this.player.vectorPosition, 0.15, 25, this.player.projectilePools[0], this.player.enemies);
+        return weaponSet;
+    }
+    public missileUpgradeOne(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(1);
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        return weaponSet;
+    }
+    public missileUpgradeTwo(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(2);
+        weaponSet[0] = new Weapon(new Vector2(-30, 0), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[1] = new Weapon(new Vector2(30, 0), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        return weaponSet;
+    }
+    public missileUpgradeThree(): Array<Weapon> {
+        let weaponSet = new Array<Weapon>(1);
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.2, -30, this.player.projectilePools[1], this.player.enemies, function () {
+            this.missileUpgradeThreeBehaviour(weaponSet[0]);
         }.bind(this));
-        return newWeaponSet;
+        return weaponSet;
     }
 
     private angle: number = -30;
     private step: number = 1;
-    private missileUpgradeThreeBehaviour(_missileWeapon: NewWeapon) {
+    private missileUpgradeThreeBehaviour(_missileWeapon: Weapon) {
         if (this.angle >= 30) {
             this.step = -1;
         } else if (this.angle <= -30) {

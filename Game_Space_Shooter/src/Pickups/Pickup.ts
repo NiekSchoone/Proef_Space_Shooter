@@ -1,16 +1,27 @@
 ﻿class Pickup extends Phaser.Sprite {
 
-    public pickupType: PickupType;
-    public vectorPosition: Vector2;
-    public velocity: Vector2;
+    private pickupType: PickupType;
+    private vectorPosition: Vector2;
+    private velocity: Vector2;
+    private player: Player;
 
-    public player: Player;
-
-    constructor(_player: Player, _x: number, _y: number, _type: PickupType) {
-        super(game, _x, _y);
+    constructor(_player: Player, _position: Vector2, _type: PickupType) {
+        super(game, _position.X, _position.Y);
         this.player = _player;
-        this.vectorPosition = new Vector2(_x, _y);
-        this.velocity = new Vector2(0, 1);
+        this.vectorPosition = _position;
+        this.velocity = new Vector2(0, 0);
+        this.pickupType = _type;
+        switch (_type) {
+            case PickupType.REPAIR:
+                this.loadTexture("pickup_repair");
+                break;
+            case PickupType.UPGRADEPLASMA:
+                this.loadTexture("pickup_plasma");
+                break;
+            case PickupType.UPGRADEMISSILE:
+                this.loadTexture("pickup_missile");
+                break;
+        }
     }
 
     public update() {

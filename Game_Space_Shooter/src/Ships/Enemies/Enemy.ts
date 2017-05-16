@@ -14,6 +14,8 @@ class Enemy extends Ship {
     private comboSprite: Phaser.Sprite;
     public id: number;
     private dead: Boolean;
+
+    private inBounds: boolean;
     private indicator: Phaser.Graphics;
     private anim: any;
 
@@ -24,13 +26,12 @@ class Enemy extends Ship {
         this.enemyType = _type;
         this.killEnemy = _killEnemy;
         this.vectorPosition.X = _start.X;
-        this.vectorPosition.Y = _start.Y;              
+        this.vectorPosition.Y = _start.Y;
         this.currentMove = 1;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
+        this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
-        this.speed = _speed;
-        this.enemyType = _type;
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
         switch (this.enemyType) {
@@ -53,15 +54,21 @@ class Enemy extends Ship {
         if (this.active) {
             this.moveDir.X = 0
             this.moveDir.Y = 1
-            
 
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
 
-            super.update();
-            if (this.shooting == false)
-            {
+            if (this.shooting == false) {
                 this.shooting = (this.vectorPosition.Y > 0);
             }
+            if (this.inBounds == false && this.checkBounds()) {
+                this.inBounds = true;
+                this.shooting = true;
+            }
+            else if (this.inBounds && this.checkBounds() == false) {
+                this.killEnemy(this);
+            }
+
+            super.update();
         } else {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this);
@@ -69,37 +76,28 @@ class Enemy extends Ship {
         }
     }
 
-    public spawn() {
-        
+    private checkBounds(): boolean {
+        return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
 
-    protected die() {
-        super.die();
-        this.killEnemy(this);
-    }
-
-    public toggleComboTarget(activate : boolean)
-    {
-        if (activate == true)
-        {
+    public toggleComboTarget(activate: boolean) {
+        if (activate == true) {
             this.anim.play();
             this.addChild(this.comboSprite);
         }
-        else
-        {
+        else {
             this.removeChild(this.comboSprite);
         }
     }
 
-    public indicateTarget()
-    {
+    public indicateTarget() {
         //this.indicator = game.add.graphics(this.vectorPosition.X - 60, this.vectorPosition.Y - 60);
         //this.indicator.lineStyle(5, 0xff0000);
         //this.indicator.lineTo(this.vectorPosition.X - 50, this.vectorPosition.Y - 50);
         //console.log("HELLCHEA");
-    
+
         this.comboSprite.anchor.setTo(0.5);
-        let anim = this.comboSprite.animations.add("indicated", [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], 24, false);
+        let anim = this.comboSprite.animations.add("indicated", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         anim.play();
         this.addChild(this.comboSprite);
     }

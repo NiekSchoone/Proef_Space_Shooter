@@ -11,7 +11,11 @@
     private wave: number;
     private level: number;
     private activeLevel: boolean;
-    constructor(_projectilePools: ProjectilePool[]) {
+    private spriteGroup: Phaser.Group;
+
+    public scoreCounter: ScoreIndicator;
+
+    constructor(_projectilePools: ProjectilePool[], _group: Phaser.Group) {
         this.patterns = new MovementPatterns();
         this.enemies = new Array<Enemy>();
         this.projectilePools = _projectilePools;
@@ -22,22 +26,21 @@
         this.waves = new Array<Phaser.Tilemap>();
         this.wave = 0;
         this.level = 0;
+
+        this.spriteGroup = _group;
+
         this.waves.push(game.add.tilemap("wave01"));
-        /*this.waves.push(game.add.tilemap("wave02"));
+        this.waves.push(game.add.tilemap("wave02"));
         this.waves.push(game.add.tilemap("wave03"));
         this.waves.push(game.add.tilemap("wave04"));
         this.waves.push(game.add.tilemap("wave05"));
-        this.waves.push(game.add.tilemap("wave06"));
-        this.waves.push(game.add.tilemap("wave07"));
-        this.waves.push(game.add.tilemap("wave08"));
-        this.waves.push(game.add.tilemap("wave09"));
-        this.waves.push(game.add.tilemap("wave10"));*/
-
     }
-    public createEnemy(type: EnemyType, healthMod: number, speedMod: number, start: Vector2): Enemy {
-        let newEnemy = new Enemy(type, healthMod, speedMod, start, 20, this.killEnemy.bind(this), this.enemiesMade);
+
+    public createEnemy(_type: EnemyType, _health: number, _speed: number, _start: Vector2): Enemy {
+        let newEnemy = new Enemy(_type, _health, _speed, _start, 50, this.killEnemy.bind(this), this.enemiesMade);
         this.enemiesMade++;
         this.enemies.push(newEnemy);
+        this.spriteGroup.add(newEnemy);
         return newEnemy;
     }
 
@@ -45,7 +48,7 @@
         if (this.activeLevel == false) {
             this.timer -= game.time.elapsedMS;
             if (this.timer <= 0) {
-                this.timer = 3000;
+                this.timer = 1000;
                 this.activeLevel = true;
             }
         }
@@ -55,43 +58,46 @@
                 enemiesInScreen = (enemiesInScreen == true && this.enemies[e].shooting == true)
             }
             if (enemiesInScreen == true || this.enemies.length == 0) {
-                this.wave++;
-                this.spawnWave();
-                if (this.wave == 5) {
-                    this.wave = 0;
-                    this.activeLevel = false;
-                    this.level++;
+                this.timer -= game.time.elapsedMS;
+                if (this.timer <= 0) {
+                    this.wave++;
+                    this.timer = 2000;
+                    this.spawnWave();
+                    if (this.wave == 5) {
+                        this.wave = 0;
+                        this.timer = 3000;
+                        this.activeLevel = false;
+                        this.level++;
+                    }
                 }
             }
         }
-    
     }
-    spawnWave() {
-        let waveToSpawn: number = 0//Math.floor(Math.random() * 9);
+
+    private spawnWave() {
+        let waveToSpawn: number = Math.floor(Math.random() * 4);
+
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":
-                    let EnemyF = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyF.addWeapon(1, this.projectilePools[0], [this.player])
-                    EnemyF.addWeapon(1, this.projectilePools[0], [this.player])
+                    let EnemyF = this.createEnemy(EnemyType.FIGHTER, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    EnemyF.addWeapon(1, this.projectilePools[0], 180, [this.player], new Vector2());
                     break;
                 case "bomber":
-                    let EnemyB = this.createEnemy(EnemyType.FIGHTER, 20, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
-                    EnemyB.addWeapon(2, this.projectilePools[1], [this.player])
-                    EnemyB.addWeapon(2, this.projectilePools[1], [this.player])
+                    let EnemyB = this.createEnemy(EnemyType.BOMBER, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    EnemyB.addWeapon(2, this.projectilePools[1], 180, [this.player], new Vector2());
                     break;
             }
-            
-
         }
     }
+
     public setPlayer(_player: Player) {
         this.player = _player;
     }
 
     private killEnemy(_enemy: Enemy) {
-        let index = this.enemies.indexOf(_enemy, _enemy.id);
-        this.enemies.splice(index, 1);
+        this.scoreCounter.onScoreChange(10);
+        ArrayMethods.removeObject(this.enemies, _enemy);
         _enemy.destroy();
     }
 

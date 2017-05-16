@@ -2,11 +2,18 @@
     private player: Player;
     private level: Level;
     private healthIndicator: HealthIndicator;
-    private plasmaBulletPool: ProjectilePool;
-    private missilePool: ProjectilePool;
-    private projectilePools: ProjectilePool[];
+    private scoreIndicator: ScoreIndicator;
     private enemyManager: EnemyManager;
     private characterNumber: number = 0;
+
+    private playerPlasmaBulletPool: ProjectilePool;
+    private enemyPlasmaBulletPool: ProjectilePool;
+    private missilePool: ProjectilePool;
+
+    private shipGroup: Phaser.Group;
+    private plasmaBulletGroup: Phaser.Group;
+    private missileGroup: Phaser.Group;
+    private uiGroup: Phaser.Group;
 
     init(_characterNumber) {
         this.characterNumber = _characterNumber;
@@ -14,28 +21,34 @@
 
     create() {
         this.level = new Level();
-        this.projectilePools = new Array<ProjectilePool>();
+
+        this.shipGroup = new Phaser.Group(game);
+        this.plasmaBulletGroup = new Phaser.Group(game);
+        this.missileGroup = new Phaser.Group(game);
+        this.uiGroup = new Phaser.Group(game);
 
         // Create the various pools for different projectiles
-        this.plasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET);
-        this.missilePool = new ProjectilePool(ProjectileType.MISSILE);
-        this.projectilePools.push(this.plasmaBulletPool);
-        this.projectilePools.push(this.missilePool);
+        this.playerPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_player", "bullet_hit_blue");
+        this.enemyPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_enemy", "bullet_hit_red");
+        this.missilePool = new ProjectilePool(ProjectileType.MISSILE, this.missileGroup);
 
         // Create a player
-        this.player = new Player(this.characterNumber, this.projectilePools, 80, 50);
+        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40);
+        this.shipGroup.add(this.player);
 
         // Create the manager that keeps track of all the enemies in the game
-        this.enemyManager = new EnemyManager(this.projectilePools);
+        this.enemyManager = new EnemyManager([this.enemyPlasmaBulletPool, this.missilePool], this.shipGroup);
         this.enemyManager.setPlayer(this.player);
 
         this.player.setTargets(this.enemyManager.getEnemies());
 
         this.healthIndicator = new HealthIndicator(this.player);
+        this.player.healthIndicator = this.healthIndicator;
+        this.uiGroup.add(this.healthIndicator);
 
-        var style = { font: "normal 30px ocra", fill: "#b3ffe2", align: "center" };
-
-        var text = game.add.text(20, 20, "10000", style);
+        this.scoreIndicator = new ScoreIndicator();
+        this.enemyManager.scoreCounter = this.scoreIndicator;
+        this.uiGroup.add(this.scoreIndicator);
     }
 
     update() {

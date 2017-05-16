@@ -2,7 +2,6 @@
 
     public projectileType: ProjectileType;
     public vectorPosition: Vector2;
-    public projectileIndex: number;
     public active: boolean;
     public damageAmount: number;
 
@@ -12,8 +11,9 @@
     protected returnToPool: Function; //Callback function to return this to the projectile pool it belongs to
 
     protected hitAnimation: Phaser.Sprite;
+    protected randomHitRotation: boolean;
 
-    constructor(_tex: string, _toPool: Function, _hitAnim?: string) {
+    constructor(_toPool: Function, _tex?: string, _hitAnim?: string, _randomHitRotation?: boolean) {
         super(game, -100, -100);
         this.vectorPosition = new Vector2(-100, -100);
         this.loadTexture(_tex);
@@ -25,6 +25,7 @@
             this.hitAnimation = new Phaser.Sprite(game, -100, -100, _hitAnim);
             this.hitAnimation.animations.add("onHit");
             this.hitAnimation.anchor.set(0.5);
+            this.randomHitRotation = _randomHitRotation;
             game.add.existing(this.hitAnimation);
         }
     }
@@ -79,8 +80,12 @@
     // On hitting a target the projectile will return to the pool and apply damage on the target
     protected onHit(_target: Ship) {
         if (this.hitAnimation != null) {
+            if (this.randomHitRotation) {
+                this.hitAnimation.angle = Math.floor(Math.random() * (359) + 1);
+            } else {
+                this.hitAnimation.angle = this.angle;
+            }
             this.hitAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
-            this.hitAnimation.angle = Math.floor(Math.random() * (359) + 1);
             this.hitAnimation.play("onHit", 24, false);
         }
         _target.onHit(this.damageAmount);
@@ -91,7 +96,6 @@
     public resetValues() {
         this.active = false;
         this.visible = false;
-        this.targets = new Array<Ship>();
         this.vectorPosition = new Vector2(-100, -100);
         this.velocity = new Vector2(0, 0);
         this.animations.stop();
