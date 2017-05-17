@@ -1,21 +1,26 @@
 ﻿class Ship extends Phaser.Sprite {
+
+    public vectorPosition: Vector2;
     public maxHP: number;
     public currentHP: number;
     public speed: number;
-    public vectorPosition: Vector2;
     public collisionRadius: number;
 
-    
-    protected active: boolean;
     protected explosion: Phaser.Sprite;
+    protected active: boolean;
 
+    private weaponOffset: number;
+    private weaponSlot: number;
+    private weaponsMade: number;
+    
     constructor(_collisionRadius: number, _maxHP: number) {
         super(game, 0, 0);
         this.game = game;
         this.collisionRadius = _collisionRadius;
-
-        this.vectorPosition = new Vector2();
         this.maxHP = _maxHP;
+        this.vectorPosition = new Vector2();
+        this.weaponOffset = 30;
+
         this.currentHP = this.maxHP;
 
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
@@ -28,6 +33,7 @@
     public onHit(_amount: number) {
         this.currentHP -= _amount;
     }
+
     public update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         if (this.currentHP <= 0) {

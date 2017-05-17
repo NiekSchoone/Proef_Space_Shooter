@@ -16,8 +16,14 @@
         this.projectileCount = 0;
         this.spriteGroup = _group;
 
-        this.plasmaTexture = _tex;
-        this.plasmaHitTexture = _hitTex;
+        if (this.poolType == ProjectileType.PLASMABULLET) {
+            if (_tex != null && _hitTex != null) {
+                this.plasmaTexture = _tex;
+                this.plasmaHitTexture = _hitTex;
+            } else {
+                throw "No texture specified for plasma bullets.";
+            }
+        }
     }
 
     // Get a projectile from the pool and return it
@@ -56,7 +62,6 @@
             throw "Incorrect type specified for object pool";
         }
         if (newProjectile != null) {
-            newProjectile.projectileIndex = this.projectileCount; // Give the projectile an index number to find it in the array
             game.add.existing(newProjectile); // Add the projectile to the game
             this.spriteGroup.add(newProjectile);
             this.projectileCount++;

@@ -33,6 +33,8 @@
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_coin_text.png" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_background.jpg" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_title.png" />
+    <Content Include="assets\Images\Pickups\pickup_plasma.png" />
+    <Content Include="assets\Images\Pickups\pickup_missile.png" />
     <Content Include="assets\Images\Placeholders\ship_enemy.png" />
     <Content Include="assets\Images\Projectiles\bullet_enemy.png" />
     <Content Include="assets\Images\Projectiles\bullet_player.png" />
@@ -46,6 +48,7 @@
     <Content Include="assets\Images\UI\Portraits\portrait_3.png" />
     <Content Include="assets\Images\UI\Buttons\button_start.png" />
     <Content Include="assets\Images\UI\ui_overlay.png" />
+    <Content Include="assets\Images\Pickups\pickup_health.png" />
     <Content Include="assets\SpriteSheets\Animations\hit_bullet_blue.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\hit_missile_explosion.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\death_explosion.png" />
@@ -101,7 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets\Audio\" />
-    <Folder Include="assets\Images\Pickups\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

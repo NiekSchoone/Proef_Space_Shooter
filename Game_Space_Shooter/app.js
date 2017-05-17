@@ -98,7 +98,7 @@ class Pickup extends Phaser.Sprite {
         super(game, _position.X, _position.Y);
         this.player = _player;
         this.vectorPosition = _position;
-        this.velocity = new Vector2(0, 0);
+        this.velocity = new Vector2(0, 1);
         this.pickupType = _type;
         switch (_type) {
             case PickupType.REPAIR:
@@ -250,8 +250,15 @@ class ProjectilePool {
         this.inUse = new Array();
         this.projectileCount = 0;
         this.spriteGroup = _group;
-        this.plasmaTexture = _tex;
-        this.plasmaHitTexture = _hitTex;
+        if (this.poolType == ProjectileType.PLASMABULLET) {
+            if (_tex != null && _hitTex != null) {
+                this.plasmaTexture = _tex;
+                this.plasmaHitTexture = _hitTex;
+            }
+            else {
+                throw "No texture specified for plasma bullets.";
+            }
+        }
     }
     // Get a projectile from the pool and return it
     getProjectile() {
@@ -290,7 +297,6 @@ class ProjectilePool {
             throw "Incorrect type specified for object pool";
         }
         if (newProjectile != null) {
-            newProjectile.projectileIndex = this.projectileCount; // Give the projectile an index number to find it in the array
             game.add.existing(newProjectile); // Add the projectile to the game
             this.spriteGroup.add(newProjectile);
             this.projectileCount++;
@@ -317,10 +323,15 @@ class Enemy extends Ship {
         this.color = _color;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
+        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
+        this.indicator.anchor.setTo(0.5);
+        this.indicator.scale.setTo(1.5);
+        this.indicator.angle = 45;
+        this.addChild(this.indicator);
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ship_enemy");
@@ -372,14 +383,8 @@ class Enemy extends Ship {
         }
     }
     indicateTarget() {
-        //this.indicator = game.add.graphics(this.vectorPosition.X - 60, this.vectorPosition.Y - 60);
-        //this.indicator.lineStyle(5, 0xff0000);
-        //this.indicator.lineTo(this.vectorPosition.X - 50, this.vectorPosition.Y - 50);
-        //console.log("HELLCHEA");
-        this.comboSprite.anchor.setTo(0.5);
-        let anim = this.comboSprite.animations.add("indicated", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
-        anim.play();
-        this.addChild(this.comboSprite);
+        this.indicator.alpha = 0;
+        game.add.tween(this.indicator).to({ alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
     }
 }
 class EnemyManager {
@@ -403,7 +408,7 @@ class EnemyManager {
     }
     update() {
         if (this.activeLevel == false) {
-            this.timer -= game.time.elapsedMS;
+            this.timer -= game.time.physicsElapsedMS;
             if (this.timer <= 0) {
                 this.timer = 1000;
                 this.activeLevel = true;
@@ -415,7 +420,7 @@ class EnemyManager {
                 enemiesInScreen = (enemiesInScreen == true && this.enemies[e].inBounds == true);
             }
             if (enemiesInScreen == true || this.enemies.length == 0) {
-                this.timer -= game.time.elapsedMS;
+                this.timer -= game.time.physicsElapsedMS;
                 if (this.timer <= 0) {
                     this.wave++;
                     this.timer = 2000;
@@ -496,7 +501,7 @@ class EnemyWeapons {
     }
 }
 class Player extends Ship {
-    constructor(_charNumber, _projectilePools, _maxHP, _collisionRadius) {
+    constructor(_charNumber, _projectilePools, _maxHP, _collisionRadius, _targets) {
         super(_collisionRadius, _maxHP);
         this.comboMode = false;
         this.moving = false;
@@ -514,12 +519,14 @@ class Player extends Ship {
         game.add.existing(this);
         game.add.existing(this.exhaustAnimation);
         game.physics.arcade.enable(this);
+        this.enemies = _targets;
         this.moveDir = new Vector2();
         this.targetEnemies = new Array();
         this.targetIDs = new Array();
         this.vectorPosition.X = 200;
         this.vectorPosition.Y = 500;
         this.playerUpgrades = new PlayerUpgrades(this);
+        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
         this.plasmaUpgradeCount = 0;
         this.missileUpgradeCount = 0;
     }
@@ -597,6 +604,7 @@ class Player extends Ship {
         // Handle slowmotion inputs.
         if (game.input.mousePointer.isDown && this.comboMode == false) {
             this.reverseSlowmo();
+            this.indicateEnemies();
         }
         else if (game.input.mousePointer.isDown == false) {
             this.smoothSlowmo();
@@ -670,6 +678,13 @@ class Player extends Ship {
             else if (game.time.slowMotion < 1.0) {
                 game.time.slowMotion = 1.0;
                 this.slowMo = false;
+            }
+        }
+    }
+    indicateEnemies() {
+        if (this.enemies.length != 0) {
+            for (var i = 0; i < this.enemies.length; i++) {
+                this.enemies[i].indicateTarget();
             }
         }
     }
@@ -767,8 +782,9 @@ class Ship extends Phaser.Sprite {
         super(game, 0, 0);
         this.game = game;
         this.collisionRadius = _collisionRadius;
-        this.vectorPosition = new Vector2();
         this.maxHP = _maxHP;
+        this.vectorPosition = new Vector2();
+        this.weaponOffset = 30;
         this.currentHP = this.maxHP;
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
         this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
@@ -805,7 +821,7 @@ class Weapon {
         this.timer = _cooldown;
     }
     update() {
-        this.timer -= game.time.elapsedMS;
+        this.timer -= game.time.physicsElapsedMS;
         this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
         if (this.timer <= 0) {
             this.timer = this.cooldown;
@@ -864,13 +880,12 @@ class GameState extends Phaser.State {
         this.playerPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_player", "bullet_hit_blue");
         this.enemyPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_enemy", "bullet_hit_red");
         this.missilePool = new ProjectilePool(ProjectileType.MISSILE, this.missileGroup);
-        // Create a player
-        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40);
-        this.shipGroup.add(this.player);
         // Create the manager that keeps track of all the enemies in the game
         this.enemyManager = new EnemyManager([this.enemyPlasmaBulletPool, this.missilePool], this.shipGroup);
+        // Create a player
+        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40, this.enemyManager.getEnemies());
+        this.shipGroup.add(this.player);
         this.enemyManager.setPlayer(this.player);
-        this.player.setTargets(this.enemyManager.getEnemies());
         this.healthIndicator = new HealthIndicator(this.player);
         this.player.healthIndicator = this.healthIndicator;
         this.uiGroup.add(this.healthIndicator);
@@ -941,9 +956,10 @@ class Preloader extends Phaser.State {
         game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
-        game.load.image("pickup_repair", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("pickup_plasma", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("pickup_missile", "assets/Images/Projectiles/bullet_enemy.png");
+        game.load.image("target_indicator", "assets/Images/UI/Indicators/crosshair.png");
+        game.load.image("pickup_repair", "assets/Images/Pickups/pickup_health.png");
+        game.load.image("pickup_plasma", "assets/Images/Pickups/pickup_plasma.png");
+        game.load.image("pickup_missile", "assets/Images/Pickups/pickup_missile.png");
         // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background.jpg", 512, 2048, 4);
         game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
