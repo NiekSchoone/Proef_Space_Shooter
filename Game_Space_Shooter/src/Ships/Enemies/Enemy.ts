@@ -12,13 +12,13 @@ class Enemy extends Ship {
     private notdead: boolean;
     private killEnemy: Function;
     private comboSprite: Phaser.Sprite;
-    private dead: Boolean;
     private weapons: Array<Weapon>;
     public inBounds: boolean;
     private indicator: Phaser.Graphics;
     private anim: any;
+    private color: number;
 
-    constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function) {
+    constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
         this.enemyType = _type;
@@ -27,6 +27,7 @@ class Enemy extends Ship {
         this.vectorPosition.Y = _start.Y;
         this.weapons = new Array<Weapon>();
         this.currentMove = 1;
+        this.color = _color;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         this.inBounds = false;
