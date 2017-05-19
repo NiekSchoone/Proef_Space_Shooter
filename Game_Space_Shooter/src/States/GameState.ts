@@ -20,6 +20,9 @@
     }
 
     create() {
+        menuMusic.stop();
+        //gameMusic.play();
+
         this.level = new Level();
 
         this.shipGroup = new Phaser.Group(game);

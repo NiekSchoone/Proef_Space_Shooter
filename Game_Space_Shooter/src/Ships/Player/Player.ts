@@ -1,5 +1,4 @@
-﻿class Player extends Ship
-{
+﻿class Player extends Ship {
     private mouseDown: boolean;
     private moveDir: Vector2;
     private comboMode: boolean = false;
@@ -12,17 +11,18 @@
     private playerUpgrades: PlayerUpgrades;
     private plasmaWeapons: Array<Weapon>;
     private missileWeapons: Array<Weapon>;
+    private plasmaUpgradeCount: number;
+    private missileUpgradeCount: number;
+
     public projectilePools: Array<ProjectilePool>;
     public enemies: Array<Enemy>;
     public healthIndicator: HealthIndicator;
-    private plasmaUpgradeCount: number;
-    private missileUpgradeCount: number;
 
     constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number, _targets: Array<Enemy>) {
         super(_collisionRadius, _maxHP);
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
-        this.speed = 10;
+        this.speed = 20;
         this.anchor.set(0.5);
 
         this.plasmaWeapons = new Array<Weapon>();
@@ -139,17 +139,6 @@
             }
         }
 
-        // Handle slowmotion inputs.
-        if (game.input.mousePointer.isDown && this.comboMode == false)
-        {
-            this.reverseSlowmo();
-            this.indicateEnemies();
-        }
-        else if (game.input.mousePointer.isDown == false)
-        {
-            this.smoothSlowmo();
-        }
-
         // When button is released.
         if (this.comboMode == true && game.input.mousePointer.isDown == false)
         {
@@ -208,42 +197,6 @@
     {
         this.enemies = _targets;
         this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
-    }
-
-    // Smoothly slowdown time. 
-    private smoothSlowmo()
-    {
-        if (this.slowMo == false)
-        {
-            if (game.time.slowMotion < 1.5)
-            {
-                game.time.slowMotion += 0.0125;
-                game.time.events.add(200, this.smoothSlowmo, this);
-            }
-            else if (game.time.slowMotion > 1.5)
-            {
-                game.time.slowMotion = 1.5;
-                this.slowMo = true;
-            }
-        }
-    }
-
-    // Smoothly reverts time back to normal.
-    private reverseSlowmo()
-    {
-        if (this.slowMo == true)
-        {
-            if (this.game.time.slowMotion > 1.0)
-            {
-                game.time.slowMotion -= 0.05;
-                game.time.events.add(200, this.reverseSlowmo, this);
-            }
-            else if (game.time.slowMotion < 1.0)
-            {
-                game.time.slowMotion = 1.0;
-                this.slowMo = false;
-            }
-        }
     }
 
     private indicateEnemies()

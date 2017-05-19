@@ -8,18 +8,12 @@
 
     protected explosion: Phaser.Sprite;
     protected active: boolean;
-
-    private weaponOffset: number;
-    private weaponSlot: number;
-    private weaponsMade: number;
     
     constructor(_collisionRadius: number, _maxHP: number) {
         super(game, 0, 0);
-        this.game = game;
         this.collisionRadius = _collisionRadius;
         this.maxHP = _maxHP;
         this.vectorPosition = new Vector2();
-        this.weaponOffset = 30;
 
         this.currentHP = this.maxHP;
 
@@ -45,7 +39,7 @@
         this.active = false;
         this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);
         this.explosion.angle = Math.floor(Math.random() * (359) + 1);
-        this.game.add.existing(this.explosion);
+        game.add.existing(this.explosion);
         this.explosion.animations.play("explode");
         ScreenShakeHandler.smallShake();
     }

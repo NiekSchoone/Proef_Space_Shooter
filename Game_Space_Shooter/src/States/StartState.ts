@@ -1,4 +1,4 @@
-﻿class BootState extends Phaser.State {
+﻿class StartState extends Phaser.State {
 
     private background: Phaser.Sprite;
     private title: Phaser.Sprite;
@@ -14,9 +14,12 @@
         game.add.tween(this.title).to({ y: -60 }, 2400, Phaser.Easing.Bounce.Out, true);
         game.add.tween(this.insertCoin).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 
-        this.game.add.existing(this.background);
-        this.game.add.existing(this.title);
-        this.game.add.existing(this.insertCoin);
+        game.add.existing(this.background);
+        game.add.existing(this.title);
+        game.add.existing(this.insertCoin);
+
+        menuMusic.play();
+        menuMusic.currentTime = 20000;
     }
 
     update() {
