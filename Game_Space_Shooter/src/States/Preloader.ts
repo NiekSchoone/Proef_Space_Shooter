@@ -21,7 +21,6 @@
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
 
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
@@ -32,7 +31,10 @@
 
         // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background.jpg", 512, 2048, 4);
-        game.load.spritesheet("ships_player", "assets/SpriteSheets/player_ship_sheet.png", 128, 128, 4);
+        game.load.spritesheet("ships_player", "assets/SpriteSheets/Ships/player_ship_sheet.png", 128, 128, 4);
+        game.load.spritesheet("ships_enemy_orange", "assets/SpriteSheets/Ships/enemy_ship_sheet_orange.png", 128, 128, 3);
+        game.load.spritesheet("ships_enemy_blue", "assets/SpriteSheets/Ships/enemy_ship_sheet_blue.png", 128, 128, 3);
+        game.load.spritesheet("ships_enemy_pink", "assets/SpriteSheets/Ships/enemy_ship_sheet_pink.png", 128, 128, 3);
         game.load.spritesheet("missile", "assets/SpriteSheets/Animations/projectile_missile.png", 64, 64, 22);
         game.load.spritesheet("player_exhaust", "assets/SpriteSheets/Animations/player_exhaust.png", 32, 64, 5);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
@@ -45,18 +47,22 @@
         game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
         
         // Audio
+        game.load.audio("music_menu", "assets/Audio/music_menu.mp3");
 
-        // EnemyWaves
+        // JSON
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON)
         game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON)
         game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON)
         game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON)
         game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON)
-
     }
 
     // After the preload function is done, the create function is called which starts the GameState
     create() {
-        game.state.start("Boot");
+
+        menuMusic = game.add.audio("music_menu", 1, true);
+        //gameMusic = game.add.audio("music_game", 1, true);
+
+        game.state.start("Start");
     }
 }

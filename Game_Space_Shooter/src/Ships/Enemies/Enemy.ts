@@ -35,13 +35,13 @@ class Enemy extends Ship {
         this.comboSprite.anchor.setTo(0.5);
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
-                this.loadTexture("ship_enemy");
+                this.loadTexture("ships_enemy_orange", 2);
                 break;
             case EnemyType.BOMBER:
-                this.loadTexture("ship_enemy");
+                this.loadTexture("ships_enemy_orange", 2);
                 break;
             case EnemyType.BOSS:
-                this.loadTexture("ship_enemy");
+                this.loadTexture("ships_enemy_orange", 2);
                 break;
         }
         game.add.existing(this);
