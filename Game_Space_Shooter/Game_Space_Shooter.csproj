@@ -54,7 +54,9 @@
     <Content Include="assets\SpriteSheets\Animations\hit_bullet_red.png" />
     <Content Include="assets\SpriteSheets\Animations\player_exhaust.png" />
     <Content Include="assets\SpriteSheets\Animations\projectile_missile.png" />
-    <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet.png" />
+    <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_pink.png" />
+    <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_blue.png" />
+    <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_orange.png" />
     <Content Include="assets\SpriteSheets\Ships\player_ship_sheet.png" />
     <Content Include="index.html" />
     <Content Include="Phaser\phaser.js" />
