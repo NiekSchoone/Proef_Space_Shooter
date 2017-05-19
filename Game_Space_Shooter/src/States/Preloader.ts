@@ -21,7 +21,6 @@
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
 
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
@@ -46,6 +45,9 @@
         game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
         
         // Audio
+
+        //Enemies
+        game.load.image("ship_enemy", "assets/Images/Enemies/ship_enemy.png");
 
         // EnemyWaves
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON)

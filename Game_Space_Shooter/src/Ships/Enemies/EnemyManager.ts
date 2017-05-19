@@ -17,9 +17,10 @@
 
     constructor(_projectilePools: ProjectilePool[], _group: Phaser.Group) {
         this.movenments = new EnemyMovements();
-        this.weapons = new EnemyWeapons;
+        
         this.enemies = new Array<Enemy>();
         this.projectilePools = _projectilePools;
+        
         this.timer = 3000;
         this.activeLevel = false;
         this.spawning = true;
@@ -67,19 +68,20 @@
     }
 
     private spawnWave() {
-        let waveToSpawn: number = Math.floor(Math.random() * 4);
+        let waveToSpawn: number = 0//Math.floor(Math.random() * 4);
 
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             let newEnemy;
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":
-                    newEnemy = new Enemy(EnemyType.FIGHTER,1, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
-                    
+                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    console.log();
                     break;
                 case "bomber":
-                    newEnemy = new Enemy(EnemyType.BOMBER,1, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
                     break;
             }
+            newEnemy.setWeapons(this.weapons.returnWeapons(this.waves[waveToSpawn].objects["Ships"][i].properties.weapons, newEnemy.vectorPosition));
             this.enemies.push(newEnemy);
             this.spriteGroup.add(newEnemy);
         }
@@ -87,6 +89,7 @@
 
     public setPlayer(_player: Player) {
         this.player = _player;
+        this.weapons = new EnemyWeapons(this.projectilePools, this.player);
     }
 
     private killEnemy(_enemy: Enemy) {

@@ -318,8 +318,7 @@ class Enemy extends Ship {
         this.killEnemy = _killEnemy;
         this.vectorPosition.X = _start.X;
         this.vectorPosition.Y = _start.Y;
-        this.weapons = new Array();
-        this.currentMove = 1;
+        this.currentMove = 0;
         this.color = _color;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
@@ -332,6 +331,12 @@ class Enemy extends Ship {
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
         this.addChild(this.indicator);
+        if (_movementPattern == null) {
+            this.movementPattern = [new Vector2(this.vectorPosition.X, 1000)];
+        }
+        else {
+            this.movementPattern = _movementPattern;
+        }
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ship_enemy");
@@ -346,14 +351,28 @@ class Enemy extends Ship {
         game.add.existing(this);
         this.active = true;
     }
+    setWeapons(_weapons) {
+        this.weapons = _weapons;
+    }
     update() {
         if (this.active) {
-            this.moveDir.X = 0;
-            this.moveDir.Y = 1;
+            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
+            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
+            this.moveDir.normalize();
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 0.5) {
+                if (this.currentMove == this.movementPattern.length) {
+                    this.die();
+                }
+                else {
+                    this.currentMove++;
+                }
+            }
             if (this.inBounds) {
-                for (let i = 0; i < this.weapons.length; i++) {
-                    this.weapons[i].update();
+                if (this.weapons != null) {
+                    for (let i = 0; i < this.weapons.length; i++) {
+                        this.weapons[i].update();
+                    }
                 }
                 if (this.checkBounds() == false) {
                     this.killEnemy(this);
@@ -390,7 +409,6 @@ class Enemy extends Ship {
 class EnemyManager {
     constructor(_projectilePools, _group) {
         this.movenments = new EnemyMovements();
-        this.weapons = new EnemyWeapons;
         this.enemies = new Array();
         this.projectilePools = _projectilePools;
         this.timer = 3000;
@@ -436,23 +454,26 @@ class EnemyManager {
         }
     }
     spawnWave() {
-        let waveToSpawn = Math.floor(Math.random() * 4);
+        let waveToSpawn = 0; //Math.floor(Math.random() * 4);
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             let newEnemy;
             switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
-                    newEnemy = new Enemy(EnemyType.FIGHTER, 1, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    console.log();
                     break;
                 case "bomber":
-                    newEnemy = new Enemy(EnemyType.BOMBER, 1, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
                     break;
             }
+            newEnemy.setWeapons(this.weapons.returnWeapons(this.waves[waveToSpawn].objects["Ships"][i].properties.weapons, newEnemy.vectorPosition));
             this.enemies.push(newEnemy);
             this.spriteGroup.add(newEnemy);
         }
     }
     setPlayer(_player) {
         this.player = _player;
+        this.weapons = new EnemyWeapons(this.projectilePools, this.player);
     }
     killEnemy(_enemy) {
         this.scoreCounter.onScoreChange(10);
@@ -496,8 +517,22 @@ class EnemyMovements {
     }
 }
 class EnemyWeapons {
-    returnWeapons(index) {
-        return new Array();
+    constructor(_projectiles, _player) {
+        this.projectilePools = _projectiles;
+        this.player = _player;
+    }
+    returnWeapons(_index, _shipPos) {
+        console.log(_index);
+        switch (_index) {
+            case 0:
+                return this.weaponSetOne(_shipPos);
+        }
+    }
+    weaponSetOne(_shipPos) {
+        let weaponset = new Array();
+        weaponset[0] = new Weapon(new Vector2(-15, 0), _shipPos, 2, 180, this.projectilePools[0], [this.player]);
+        weaponset[1] = new Weapon(new Vector2(15, 0), _shipPos, 2, 180, this.projectilePools[0], [this.player]);
+        return weaponset;
     }
 }
 class Player extends Ship {
@@ -821,17 +856,22 @@ class Weapon {
         this.timer = _cooldown;
     }
     update() {
-        this.timer -= game.time.physicsElapsedMS;
-        this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
-        if (this.timer <= 0) {
-            this.timer = this.cooldown;
-            let newProj = this.projectilePool.getProjectile();
-            newProj.setTarget(this.targets);
-            newProj.fire(this.vectorPosition, this.fireAngle);
+        if (this.cooldown > 0) {
+            this.timer -= game.time.physicsElapsedMS;
+            if (this.timer <= 0) {
+                this.timer = this.cooldown;
+                this.fire();
+            }
         }
         if (this.behaviour != null) {
             this.behaviour();
         }
+    }
+    fire() {
+        this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
+        let newProj = this.projectilePool.getProjectile();
+        newProj.setTarget(this.targets);
+        newProj.fire(this.vectorPosition, this.fireAngle);
     }
     // Set the angle the projectiles will fire towards
     setAngle(_angle) {
@@ -953,7 +993,6 @@ class Preloader extends Phaser.State {
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
-        game.load.image("ship_enemy", "assets/Images/Placeholders/ship_enemy.png");
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
         game.load.image("target_indicator", "assets/Images/UI/Indicators/crosshair.png");
@@ -972,6 +1011,8 @@ class Preloader extends Phaser.State {
         game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
         game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
         // Audio
+        //Enemies
+        game.load.image("ship_enemy", "assets/Images/Enemies/ship_enemy.png");
         // EnemyWaves
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON);

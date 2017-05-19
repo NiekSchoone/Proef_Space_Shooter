@@ -17,7 +17,6 @@ class Enemy extends Ship {
     private indicator: Phaser.Sprite;
     private anim: any;
     private color: number;
-
     constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
@@ -25,8 +24,7 @@ class Enemy extends Ship {
         this.killEnemy = _killEnemy;
         this.vectorPosition.X = _start.X;
         this.vectorPosition.Y = _start.Y;
-        this.weapons = new Array<Weapon>();
-        this.currentMove = 1;
+        this.currentMove = 0;
         this.color = _color;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
@@ -39,6 +37,12 @@ class Enemy extends Ship {
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
         this.addChild(this.indicator);
+        if (_movementPattern == null) {
+            this.movementPattern = [new Vector2(this.vectorPosition.X, 1000)];
+        }
+        else {
+            this.movementPattern = _movementPattern;
+        }
 
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
@@ -54,17 +58,30 @@ class Enemy extends Ship {
         game.add.existing(this);
         this.active = true;
     }
-
+    public setWeapons(_weapons: Array<Weapon>) {
+        this.weapons = _weapons;
+    }
     public update() {
         if (this.active) {
-            this.moveDir.X = 0
-            this.moveDir.Y = 1
 
+            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
+            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
+            this.moveDir.normalize();
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 0.5) {
+                if (this.currentMove == this.movementPattern.length) {
+                    this.die();
+                }
+                else {
+                    this.currentMove++;
+                }
+            }
 
             if (this.inBounds) {
-                for (let i = 0; i < this.weapons.length; i++) {
-                    this.weapons[i].update();
+                if (this.weapons != null) {
+                    for (let i = 0; i < this.weapons.length; i++) {
+                        this.weapons[i].update();
+                    }
                 }
                 if (this.checkBounds() == false) {
                     this.killEnemy(this);
