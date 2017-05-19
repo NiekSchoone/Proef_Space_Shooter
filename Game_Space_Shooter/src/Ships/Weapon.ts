@@ -21,19 +21,25 @@
     }
 
     public update() {
-        this.timer -= game.time.physicsElapsedMS;
-        this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
-        if (this.timer <= 0) {
-            this.timer = this.cooldown;
-            let newProj = this.projectilePool.getProjectile();
-            newProj.setTarget(this.targets);
-            newProj.fire(this.vectorPosition, this.fireAngle);
+        if (this.cooldown > 0) {
+            this.timer -= game.time.physicsElapsedMS;
+            if (this.timer <= 0) {
+                this.timer = this.cooldown;
+                this.fire();
+            }
+            
         }
         if (this.behaviour != null) {
             this.behaviour();
         }
     }
 
+    public fire() {
+        this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
+        let newProj = this.projectilePool.getProjectile();
+        newProj.setTarget(this.targets);
+        newProj.fire(this.vectorPosition, this.fireAngle);
+    }
     // Set the angle the projectiles will fire towards
     public setAngle(_angle: number) {
         this.fireAngle = _angle;

@@ -2,7 +2,7 @@
 {
     FIGHTER,
     BOMBER,
-    BOSS
+    SCOUT
 }
 class Enemy extends Ship {
     private enemyType: EnemyType;
@@ -25,8 +25,7 @@ class Enemy extends Ship {
         this.killEnemy = _killEnemy;
         this.vectorPosition.X = _start.X;
         this.vectorPosition.Y = _start.Y;
-        this.weapons = new Array<Weapon>();
-        this.currentMove = 1;
+        this.currentMove = 0;
         this.color = _color;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
@@ -40,32 +39,51 @@ class Enemy extends Ship {
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
         this.addChild(this.indicator);
+        if (_movementPattern == null) {
+            this.movementPattern = [new Vector2(this.vectorPosition.X, 1000)];
+        }
+        else {
+            this.movementPattern = _movementPattern;
+        }
 
-        switch (this.enemyType) {
-            case EnemyType.FIGHTER:
-                this.loadTexture("ship_enemy");
+        switch (this.color) {
+            case 0:
+                this.loadTexture("ships_enemy_orange", this.enemyType);
                 break;
-            case EnemyType.BOMBER:
-                this.loadTexture("ship_enemy");
+            case 1:
+                this.loadTexture("ships_enemy_blue", this.enemyType);
                 break;
-            case EnemyType.BOSS:
-                this.loadTexture("ship_enemy");
+            case 2:
+                this.loadTexture("ships_enemy_pink", this.enemyType);
                 break;
         }
         game.add.existing(this);
         this.active = true;
     }
-
+    public setWeapons(_weapons: Array<Weapon>) {
+        this.weapons = _weapons;
+    }
     public update() {
         if (this.active) {
-            this.moveDir.X = 0
-            this.moveDir.Y = 1
 
+            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
+            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
+            this.moveDir.normalize();
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 0.5) {
+                if (this.currentMove == this.movementPattern.length) {
+                    this.die();
+                }
+                else {
+                    this.currentMove++;
+                }
+            }
 
             if (this.inBounds) {
-                for (let i = 0; i < this.weapons.length; i++) {
-                    this.weapons[i].update();
+                if (this.weapons != null) {
+                    for (let i = 0; i < this.weapons.length; i++) {
+                        this.weapons[i].update();
+                    }
                 }
                 if (this.checkBounds() == false) {
                     this.killEnemy(this);

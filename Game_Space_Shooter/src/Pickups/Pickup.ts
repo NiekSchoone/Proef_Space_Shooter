@@ -4,13 +4,16 @@
     private vectorPosition: Vector2;
     private velocity: Vector2;
     private player: Player;
+    private speed: number;
 
     constructor(_player: Player, _position: Vector2, _type: PickupType) {
         super(game, _position.X, _position.Y);
         this.player = _player;
         this.vectorPosition = _position;
         this.velocity = new Vector2(0, 1);
+        this.speed = 0;
         this.pickupType = _type;
+        this.anchor.set(0.5);
         switch (_type) {
             case PickupType.REPAIR:
                 this.loadTexture("pickup_repair");
@@ -25,7 +28,10 @@
     }
 
     public update() {
-        this.vectorPosition.add(this.velocity);
+        if (this.speed < 5) {
+            this.speed += 0.04;
+        }
+        this.vectorPosition.add(new Vector2(this.velocity.X * this.speed, this.velocity.Y * this.speed));
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
 
         this.checkCollision();

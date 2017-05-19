@@ -25,6 +25,13 @@ span {
 	margin:auto;
 }
 
+#borderDiv {
+    padding: 0px;
+    left:0; right:0;
+    top:0; bottom:0;
+	margin:auto;
+}
+
 .fontLoader {
    position: absolute;
    left: -1000px;

@@ -1,4 +1,6 @@
 ﻿declare var game: Phaser.Game;
+declare var menuMusic: Phaser.Sound;
+declare var gameMusic: Phaser.Sound;
 
 class App {
     constructor() {
@@ -13,7 +15,7 @@ class App {
 
         // Add the various states the game goes through
         game.state.add("Preload", Preloader);
-        game.state.add("Boot", BootState);
+        game.state.add("Start", StartState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         // Start the preload state
