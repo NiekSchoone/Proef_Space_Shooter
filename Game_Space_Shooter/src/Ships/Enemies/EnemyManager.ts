@@ -68,21 +68,30 @@
     }
 
     private spawnWave() {
-        let waveToSpawn: number = 0//Math.floor(Math.random() * 4);
+        let waveToSpawn: number = Math.floor(Math.random() * 4);
+        let enemytoPickup = Math.floor(Math.random() * this.waves[waveToSpawn].objects["Ships"].length);;
 
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             let newEnemy;
+            let movement: Array<Vector2> = null;
+            let moveIndex = this.waves[waveToSpawn].objects["Ships"][i].properties.movement;
+            if (moveIndex != 0) {
+                movement = this.movenments.returnMovement(moveIndex);
+            }
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":
-                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     console.log();
                     break;
                 case "bomber":
-                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     break;
                 case "scout":
-                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     break;
+            }
+            if (i == enemytoPickup) {
+                newEnemy.hasPickup = true;
             }
             newEnemy.setWeapons(this.weapons.returnWeapons(this.waves[waveToSpawn].objects["Ships"][i].properties.weapons, newEnemy.vectorPosition));
             this.enemies.push(newEnemy);
@@ -95,8 +104,12 @@
         this.weapons = new EnemyWeapons(this.projectilePools, this.player);
     }
 
-    private killEnemy(_enemy: Enemy) {
-        this.scoreCounter.onScoreChange(10);    
+    private killEnemy(_enemy: Enemy, score: number) {
+        this.scoreCounter.onScoreChange(score);
+        if (_enemy.hasPickup == true) {
+            let pickup = new Pickup(this.player, _enemy.vectorPosition, Math.floor(Math.random() * 3));
+            game.add.existing(pickup);
+        }   
         ArrayMethods.removeObject(this.enemies, _enemy);
         _enemy.destroy();
     }

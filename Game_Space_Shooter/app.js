@@ -51,35 +51,43 @@ class HealthIndicator extends Phaser.Sprite {
     }
 }
 class EnemyMovements {
-    constructor() {
-        this.pattern01 = new Array();
-        let point0 = new Vector2(200, 200);
-        this.pattern01.push(point0);
-        let point1 = new Vector2(1000, 1000);
-        this.pattern01.push(point1);
-        this.pattern02 = new Array();
-        let point2 = new Vector2(400, -20);
-        this.pattern02.push(point2);
-        let point3 = new Vector2(400, 1000);
-        this.pattern02.push(point3);
-        this.pattern03 = new Array();
-        let point4 = new Vector2(200, -20);
-        this.pattern03.push(point4);
-        let point5 = new Vector2(300, 1000);
-        this.pattern03.push(point5);
-        this.pattern04 = new Array();
-        let point6 = new Vector2(300, -20);
-        this.pattern04.push(point6);
-        let point7 = new Vector2(300, 1000);
-        this.pattern04.push(point7);
-        this.pattern05 = new Array();
-        let point8 = new Vector2(200, -20);
-        this.pattern05.push(point8);
-        let point9 = new Vector2(250, 1000);
-        this.pattern05.push(point9);
+    returnMovement(_index) {
+        switch (_index) {
+            case 1:
+                return this.setOne();
+            case 2:
+                return this.setTwo();
+            case 3:
+                return this.setThree();
+            case 4:
+                return this.setFour();
+        }
     }
-    getMovements(index) {
-        return new Array();
+    setOne() {
+        let movement = new Array();
+        movement[0] = new Vector2(64, 400);
+        movement[1] = new Vector2(448, 1000);
+        return movement;
+    }
+    setTwo() {
+        let movement = new Array();
+        movement[0] = new Vector2(448, 400);
+        movement[1] = new Vector2(64, 1000);
+        return movement;
+    }
+    setThree() {
+        let movement = new Array();
+        movement[0] = new Vector2(256, 400);
+        movement[1] = new Vector2(64, 100);
+        movement[2] = new Vector2(64, 1000);
+        return movement;
+    }
+    setFour() {
+        let movement = new Array();
+        movement[0] = new Vector2(256, 400);
+        movement[1] = new Vector2(448, 100);
+        movement[2] = new Vector2(448, 1000);
+        return movement;
     }
 }
 class EnemyWeapons {
@@ -90,13 +98,35 @@ class EnemyWeapons {
     returnWeapons(_index, _shipPos) {
         switch (_index) {
             case 0:
-                return this.weaponSetOne(_shipPos);
+                return this.setZero(_shipPos);
+            case 1:
+                return this.setOne(_shipPos);
+            case 2:
+                return this.setTwo(_shipPos);
+            case 3:
+                return this.setThree(_shipPos);
         }
     }
-    weaponSetOne(_shipPos) {
+    setZero(_shipPos) {
         let weaponset = new Array();
-        weaponset[0] = new Weapon(new Vector2(-15, 0), _shipPos, 2, 180, this.projectilePools[0], [this.player]);
-        weaponset[1] = new Weapon(new Vector2(15, 0), _shipPos, 2, 180, this.projectilePools[0], [this.player]);
+        weaponset[0] = new Weapon(new Vector2(), _shipPos, 2, 180, this.projectilePools[0], [this.player]);
+        return weaponset;
+    }
+    setOne(_shipPos) {
+        let weaponset = new Array();
+        weaponset[0] = new Weapon(new Vector2(), _shipPos, 2.5, 180, this.projectilePools[1], [this.player]);
+        return weaponset;
+    }
+    setTwo(_shipPos) {
+        let weaponset = new Array();
+        weaponset[0] = new Weapon(new Vector2(-10, 0), _shipPos, 1, 160, this.projectilePools[0], [this.player]);
+        weaponset[1] = new Weapon(new Vector2(10, 0), _shipPos, 1, 200, this.projectilePools[0], [this.player]);
+        return weaponset;
+    }
+    setThree(_shipPos) {
+        let weaponset = new Array();
+        weaponset[0] = new Weapon(new Vector2(-10, 0), _shipPos, 1, 180, this.projectilePools[0], [this.player]);
+        weaponset[1] = new Weapon(new Vector2(10, 0), _shipPos, 1, 180, this.projectilePools[0], [this.player]);
         return weaponset;
     }
 }
@@ -331,20 +361,30 @@ class EnemyManager {
         }
     }
     spawnWave() {
-        let waveToSpawn = 0; //Math.floor(Math.random() * 4);
+        let waveToSpawn = Math.floor(Math.random() * 4);
+        let enemytoPickup = Math.floor(Math.random() * this.waves[waveToSpawn].objects["Ships"].length);
+        ;
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             let newEnemy;
+            let movement = null;
+            let moveIndex = this.waves[waveToSpawn].objects["Ships"][i].properties.movement;
+            if (moveIndex != 0) {
+                movement = this.movenments.returnMovement(moveIndex);
+            }
             switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
-                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     console.log();
                     break;
                 case "bomber":
-                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     break;
                 case "scout":
-                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
+                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     break;
+            }
+            if (i == enemytoPickup) {
+                newEnemy.hasPickup = true;
             }
             newEnemy.setWeapons(this.weapons.returnWeapons(this.waves[waveToSpawn].objects["Ships"][i].properties.weapons, newEnemy.vectorPosition));
             this.enemies.push(newEnemy);
@@ -355,8 +395,12 @@ class EnemyManager {
         this.player = _player;
         this.weapons = new EnemyWeapons(this.projectilePools, this.player);
     }
-    killEnemy(_enemy) {
-        this.scoreCounter.onScoreChange(10);
+    killEnemy(_enemy, score) {
+        this.scoreCounter.onScoreChange(score);
+        if (_enemy.hasPickup == true) {
+            let pickup = new Pickup(this.player, _enemy.vectorPosition, Math.floor(Math.random() * 3));
+            game.add.existing(pickup);
+        }
         ArrayMethods.removeObject(this.enemies, _enemy);
         _enemy.destroy();
     }
@@ -778,12 +822,14 @@ class Enemy extends Ship {
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
         this.addChild(this.indicator);
+        this.hasPickup = false;
         if (_movementPattern == null) {
             this.movementPattern = [new Vector2(this.vectorPosition.X, 1000)];
         }
         else {
             this.movementPattern = _movementPattern;
         }
+        this.score = 10;
         switch (this.color) {
             case 0:
                 this.loadTexture("ships_enemy_orange", this.enemyType);
@@ -797,32 +843,24 @@ class Enemy extends Ship {
         }
         game.add.existing(this);
         this.active = true;
+        this.moveDir.X = 0;
+        this.moveDir.Y = 1;
     }
     setWeapons(_weapons) {
         this.weapons = _weapons;
     }
     update() {
         if (this.active) {
-            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
-            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
-            this.moveDir.normalize();
-            this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 0.5) {
-                if (this.currentMove == this.movementPattern.length) {
-                    this.die();
-                }
-                else {
-                    this.currentMove++;
-                }
-            }
             if (this.inBounds) {
+                this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
+                this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
                 if (this.weapons != null) {
                     for (let i = 0; i < this.weapons.length; i++) {
                         this.weapons[i].update();
                     }
                 }
                 if (this.checkBounds() == false) {
-                    this.killEnemy(this);
+                    this.killEnemy(this, 0);
                 }
             }
             else if (this.checkBounds()) {
@@ -832,7 +870,15 @@ class Enemy extends Ship {
         }
         else {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
-                this.killEnemy(this);
+                this.killEnemy(this, this.score);
+            }
+        }
+        this.moveDir.normalize();
+        this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+        if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
+            this.currentMove++;
+            if (this.currentMove == this.movementPattern.length) {
+                this.killEnemy(this, 0);
             }
         }
     }

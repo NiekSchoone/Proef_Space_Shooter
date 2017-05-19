@@ -17,6 +17,8 @@ class Enemy extends Ship {
     private indicator: Phaser.Sprite;
     private anim: any;
     private color: number;
+    private score: number;
+    public hasPickup: boolean;
     constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
@@ -37,13 +39,14 @@ class Enemy extends Ship {
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
         this.addChild(this.indicator);
+        this.hasPickup = false;
         if (_movementPattern == null) {
             this.movementPattern = [new Vector2(this.vectorPosition.X, 1000)];
         }
         else {
             this.movementPattern = _movementPattern;
         }
-
+        this.score = 10;
         switch (this.color) {
             case 0:
                 this.loadTexture("ships_enemy_orange", this.enemyType);
@@ -57,6 +60,8 @@ class Enemy extends Ship {
         }
         game.add.existing(this);
         this.active = true;
+        this.moveDir.X = 0;
+        this.moveDir.Y = 1;
     }
     public setWeapons(_weapons: Array<Weapon>) {
         this.weapons = _weapons;
@@ -64,37 +69,36 @@ class Enemy extends Ship {
     public update() {
         if (this.active) {
 
-            this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
-            this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
-            this.moveDir.normalize();
-            this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 0.5) {
-                if (this.currentMove == this.movementPattern.length) {
-                    this.die();
-                }
-                else {
-                    this.currentMove++;
-                }
-            }
-
             if (this.inBounds) {
+                this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
+                this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
                 if (this.weapons != null) {
                     for (let i = 0; i < this.weapons.length; i++) {
                         this.weapons[i].update();
                     }
                 }
                 if (this.checkBounds() == false) {
-                    this.killEnemy(this);
+                    this.killEnemy(this,0);
                 }
             }
-            else if ( this.checkBounds()) {
+            else if (this.checkBounds()) {
+                
                 this.inBounds = true;
             }
 
             super.update();
         } else {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
-                this.killEnemy(this);
+                this.killEnemy(this, this.score);
+            }
+        }
+        
+        this.moveDir.normalize();
+        this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+        if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
+            this.currentMove++;
+            if (this.currentMove == this.movementPattern.length) {
+                this.killEnemy(this, 0);
             }
         }
     }
