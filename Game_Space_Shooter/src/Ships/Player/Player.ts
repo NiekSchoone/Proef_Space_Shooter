@@ -186,6 +186,11 @@ class Player extends Ship {
                 this.targetEnemies.splice(i);
             }
         }
+        // Indicate enemies for combo mode.
+        if (game.input.mousePointer.isDown == true && this.comboMode == false)
+        {
+            this.indicateEnemies();
+        }
 
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
         if ((game.input.pointer1.isDown || game.input.mousePointer.isDown) && this.comboMode == false)

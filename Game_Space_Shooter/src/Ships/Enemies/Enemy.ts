@@ -119,6 +119,6 @@ class Enemy extends Ship {
     public indicateTarget()
     {
         this.indicator.alpha = 0;
-        game.add.tween(this.indicator).to({ alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
+        game.add.tween(this.indicator).to({ alpha: 1 }, 350, Phaser.Easing.Linear.None, true);
     }
 }
