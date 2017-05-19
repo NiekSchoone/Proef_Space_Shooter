@@ -10,6 +10,18 @@
                  "height":128,
                  "id":1,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -22,6 +34,18 @@
                  "height":128,
                  "id":2,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -34,6 +58,18 @@
                  "height":128,
                  "id":3,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":1,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"bomber",
                  "visible":true,
@@ -46,6 +82,18 @@
                  "height":128,
                  "id":4,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"bomber",
                  "visible":true,
@@ -58,6 +106,18 @@
                  "height":128,
                  "id":5,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -70,6 +130,18 @@
                  "height":128,
                  "id":6,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":2,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -82,8 +154,20 @@
                  "height":128,
                  "id":7,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":2,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
-                 "type":"fighter",
+                 "type":"scout",
                  "visible":true,
                  "width":128,
                  "x":256,
@@ -94,6 +178,18 @@
                  "height":128,
                  "id":8,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -106,6 +202,18 @@
                  "height":128,
                  "id":9,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -118,6 +226,18 @@
                  "height":128,
                  "id":10,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -130,6 +250,18 @@
                  "height":128,
                  "id":11,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
@@ -142,6 +274,18 @@
                  "height":128,
                  "id":12,
                  "name":"Ships",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":0,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
                  "rotation":0,
                  "type":"fighter",
                  "visible":true,
