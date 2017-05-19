@@ -1,4 +1,4 @@
-﻿class Player extends Ship {
+class Player extends Ship {
     private mouseDown: boolean;
     private moveDir: Vector2;
     private comboMode: boolean = false;

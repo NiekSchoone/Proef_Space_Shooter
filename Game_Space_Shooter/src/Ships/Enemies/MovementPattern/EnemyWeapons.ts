@@ -9,7 +9,6 @@
     }
 
     returnWeapons(_index: number, _shipPos: Vector2): Array<Weapon> {
-        console.log(_index);
         switch (_index) {
             case 0:
                 
