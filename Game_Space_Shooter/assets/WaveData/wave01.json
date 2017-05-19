@@ -60,7 +60,7 @@
                  "name":"Ships",
                  "properties":
                     {
-                     "color":0,
+                     "color":1,
                      "movement":0,
                      "weapons":0
                     },
@@ -132,7 +132,7 @@
                  "name":"Ships",
                  "properties":
                     {
-                     "color":0,
+                     "color":2,
                      "movement":0,
                      "weapons":0
                     },
@@ -156,7 +156,7 @@
                  "name":"Ships",
                  "properties":
                     {
-                     "color":0,
+                     "color":2,
                      "movement":0,
                      "weapons":0
                     },
@@ -167,7 +167,7 @@
                      "weapons":"int"
                     },
                  "rotation":0,
-                 "type":"fighter",
+                 "type":"scout",
                  "visible":true,
                  "width":128,
                  "x":256,

@@ -2,7 +2,7 @@
 {
     FIGHTER,
     BOMBER,
-    BOSS
+    SCOUT
 }
 class Enemy extends Ship {
     private enemyType: EnemyType;
@@ -44,15 +44,15 @@ class Enemy extends Ship {
             this.movementPattern = _movementPattern;
         }
 
-        switch (this.enemyType) {
-            case EnemyType.FIGHTER:
-                this.loadTexture("ships_enemy_orange", 2);
+        switch (this.color) {
+            case 0:
+                this.loadTexture("ships_enemy_orange", this.enemyType);
                 break;
-            case EnemyType.BOMBER:
-                this.loadTexture("ships_enemy_orange", 2);
+            case 1:
+                this.loadTexture("ships_enemy_blue", this.enemyType);
                 break;
-            case EnemyType.BOSS:
-                this.loadTexture("ships_enemy_orange", 2);
+            case 2:
+                this.loadTexture("ships_enemy_pink", this.enemyType);
                 break;
         }
         game.add.existing(this);
