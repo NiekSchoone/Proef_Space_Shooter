@@ -1,3 +1,51 @@
+class ComboMeter extends Phaser.Sprite {
+    constructor() {
+        super(game, 0, 0);
+        this.maxComboFuel = 100;
+        this.currentComboFuel = 100;
+        this.bars = 8;
+        this.barSections = new Array();
+        this.comboReady = false;
+        this.setBarSprites();
+        game.add.existing(this);
+        this.onMeterChange(this.currentComboFuel);
+    }
+    setBarSprites() {
+        var step = 10;
+        for (var i = 0; i < this.bars; i++) {
+            var x = 20;
+            var y = 600 + step * i;
+            var bar = new Phaser.Sprite(game, x, y, "health_bar");
+            bar.anchor.set(0.5);
+            game.add.existing(bar);
+            this.barSections.push(bar);
+        }
+    }
+    // Executed on a change in the players HP
+    onMeterChange(_amount) {
+        // Calculate the number of health blocks that will be set invisible;
+        if (this.currentComboFuel < this.maxComboFuel) {
+            this.currentComboFuel += _amount;
+        }
+        if (this.currentComboFuel >= this.maxComboFuel) {
+            this.currentComboFuel = this.maxComboFuel;
+            this.comboReady = true;
+        }
+        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 10);
+        let arrayBars = this.bars - 1;
+        for (var i = 0; i < this.bars; i++) {
+            if (i < sum) {
+                this.barSections[arrayBars - i].visible = true;
+            }
+            else {
+                this.barSections[arrayBars - i].visible = false;
+            }
+        }
+    }
+    get ComboReady() {
+        return this.comboReady;
+    }
+}
 class ScoreIndicator extends Phaser.Text {
     constructor() {
         super(game, 20, 20, "0");
@@ -17,11 +65,11 @@ class HealthIndicator extends Phaser.Sprite {
         this.player = _player;
         this.bars = 8;
         this.barSections = new Array();
-        this.setSprites();
+        this.setBarSprites();
         game.add.existing(this);
         this.onHealthChange();
     }
-    setSprites() {
+    setBarSprites() {
         var angle = -0.95;
         var step = (Math.PI) / 7.15;
         for (var i = 0; i < this.bars; i++) {
@@ -263,7 +311,6 @@ class StartState extends Phaser.State {
         game.add.existing(this.title);
         game.add.existing(this.insertCoin);
         menuMusic.play();
-        menuMusic.currentTime = 20000;
     }
     update() {
         if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
@@ -278,26 +325,47 @@ class MenuState extends Phaser.State {
     create() {
         //gameMusic.stop();
         this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
-        this.startButton = new Phaser.Button(game, 0, 532, 'menu_button_start', function () { this.startGame(); }, this);
-        this.previousButton = new Phaser.Button(game, 18, 542, 'menu_button_arrow', function () { this.changeCharacter(-1); }, this);
-        this.nextButton = new Phaser.Button(game, 494, 542, 'menu_button_arrow', function () { this.changeCharacter(1); }, this);
+        this.welcomeSprite = new Phaser.Sprite(game, 0, 0, 'menu_welcome_bar');
+        this.overlay = new Phaser.Sprite(game, -20, 170, "menu_selection_overlay");
+        this.animationSprite = new Phaser.Sprite(game, 0, 600, "character_select_animation");
+        this.startButton = new Phaser.Button(game, 262, 665, 'menu_button_start', function () { this.startGame(); }, this);
+        this.previousButton = new Phaser.Button(game, 5, 640, 'menu_button_arrow', function () { this.changeCharacter(-1); }, this);
+        this.nextButton = new Phaser.Button(game, 507, 640, 'menu_button_arrow', function () { this.changeCharacter(1); }, this);
         this.nextButton.scale.set(-1, 1);
+        this.startButton.anchor.set(0.5);
+        this.animationSprite.animations.add("anim");
+        this.animationSprite.play("anim", 24, true);
         this.portraits = new Array();
+        this.ships = new Array();
         let playerPortrait1 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_1');
         let playerPortrait2 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_2');
         let playerPortrait3 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_3');
         let playerPortrait4 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_4');
+        let ship1 = new Phaser.Sprite(game, 0, 0, 'ships_player', 0);
+        let ship2 = new Phaser.Sprite(game, 0, 0, 'ships_player', 1);
+        let ship3 = new Phaser.Sprite(game, 0, 0, 'ships_player', 2);
+        let ship4 = new Phaser.Sprite(game, 0, 0, 'ships_player', 3);
         this.portraits.push(playerPortrait1);
         this.portraits.push(playerPortrait2);
         this.portraits.push(playerPortrait3);
         this.portraits.push(playerPortrait4);
+        this.ships.push(ship1);
+        this.ships.push(ship2);
+        this.ships.push(ship3);
+        this.ships.push(ship4);
         this.currentCharacterNumber = 0;
-        this.currentPortrait = new Phaser.Sprite(game, 0, 0, this.portraits[this.currentCharacterNumber].texture);
+        this.currentPortrait = new Phaser.Sprite(game, 135, 165, this.portraits[this.currentCharacterNumber].texture);
+        this.currentPortrait.scale.set(0.7);
+        this.currentShip = new Phaser.Sprite(game, 27, 410, this.ships[this.currentCharacterNumber].texture);
         game.add.existing(this.background);
+        game.add.existing(this.welcomeSprite);
+        game.add.existing(this.overlay);
+        game.add.existing(this.animationSprite);
         game.add.existing(this.startButton);
         game.add.existing(this.previousButton);
         game.add.existing(this.nextButton);
         game.add.existing(this.currentPortrait);
+        game.add.existing(this.currentShip);
     }
     changeCharacter(_changeFactor) {
         this.currentCharacterNumber += _changeFactor;
@@ -308,6 +376,7 @@ class MenuState extends Phaser.State {
             this.currentCharacterNumber = 0;
         }
         this.currentPortrait.loadTexture(this.portraits[this.currentCharacterNumber].texture);
+        this.currentShip.loadTexture(this.ships[this.currentCharacterNumber].texture);
     }
     startGame() {
         game.state.start("Game", true, false, this.currentCharacterNumber);
@@ -712,19 +781,17 @@ class Player extends Ship {
             this.missileWeapons[i].update();
         }
         // If mouse goes down on top of an enemy
-        if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false) {
+        if (this.checkCollision() != null && (game.input.mousePointer.isDown || game.input.pointer1.isDown) && this.moving == false) {
             // Check if there's already targets
             if (this.targetEnemies.length != 0) {
                 let noDuplicate = true;
                 // Loop through all target enemies and check if duplicate.
-                for (var i = 0; i < this.targetEnemies.length; i++) {
-                    if (ArrayMethods.containsObject(this.targetEnemies, this.checkCollision)) {
-                        noDuplicate = false;
-                    }
+                if (ArrayMethods.containsObject(this.targetEnemies, this.checkCollision())) {
+                    noDuplicate = false;
                 }
                 // If there's no duplicate add it to the target array. 
                 if (noDuplicate == true) {
-                    if (this.checkCollision != null) {
+                    if (this.checkCollision().color == this.targetColor) {
                         this.targetEnemies.push(this.checkCollision());
                         this.checkCollision().toggleComboTarget(true);
                     }
@@ -732,13 +799,14 @@ class Player extends Ship {
             }
             else {
                 // If it's the first target, skip checking duplicates. 
+                this.targetColor = this.checkCollision().color;
                 this.targetEnemies.push(this.checkCollision());
                 this.checkCollision().toggleComboTarget(true);
                 this.comboMode = true;
             }
         }
         // When button is released.
-        if (this.comboMode == true && game.input.mousePointer.isDown == false) {
+        if (this.comboMode == true && (game.input.mousePointer.isDown == false || game.input.pointer1.isDown)) {
             this.comboMode = false;
             // Check if more than one enemy is selected. 
             if (this.targetEnemies.length > 1) {
@@ -764,6 +832,10 @@ class Player extends Ship {
             for (var i = 0; i <= this.targetEnemies.length; i++) {
                 this.targetEnemies.splice(i);
             }
+        }
+        // Indicate enemies for combo mode.
+        if (game.input.mousePointer.isDown == true && this.comboMode == false) {
+            this.indicateEnemies();
         }
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
         if ((game.input.pointer1.isDown || game.input.mousePointer.isDown) && this.comboMode == false) {
@@ -816,6 +888,7 @@ class Enemy extends Ship {
         this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
+        this.anim.setFrame(19);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
         this.indicator.anchor.setTo(0.5);
@@ -886,7 +959,7 @@ class Enemy extends Ship {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576);
     }
     toggleComboTarget(activate) {
-        if (activate == true) {
+        if (activate == true && this.anim.isFinished == false) {
             this.anim.play();
             this.addChild(this.comboSprite);
         }
@@ -896,7 +969,7 @@ class Enemy extends Ship {
     }
     indicateTarget() {
         this.indicator.alpha = 0;
-        game.add.tween(this.indicator).to({ alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
+        game.add.tween(this.indicator).to({ alpha: 1 }, 350, Phaser.Easing.Linear.None, true);
     }
 }
 class Level {
@@ -1098,9 +1171,9 @@ class GameState extends Phaser.State {
         menuMusic.stop();
         //gameMusic.play();
         this.level = new Level();
-        this.shipGroup = new Phaser.Group(game);
         this.plasmaBulletGroup = new Phaser.Group(game);
         this.missileGroup = new Phaser.Group(game);
+        this.shipGroup = new Phaser.Group(game);
         this.uiGroup = new Phaser.Group(game);
         // Create the various pools for different projectiles
         this.playerPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_player", "bullet_hit_blue");
@@ -1131,13 +1204,15 @@ class Preloader extends Phaser.State {
         game.load.image("startscreen_background", "assets/Images/Backgrounds/StartScreen/startscreen_background.jpg");
         game.load.image("startscreen_title", "assets/Images/Backgrounds/StartScreen/startscreen_title.png");
         game.load.image("insert_coin_text", "assets/Images/Backgrounds/StartScreen/startscreen_coin_text.png");
-        game.load.image("menu_background", "assets/Images/Backgrounds/menu_background.jpg");
+        game.load.image("menu_background", "assets/Images/Backgrounds/background_characterselect.png");
         game.load.image("menu_portrait_1", "assets/Images/UI/Portraits/portrait_1.png");
         game.load.image("menu_portrait_2", "assets/Images/UI/Portraits/portrait_2.png");
         game.load.image("menu_portrait_3", "assets/Images/UI/Portraits/portrait_3.png");
         game.load.image("menu_portrait_4", "assets/Images/UI/Portraits/portrait_4.png");
-        game.load.image("menu_button_start", "assets/Images/UI/Buttons/button_start.png");
-        game.load.image("menu_button_arrow", "assets/Images/UI/Buttons/button_arrow.png");
+        game.load.image("menu_button_start", "assets/Images/UI/CharacterSelect/button_select.png");
+        game.load.image("menu_button_arrow", "assets/Images/UI/CharacterSelect/button_arrow.png");
+        game.load.image("menu_selection_overlay", "assets/Images/UI/CharacterSelect/selection_overlay.png");
+        game.load.image("menu_welcome_bar", "assets/Images/UI/CharacterSelect/welcome_bar.png");
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
@@ -1157,6 +1232,7 @@ class Preloader extends Phaser.State {
         game.load.spritesheet("player_exhaust", "assets/SpriteSheets/Animations/player_exhaust.png", 32, 64, 5);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
         game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 13);
+        game.load.spritesheet("character_select_animation", "assets/SpriteSheets/Animations/character_select_animation.png", 512, 256, 30);
         game.load.spritesheet("bullet_hit_blue", "assets/SpriteSheets/Animations/hit_bullet_blue.png", 64, 64, 5);
         game.load.spritesheet("bullet_hit_red", "assets/SpriteSheets/Animations/hit_bullet_red.png", 64, 64, 5);
         game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);

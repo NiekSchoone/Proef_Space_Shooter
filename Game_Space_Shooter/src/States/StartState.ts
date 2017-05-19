@@ -19,7 +19,6 @@
         game.add.existing(this.insertCoin);
 
         menuMusic.play();
-        menuMusic.currentTime = 20000;
     }
 
     update() {

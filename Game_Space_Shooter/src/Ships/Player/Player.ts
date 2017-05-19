@@ -18,7 +18,10 @@ class Player extends Ship {
     public enemies: Array<Enemy>;
     public healthIndicator: HealthIndicator;
 
-    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number, _targets: Array<Enemy>) {
+    private targetColor: number;
+	
+    constructor(_charNumber: number, _projectilePools: ProjectilePool[], _maxHP: number, _collisionRadius: number, _targets: Array<Enemy>)
+    {
         super(_collisionRadius, _maxHP);
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
@@ -69,14 +72,18 @@ class Player extends Ship {
             {
                 this.currentHP = this.maxHP;
             }
-        } else if (_pickupType == PickupType.UPGRADEPLASMA) {
+        } else if (_pickupType == PickupType.UPGRADEPLASMA)
+        {
             this.plasmaUpgradeCount++;
-            if (this.plasmaUpgradeCount <= 3) {
+            if (this.plasmaUpgradeCount <= 3)
+            {
                 this.plasmaWeapons = this.playerUpgrades.nextPlasmaUpgrade(this.plasmaUpgradeCount);
             }
-        } else if (_pickupType == PickupType.UPGRADEMISSILE) {
+        } else if (_pickupType == PickupType.UPGRADEMISSILE)
+        {
             this.missileUpgradeCount++;
-            if (this.missileUpgradeCount <= 3) {
+            if (this.missileUpgradeCount <= 3)
+            {
                 this.missileWeapons = this.playerUpgrades.nextMissileUpgrade(this.missileUpgradeCount);
             }
         }
@@ -99,15 +106,18 @@ class Player extends Ship {
         }
     }
 
-    public update() {
-        for (let i = 0; i < this.plasmaWeapons.length; i++) {
+    public update()
+    {
+        for (let i = 0; i < this.plasmaWeapons.length; i++)
+        {
             this.plasmaWeapons[i].update();
         }
-        for (let i = 0; i < this.missileWeapons.length; i++) {
+        for (let i = 0; i < this.missileWeapons.length; i++)
+        {
             this.missileWeapons[i].update();
         }
         // If mouse goes down on top of an enemy
-        if (this.checkCollision() != null && game.input.mousePointer.isDown && this.moving == false)
+        if (this.checkCollision() != null && (game.input.mousePointer.isDown || game.input.pointer1.isDown) && this.moving == false)
         {
             // Check if there's already targets
             if (this.targetEnemies.length != 0)
@@ -115,15 +125,14 @@ class Player extends Ship {
                 let noDuplicate: boolean = true;
 
                 // Loop through all target enemies and check if duplicate.
-                for (var i = 0; i < this.targetEnemies.length; i++) {
-                    if (ArrayMethods.containsObject(this.targetEnemies, this.checkCollision)) {
-                        noDuplicate = false;
-                    }
+                if (ArrayMethods.containsObject(this.targetEnemies, this.checkCollision()))
+                {
+                    noDuplicate = false;
                 }
                 // If there's no duplicate add it to the target array. 
                 if (noDuplicate == true)
                 {
-                    if (this.checkCollision != null)
+                    if (this.checkCollision().color == this.targetColor)
                     {
                         this.targetEnemies.push(this.checkCollision());
                         this.checkCollision().toggleComboTarget(true);
@@ -133,6 +142,7 @@ class Player extends Ship {
             else
             {
                 // If it's the first target, skip checking duplicates. 
+                this.targetColor = this.checkCollision().color;
                 this.targetEnemies.push(this.checkCollision());
                 this.checkCollision().toggleComboTarget(true);
                 this.comboMode = true;
@@ -140,7 +150,7 @@ class Player extends Ship {
         }
 
         // When button is released.
-        if (this.comboMode == true && game.input.mousePointer.isDown == false)
+        if (this.comboMode == true && (game.input.mousePointer.isDown == false || game.input.pointer1.isDown))
         {
             this.comboMode = false;
             // Check if more than one enemy is selected. 
@@ -175,6 +185,11 @@ class Player extends Ship {
             {
                 this.targetEnemies.splice(i);
             }
+        }
+        // Indicate enemies for combo mode.
+        if (game.input.mousePointer.isDown == true && this.comboMode == false)
+        {
+            this.indicateEnemies();
         }
 
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction

@@ -10,13 +10,13 @@
         this.player = _player;
         this.bars = 8;
         this.barSections = new Array<Phaser.Sprite>();
-        this.setSprites();
+        this.setBarSprites();
         game.add.existing(this);
 
         this.onHealthChange();
     }
 
-    private setSprites() {
+    private setBarSprites() {
         var angle = -0.95;
         var step = (Math.PI) / 7.15;
         for (var i = 0; i < this.bars; i++) {

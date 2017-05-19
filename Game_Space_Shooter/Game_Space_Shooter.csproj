@@ -25,9 +25,9 @@
     <Content Include="app.css" />
     <Content Include="assets\Audio\music_menu.mp3" />
     <Content Include="assets\Font\font.css" />
-    <Content Include="assets\Images\Backgrounds\canvas_border.jpg" />
+    <Content Include="assets\Images\Backgrounds\background_characterselect.png" />
+    <Content Include="assets\Images\Backgrounds\canvas_border.png" />
     <Content Include="assets\Images\Backgrounds\game_background.jpg" />
-    <Content Include="assets\Images\Backgrounds\menu_background.jpg" />
     <Content Include="assets\Images\Backgrounds\browser_background.jpg" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_coin_text.png" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_background.jpg" />
@@ -39,6 +39,10 @@
     <Content Include="assets\Images\Projectiles\bullet_player.png" />
     <Content Include="assets\Images\UI\Buttons\button_arrow.png" />
     <Content Include="assets\Images\UI\Buttons\button_back.png" />
+    <Content Include="assets\Images\UI\CharacterSelect\button_arrow.png" />
+    <Content Include="assets\Images\UI\CharacterSelect\selection_overlay.png" />
+    <Content Include="assets\Images\UI\CharacterSelect\button_select.png" />
+    <Content Include="assets\Images\UI\CharacterSelect\welcome_bar.png" />
     <Content Include="assets\Images\UI\Indicators\health_bar.png" />
     <Content Include="assets\Images\UI\Indicators\health_circle.png" />
     <Content Include="assets\Images\UI\Portraits\portrait_4.png" />
@@ -48,10 +52,12 @@
     <Content Include="assets\Images\UI\Buttons\button_start.png" />
     <Content Include="assets\Images\UI\ui_overlay.png" />
     <Content Include="assets\Images\Pickups\pickup_health.png" />
+    <Content Include="assets\SpriteSheets\Animations\character_select_animation.png" />
     <Content Include="assets\SpriteSheets\Animations\hit_bullet_blue.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\hit_missile_explosion.png" />
     <Content Include="assets\SpriteSheets\Animations\Explosions\death_explosion.png" />
     <Content Include="assets\SpriteSheets\Animations\hit_bullet_red.png" />
+    <Content Include="assets\SpriteSheets\Animations\indicator.png" />
     <Content Include="assets\SpriteSheets\Animations\player_exhaust.png" />
     <Content Include="assets\SpriteSheets\Animations\projectile_missile.png" />
     <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_pink.png" />
@@ -67,8 +73,9 @@
     <TypeScriptCompile Include="Phaser\p2.d.ts" />
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
-    <TypeScriptCompile Include="src\Level\ScoreIndicator.ts" />
-    <TypeScriptCompile Include="src\Level\HealthIndicator.ts" />
+    <TypeScriptCompile Include="src\UI\ComboMeter.ts" />
+    <TypeScriptCompile Include="src\UI\ScoreIndicator.ts" />
+    <TypeScriptCompile Include="src\UI\HealthIndicator.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\EnemyMovements.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\MovementPattern\EnemyWeapons.ts" />
     <TypeScriptCompile Include="src\Ships\Player\PlayerUpgrades.ts" />
@@ -97,6 +104,11 @@
     <Content Include="assets\Font\OCRAExtended.eot" />
     <Content Include="assets\Font\OCRAExtended.ttf" />
     <Content Include="assets\Font\OCRAExtended.woff" />
+    <Content Include="assets\WaveData\wave01.json" />
+    <Content Include="assets\WaveData\wave02.json" />
+    <Content Include="assets\WaveData\wave03.json" />
+    <Content Include="assets\WaveData\wave04.json" />
+    <Content Include="assets\WaveData\wave05.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
