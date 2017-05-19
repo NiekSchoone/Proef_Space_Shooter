@@ -15,8 +15,8 @@ class Enemy extends Ship {
     private weapons: Array<Weapon>;
     public inBounds: boolean;
     private indicator: Phaser.Sprite;
-    private anim: any;
-    private color: number;
+    private anim: Phaser.Animation;
+    public color: number;
 
     constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
         super(_collisionRadius, _maxHP);
@@ -33,6 +33,7 @@ class Enemy extends Ship {
         this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
+        this.anim.setFrame(19);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
         this.indicator.anchor.setTo(0.5);
@@ -85,8 +86,10 @@ class Enemy extends Ship {
     private checkBounds(): boolean {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
-    public toggleComboTarget(activate: boolean) {
-        if (activate == true) {
+    public toggleComboTarget(activate: boolean)
+    {
+        if (activate == true && this.anim.isFinished == false)
+        {
             this.anim.play();
             this.addChild(this.comboSprite);
         }
