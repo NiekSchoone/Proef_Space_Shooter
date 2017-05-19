@@ -3,6 +3,7 @@
     private level: Level;
     private healthIndicator: HealthIndicator;
     private scoreIndicator: ScoreIndicator;
+    private comboMeter: ComboMeter;
     private enemyManager: EnemyManager;
     private characterNumber: number = 0;
 
@@ -25,9 +26,9 @@
 
         this.level = new Level();
 
-        this.shipGroup = new Phaser.Group(game);
         this.plasmaBulletGroup = new Phaser.Group(game);
         this.missileGroup = new Phaser.Group(game);
+        this.shipGroup = new Phaser.Group(game);
         this.uiGroup = new Phaser.Group(game);
 
         // Create the various pools for different projectiles

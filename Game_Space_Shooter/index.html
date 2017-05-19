@@ -12,7 +12,7 @@
 <body>
     <div class="fontLoader" style="font-family: 'ocra';">-</div>
 
-    <img id="border" src="assets/Images/Backgrounds/canvas_border.jpg" style="position:absolute; left:50%; top:50%;"/>
+    <img id="border" src="assets/Images/Backgrounds/canvas_border.png" style="position:absolute; left:50%; top:50%;"/>
 
     <div id="content" style="position:absolute;"></div>
     <script>
@@ -24,7 +24,7 @@
 
         function setSize() {
             var scaleRatio = 1080 / 512;
-            var borderScaleRatio = 1080 / 574;
+            var borderScaleRatio = 1080 / 1024;
             var desiredWidth = document.body.clientHeight / scaleRatio;
             var desiredHeight = (desiredWidth / 9) * 16;
 
@@ -43,7 +43,7 @@
             setSize();
         });
 
-        setSize();
+        $(window).resize();
     </script>
     <script src="app.js"></script>
 </body>

@@ -8,15 +8,17 @@
         game.load.image("startscreen_title", "assets/Images/Backgrounds/StartScreen/startscreen_title.png");
         game.load.image("insert_coin_text", "assets/Images/Backgrounds/StartScreen/startscreen_coin_text.png");
 
-        game.load.image("menu_background", "assets/Images/Backgrounds/menu_background.jpg");
+        game.load.image("menu_background", "assets/Images/Backgrounds/background_characterselect.png");
 
         game.load.image("menu_portrait_1", "assets/Images/UI/Portraits/portrait_1.png");
         game.load.image("menu_portrait_2", "assets/Images/UI/Portraits/portrait_2.png");
         game.load.image("menu_portrait_3", "assets/Images/UI/Portraits/portrait_3.png");
         game.load.image("menu_portrait_4", "assets/Images/UI/Portraits/portrait_4.png");
 
-        game.load.image("menu_button_start", "assets/Images/UI/Buttons/button_start.png");
-        game.load.image("menu_button_arrow", "assets/Images/UI/Buttons/button_arrow.png");
+        game.load.image("menu_button_start", "assets/Images/UI/CharacterSelect/button_select.png");
+        game.load.image("menu_button_arrow", "assets/Images/UI/CharacterSelect/button_arrow.png");
+        game.load.image("menu_selection_overlay", "assets/Images/UI/CharacterSelect/selection_overlay.png");
+        game.load.image("menu_welcome_bar", "assets/Images/UI/CharacterSelect/welcome_bar.png");
 
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
@@ -41,6 +43,8 @@
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
         game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 13);
 
+        game.load.spritesheet("character_select_animation", "assets/SpriteSheets/Animations/character_select_animation.png", 512, 256, 30);
+
         game.load.spritesheet("bullet_hit_blue", "assets/SpriteSheets/Animations/hit_bullet_blue.png", 64, 64, 5);
         game.load.spritesheet("bullet_hit_red", "assets/SpriteSheets/Animations/hit_bullet_red.png", 64, 64, 5);
 
@@ -51,11 +55,11 @@
         game.load.audio("music_menu", "assets/Audio/music_menu.mp3");
 
         // JSON
-        game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON)
-        game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON)
-        game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON)
-        game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON)
-        game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON)
+        game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON);
     }
 
     // After the preload function is done, the create function is called which starts the GameState
