@@ -13,7 +13,6 @@
     private level: number;
     private activeLevel: boolean;
     private spriteGroup: Phaser.Group;
-
     public scoreCounter: ScoreIndicator;
 
     constructor(_projectilePools: ProjectilePool[], _group: Phaser.Group) {
@@ -35,13 +34,6 @@
         this.waves.push(game.add.tilemap("wave03"));
         this.waves.push(game.add.tilemap("wave04"));
         this.waves.push(game.add.tilemap("wave05"));
-    }
-
-    public createEnemy(_type: EnemyType, _health: number, _speed: number, _start: Vector2): Enemy {
-        let newEnemy = new Enemy(_type, _health, _speed, _start, 50, this.killEnemy.bind(this));
-        this.enemies.push(newEnemy);
-        this.spriteGroup.add(newEnemy);
-        return newEnemy;
     }
 
     public update() {
@@ -78,15 +70,18 @@
         let waveToSpawn: number = Math.floor(Math.random() * 4);
 
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
+            let newEnemy;
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":
-                    let EnemyF = this.createEnemy(EnemyType.FIGHTER, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    newEnemy = new Enemy(EnemyType.FIGHTER,1, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
                     
                     break;
                 case "bomber":
-                    let EnemyB = this.createEnemy(EnemyType.BOMBER, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y));
+                    newEnemy = new Enemy(EnemyType.BOMBER,1, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this));
                     break;
             }
+            this.enemies.push(newEnemy);
+            this.spriteGroup.add(newEnemy);
         }
     }
 
@@ -95,10 +90,7 @@
     }
 
     private killEnemy(_enemy: Enemy) {
-        this.scoreCounter.onScoreChange(10);
-        //test
-        let pickup = new Pickup(this.player, new Vector2(_enemy.vectorPosition.X, _enemy.vectorPosition.Y), Math.floor(Math.random() * 3));
-        game.add.existing(pickup);
+        this.scoreCounter.onScoreChange(10);    
         ArrayMethods.removeObject(this.enemies, _enemy);
         _enemy.destroy();
     }

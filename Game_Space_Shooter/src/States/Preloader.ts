@@ -24,6 +24,7 @@
 
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
+        game.load.image("target_indicator","assets/Images/UI/Indicators/crosshair.png")
 
         game.load.image("pickup_repair", "assets/Images/Pickups/pickup_health.png");
         game.load.image("pickup_plasma", "assets/Images/Pickups/pickup_plasma.png");

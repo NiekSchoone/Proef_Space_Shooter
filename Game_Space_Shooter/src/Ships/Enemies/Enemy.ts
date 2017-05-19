@@ -12,13 +12,13 @@ class Enemy extends Ship {
     private notdead: boolean;
     private killEnemy: Function;
     private comboSprite: Phaser.Sprite;
-    private dead: Boolean;
     private weapons: Array<Weapon>;
     public inBounds: boolean;
-    private indicator: Phaser.Graphics;
+    private indicator: Phaser.Sprite;
     private anim: any;
+    private color: number;
 
-    constructor(_type: EnemyType, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function) {
+    constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
         this.enemyType = _type;
@@ -27,12 +27,19 @@ class Enemy extends Ship {
         this.vectorPosition.Y = _start.Y;
         this.weapons = new Array<Weapon>();
         this.currentMove = 1;
+        this.color = _color;
         this.speed = _speed;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
+        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
+        this.indicator.anchor.setTo(0.5);
+        this.indicator.scale.setTo(1.5);
+        this.indicator.angle = 45;
+        this.addChild(this.indicator);
+
         switch (this.enemyType) {
             case EnemyType.FIGHTER:
                 this.loadTexture("ships_enemy_orange", 2);
@@ -88,15 +95,9 @@ class Enemy extends Ship {
         }
     }
 
-    public indicateTarget() {
-        //this.indicator = game.add.graphics(this.vectorPosition.X - 60, this.vectorPosition.Y - 60);
-        //this.indicator.lineStyle(5, 0xff0000);
-        //this.indicator.lineTo(this.vectorPosition.X - 50, this.vectorPosition.Y - 50);
-        //console.log("HELLCHEA");
-
-        this.comboSprite.anchor.setTo(0.5);
-        let anim = this.comboSprite.animations.add("indicated", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
-        anim.play();
-        this.addChild(this.comboSprite);
+    public indicateTarget()
+    {
+        this.indicator.alpha = 0;
+        game.add.tween(this.indicator).to({ alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
     }
 }

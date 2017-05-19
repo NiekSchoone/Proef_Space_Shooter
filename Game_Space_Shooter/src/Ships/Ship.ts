@@ -5,7 +5,7 @@
     public currentHP: number;
     public speed: number;
     public collisionRadius: number;
-    
+
     protected explosion: Phaser.Sprite;
     protected active: boolean;
     
