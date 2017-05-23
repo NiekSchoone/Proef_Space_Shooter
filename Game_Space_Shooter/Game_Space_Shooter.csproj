@@ -32,6 +32,9 @@
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_coin_text.png" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_background.jpg" />
     <Content Include="assets\Images\Backgrounds\StartScreen\startscreen_title.png" />
+    <Content Include="assets\Images\Enemies\enemy_ships_01_001.png" />
+    <Content Include="assets\Images\Enemies\enemy_ships_02_001.png" />
+    <Content Include="assets\Images\Enemies\enemy_ships_03_001.png" />
     <Content Include="assets\Images\Pickups\pickup_plasma.png" />
     <Content Include="assets\Images\Pickups\pickup_missile.png" />
     <Content Include="assets\Images\player_hit_overlay.png" />

@@ -21,7 +21,7 @@
         this.enemies = new Array<Enemy>();
         this.projectilePools = _projectilePools;
         
-        this.timer = 3000;
+        this.timer = 1000;
         this.activeLevel = false;
         this.spawning = true;
         this.waves = new Array<Phaser.Tilemap>();
@@ -41,7 +41,6 @@
         if (this.activeLevel == false) {
             this.timer -= game.time.physicsElapsedMS;
             if (this.timer <= 0) {
-                this.timer = 1000;
                 this.activeLevel = true;
             }
         }
@@ -54,11 +53,11 @@
                 this.timer -= game.time.physicsElapsedMS;
                 if (this.timer <= 0) {
                     this.wave++;
-                    this.timer = 2000;
+                    this.timer = 1000;
                     this.spawnWave();
                     if (this.wave == 5) {
                         this.wave = 0;
-                        this.timer = 3000;
+                        this.timer = 5000;
                         this.activeLevel = false;
                         this.level++;
                     }
@@ -73,21 +72,21 @@
 
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
             let newEnemy;
-            let movement: Array<Vector2> = null;
+            let movement: Array<EnemyPosition> = null;
             let moveIndex = this.waves[waveToSpawn].objects["Ships"][i].properties.movement;
             if (moveIndex != 0) {
                 movement = this.movenments.returnMovement(moveIndex);
             }
-            switch (this.waves[waveToSpawn].objects["Ships"][i].type){
+            switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
-                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
+                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 30 + (2 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     console.log();
                     break;
                 case "bomber":
-                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
+                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 40 + (2 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
                     break;
                 case "scout":
-                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
+                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 20 + (1.5 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 20, this.killEnemy.bind(this), movement);
                     break;
             }
             if (i == enemytoPickup) {

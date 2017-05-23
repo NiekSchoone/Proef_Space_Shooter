@@ -1,5 +1,13 @@
-﻿class EnemyMovements {
-    returnMovement(_index: number): Array<Vector2> {
+﻿class EnemyPosition {
+    public point: Vector2;
+    public rotation: number;
+    constructor(_point: Vector2, _rotiation: number) {
+        this.point = _point;
+        this.rotation = _rotiation;
+    }
+}
+class EnemyMovements {
+    returnMovement(_index: number): Array<EnemyPosition> {
         switch (_index) {
             case 1:
                 return this.setOne();
@@ -13,30 +21,30 @@
 
     }
 
-    private setOne(): Array<Vector2> {
-        let movement: Array<Vector2> = new Array<Vector2>();
-        movement[0] = new Vector2(64,400);
-        movement[1] = new Vector2(448,1000);
+    private setOne(): Array<EnemyPosition> {
+        let movement: Array<EnemyPosition> = new Array<EnemyPosition>();
+        movement[0] = new EnemyPosition(new Vector2( 64, 400),180);
+        movement[1] = new EnemyPosition(new Vector2(448,1000),180);
         return movement;
     }
-    private setTwo(): Array<Vector2> {
-        let movement: Array<Vector2> = new Array<Vector2>();
-        movement[0] = new Vector2(448, 400);
-        movement[1] = new Vector2(64, 1000);
+    private setTwo(): Array<EnemyPosition> {
+        let movement: Array<EnemyPosition> = new Array<EnemyPosition>();
+        movement[0] = new EnemyPosition(new Vector2(448, 400),180);
+        movement[1] = new EnemyPosition(new Vector2(64, 1000),180);
         return movement;
     }
-    private setThree(): Array<Vector2> {
-        let movement: Array<Vector2> = new Array<Vector2>();
-        movement[0] = new Vector2(256, 400);
-        movement[1] = new Vector2(64, 100);
-        movement[2] = new Vector2(64, 1000);
+    private setThree(): Array<EnemyPosition> {
+        let movement: Array<EnemyPosition> = new Array<EnemyPosition>();
+        movement[0] = new EnemyPosition(new Vector2(256, 400),180);
+        movement[1] = new EnemyPosition(new Vector2(64, 100),180);
+        movement[2] = new EnemyPosition(new Vector2(64, 1000),180);
         return movement;
     }
-    private setFour(): Array<Vector2> {
-        let movement: Array<Vector2> = new Array<Vector2>();
-        movement[0] = new Vector2(256, 400);
-        movement[1] = new Vector2(448, 100);
-        movement[2] = new Vector2(448, 1000);
+    private setFour(): Array<EnemyPosition> {
+        let movement: Array<EnemyPosition> = new Array<EnemyPosition>();
+        movement[0] = new EnemyPosition(new Vector2(256, 400),180);
+        movement[1] = new EnemyPosition(new Vector2(448, 100),180);
+        movement[2] = new EnemyPosition(new Vector2(448, 1000),180);
         return movement;
     }
 }
