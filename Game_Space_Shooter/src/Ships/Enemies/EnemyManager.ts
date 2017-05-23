@@ -81,13 +81,15 @@
             switch (this.waves[waveToSpawn].objects["Ships"][i].type){
                 case "fighter":
                     newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
-                    console.log();
+                    newEnemy.setDeathSound("enemy_death_big");
                     break;
                 case "bomber":
                     newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
+                    newEnemy.setDeathSound("enemy_death_big");
                     break;
                 case "scout":
                     newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 55, 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
+                    newEnemy.setDeathSound("enemy_death_small");
                     break;
             }
             if (i == enemytoPickup) {

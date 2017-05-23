@@ -63,18 +63,18 @@
     }
     public missileUpgradeOne(): Array<Weapon> {
         let weaponSet = new Array<Weapon>(1);
-        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.7, 0, this.player.projectilePools[1], this.player.enemies);
         return weaponSet;
     }
     public missileUpgradeTwo(): Array<Weapon> {
         let weaponSet = new Array<Weapon>(2);
-        weaponSet[0] = new Weapon(new Vector2(-30, 0), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
-        weaponSet[1] = new Weapon(new Vector2(30, 0), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[0] = new Weapon(new Vector2(-30, 0), this.player.vectorPosition, 0.7, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[1] = new Weapon(new Vector2(30, 0), this.player.vectorPosition, 0.7, 0, this.player.projectilePools[1], this.player.enemies);
         return weaponSet;
     }
     public missileUpgradeThree(): Array<Weapon> {
         let weaponSet = new Array<Weapon>(1);
-        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.2, -30, this.player.projectilePools[1], this.player.enemies, function () {
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.3, -30, this.player.projectilePools[1], this.player.enemies, function () {
             this.missileUpgradeThreeBehaviour(weaponSet[0]);
         }.bind(this));
         return weaponSet;

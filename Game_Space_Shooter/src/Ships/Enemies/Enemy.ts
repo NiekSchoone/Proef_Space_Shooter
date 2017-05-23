@@ -19,6 +19,8 @@ class Enemy extends Ship {
     private score: number;
     public hasPickup: boolean;
     private anim: Phaser.Animation;
+
+
     constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
         super(_collisionRadius, _maxHP);
         this.moveDir = new Vector2(0, 0);
@@ -79,11 +81,11 @@ class Enemy extends Ship {
                     }
                 }
                 if (this.checkBounds() == false) {
-                    this.killEnemy(this,0);
+                    this.killEnemy(this, 0);
                 }
             }
             else if (this.checkBounds()) {
-                
+
                 this.inBounds = true;
             }
 
@@ -93,7 +95,7 @@ class Enemy extends Ship {
                 this.killEnemy(this, this.score);
             }
         }
-        
+
         this.moveDir.normalize();
         this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
         if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
@@ -107,10 +109,8 @@ class Enemy extends Ship {
     private checkBounds(): boolean {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
-    public toggleComboTarget(activate: boolean)
-    {
-        if (activate == true && this.anim.isFinished == false)
-        {
+    public toggleComboTarget(activate: boolean) {
+        if (activate == true && this.anim.isFinished == false) {
             this.anim.play();
             this.addChild(this.comboSprite);
         }
@@ -119,9 +119,8 @@ class Enemy extends Ship {
         }
     }
 
-    public indicateTarget()
-    {
-        this.indicator.alpha = 0;
-        game.add.tween(this.indicator).to({ alpha: 1 }, 350, Phaser.Easing.Linear.None, true);
+    public indicateTarget() {
+        this.indicator.alpha = 1;
+        game.add.tween(this.indicator).to({ alpha: 0 }, 350, "Linear", true, 0, 0);
     }
 }

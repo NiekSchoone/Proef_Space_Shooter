@@ -5,7 +5,7 @@
     private scoreIndicator: ScoreIndicator;
     private comboMeter: ComboMeter;
     private enemyManager: EnemyManager;
-    private characterNumber: number = 0;
+    private characterNumber: number;
 
     private playerPlasmaBulletPool: ProjectilePool;
     private enemyPlasmaBulletPool: ProjectilePool;
@@ -22,7 +22,9 @@
 
     create() {
         menuMusic.stop();
-        //gameMusic.play();
+        gameMusic.play();
+
+        game.camera.flash(0x000000, 1000);
 
         this.level = new Level();
 
@@ -40,14 +42,15 @@
         this.enemyManager = new EnemyManager([this.enemyPlasmaBulletPool, this.missilePool], this.shipGroup);
 
         // Create a player
-        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40, this.enemyManager.getEnemies());
-        this.shipGroup.add(this.player);
+        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40, this.enemyManager.getEnemies(), this.shipGroup);
 
         this.enemyManager.setPlayer(this.player);
 
         this.healthIndicator = new HealthIndicator(this.player);
         this.player.healthIndicator = this.healthIndicator;
         this.uiGroup.add(this.healthIndicator);
+
+        this.comboMeter = new ComboMeter(this.uiGroup);
 
         this.scoreIndicator = new ScoreIndicator();
         this.enemyManager.scoreCounter = this.scoreIndicator;
