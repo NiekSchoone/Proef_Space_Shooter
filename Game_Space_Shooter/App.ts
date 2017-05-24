@@ -18,6 +18,7 @@ class App {
         game.state.add("Start", StartState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
+        game.state.add("GameOver", GameOver);
         // Start the preload state
         game.state.start("Preload");
     }

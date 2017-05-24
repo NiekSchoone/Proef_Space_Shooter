@@ -44,7 +44,9 @@
     public setAngle(_angle: number) {
         this.fireAngle = _angle;
     }
-
+    public getAngle(): number {
+        return this.fireAngle;
+    }
     public setPosition(_relativePosition: Vector2) {
         this.relativePosition = _relativePosition;
     }

@@ -1,20 +1,20 @@
-{ "height":10,
+{ "height":16,
  "layers":[
         {
          "draworder":"topdown",
-         "height":0,
+         "height":16,
          "name":"Ships",
          "objects":[
                 {
                  "gid":1,
                  "height":128,
-                 "id":11,
-                 "name":"Ships",
+                 "id":1,
+                 "name":"",
                  "properties":
                     {
                      "color":0,
-                     "movement":2,
-                     "weapons":0
+                     "movement":0,
+                     "weapons":2
                     },
                  "propertytypes":
                     {
@@ -23,17 +23,17 @@
                      "weapons":"int"
                     },
                  "rotation":0,
-                 "type":"scout",
+                 "type":"fighter",
                  "visible":true,
                  "width":128,
-                 "x":384,
-                 "y":128
+                 "x":448,
+                 "y":1408
                 }, 
                 {
                  "gid":1,
                  "height":128,
-                 "id":12,
-                 "name":"scout",
+                 "id":2,
+                 "name":"",
                  "properties":
                     {
                      "color":0,
@@ -50,19 +50,137 @@
                  "type":"scout",
                  "visible":true,
                  "width":128,
-                 "x":512,
-                 "y":128
+                 "x":576,
+                 "y":1536
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":3,
+                 "name":"",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":2,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
+                 "rotation":0,
+                 "type":"scout",
+                 "visible":true,
+                 "width":128,
+                 "x":320,
+                 "y":1536
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":4,
+                 "name":"",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":2,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
+                 "rotation":0,
+                 "type":"scout",
+                 "visible":true,
+                 "width":128,
+                 "x":320,
+                 "y":1024
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":5,
+                 "name":"",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":1,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
+                 "rotation":0,
+                 "type":"scout",
+                 "visible":true,
+                 "width":128,
+                 "x":576,
+                 "y":1024
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":6,
+                 "name":"",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":1,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
+                 "rotation":0,
+                 "type":"scout",
+                 "visible":true,
+                 "width":128,
+                 "x":576,
+                 "y":1280
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":7,
+                 "name":"",
+                 "properties":
+                    {
+                     "color":0,
+                     "movement":2,
+                     "weapons":0
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
+                 "rotation":0,
+                 "type":"scout",
+                 "visible":true,
+                 "width":128,
+                 "x":320,
+                 "y":1280
                 }],
-         "offsetx":0,
-         "offsety":-3.0303,
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":0,
+         "width":8,
          "x":0,
          "y":0
         }],
- "nextobjectid":25,
+ "nextobjectid":8,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tileheight":128,

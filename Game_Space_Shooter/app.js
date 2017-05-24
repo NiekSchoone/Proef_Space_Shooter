@@ -11,6 +11,7 @@ class App {
         game.state.add("Start", StartState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
+        game.state.add("GameOver", GameOver);
         // Start the preload state
         game.state.start("Preload");
     }
@@ -274,13 +275,15 @@ class Enemy extends Ship {
         this.vectorPosition.Y = _start.Y;
         this.currentMove = 0;
         if (_movementPattern == null) {
-            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000), 180)];
+            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000), 0)];
         }
         else {
             this.movementPattern = _movementPattern;
         }
+        this.angle = this.movementPattern[this.currentMove].rotation;
         this.inBounds = false;
         this.hasPickup = false;
+        this.score = 10;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.comboSprite.anchor.setTo(0.5);
@@ -315,10 +318,13 @@ class Enemy extends Ship {
             this.moveDir.Y = (this.movementPattern[this.currentMove].point.Y - this.vectorPosition.Y) / 100;
             this.moveDir.normalize();
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove].point) < 1) {
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove].point) < 1.5) {
                 this.currentMove++;
-                if (this.currentMove == this.movementPattern.length) {
+                if (this.currentMove >= this.movementPattern.length) {
                     this.killEnemy(this, 0);
+                }
+                else {
+                    this.angle = this.movementPattern[this.currentMove].rotation;
                 }
             }
             if (this.inBounds) {
@@ -352,8 +358,8 @@ class Enemy extends Ship {
         }
     }
     indicateTarget() {
-        this.indicator.alpha = 0;
-        game.add.tween(this.indicator).to({ alpha: 1 }, 350, Phaser.Easing.Linear.None, true);
+        this.indicator.alpha = 1;
+        game.add.tween(this.indicator).to({ alpha: 0 }, 350, "Linear", true, 0, 0);
     }
 }
 class EnemyManager {
@@ -373,6 +379,8 @@ class EnemyManager {
         this.waves.push(game.add.tilemap("wave03"));
         this.waves.push(game.add.tilemap("wave04"));
         this.waves.push(game.add.tilemap("wave05"));
+        this.waves.push(game.add.tilemap("wave06"));
+        this.waves.push(game.add.tilemap("wave07"));
     }
     update() {
         if (this.activeLevel == false) {
@@ -390,11 +398,11 @@ class EnemyManager {
                 this.timer -= game.time.physicsElapsedMS;
                 if (this.timer <= 0) {
                     this.wave++;
-                    this.timer = 1000;
+                    this.timer = 1500;
                     this.spawnWave();
                     if (this.wave == 5) {
                         this.wave = 0;
-                        this.timer = 5000;
+                        this.timer = 7000;
                         this.activeLevel = false;
                         this.level++;
                     }
@@ -403,7 +411,7 @@ class EnemyManager {
         }
     }
     spawnWave() {
-        let waveToSpawn = Math.floor(Math.random() * 4);
+        let waveToSpawn = Math.floor(Math.random() * 6);
         let enemytoPickup = Math.floor(Math.random() * this.waves[waveToSpawn].objects["Ships"].length);
         ;
         for (let i = 0; i < this.waves[waveToSpawn].objects["Ships"].length; i++) {
@@ -415,18 +423,23 @@ class EnemyManager {
             }
             switch (this.waves[waveToSpawn].objects["Ships"][i].type) {
                 case "fighter":
-                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 30 + (2 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
-                    console.log();
+                    newEnemy = new Enemy(EnemyType.FIGHTER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 30 + (2 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y + 910), 50, this.killEnemy.bind(this), movement);
+                    newEnemy.setDeathSound("enemy_death_big");
                     break;
                 case "bomber":
-                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 40 + (2 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 50, this.killEnemy.bind(this), movement);
+                    newEnemy = new Enemy(EnemyType.BOMBER, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 40 + (2 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y + 910), 50, this.killEnemy.bind(this), movement);
+                    newEnemy.setDeathSound("enemy_death_big");
                     break;
                 case "scout":
-                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 20 + (1.5 * this.level), 2, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y), 20, this.killEnemy.bind(this), movement);
+                    newEnemy = new Enemy(EnemyType.SCOUT, this.waves[waveToSpawn].objects["Ships"][i].properties.color, 6 + (1.5 * this.level), 2.5, new Vector2(this.waves[waveToSpawn].objects["Ships"][i].x - 192, -this.waves[waveToSpawn].objects["Ships"][i].y + 910), 20, this.killEnemy.bind(this), movement);
+                    newEnemy.setDeathSound("enemy_death_small");
                     break;
             }
             if (i == enemytoPickup) {
-                newEnemy.hasPickup = true;
+                let droprate = Math.random();
+                if (droprate <= 0.5) {
+                    newEnemy.hasPickup = true;
+                }
             }
             newEnemy.setWeapons(this.weapons.returnWeapons(this.waves[waveToSpawn].objects["Ships"][i].properties.weapons, newEnemy.vectorPosition));
             this.enemies.push(newEnemy);
@@ -467,32 +480,88 @@ class EnemyMovements {
                 return this.setThree();
             case 4:
                 return this.setFour();
+            case 5:
+                return this.setFive();
+            case 6:
+                return this.setSix();
+            case 7:
+                return this.setSeven();
+            case 8:
+                return this.setEight();
+            case 9:
+                return this.setNine();
+            case 10:
+                return this.setTen();
         }
     }
     setOne() {
         let movement = new Array();
-        movement[0] = new EnemyPosition(new Vector2(64, 400), 180);
-        movement[1] = new EnemyPosition(new Vector2(448, 1000), 180);
+        movement[0] = new EnemyPosition(new Vector2(382, 10), 0);
+        movement[1] = new EnemyPosition(new Vector2(64, 454), 0);
+        movement[2] = new EnemyPosition(new Vector2(448, 682), 0);
+        movement[3] = new EnemyPosition(new Vector2(-52, 1000), 0);
         return movement;
     }
     setTwo() {
         let movement = new Array();
-        movement[0] = new EnemyPosition(new Vector2(448, 400), 180);
-        movement[1] = new EnemyPosition(new Vector2(64, 1000), 180);
+        movement[0] = new EnemyPosition(new Vector2(128, 10), 0);
+        movement[1] = new EnemyPosition(new Vector2(448, 454), 0);
+        movement[2] = new EnemyPosition(new Vector2(64, 682), 0);
+        movement[3] = new EnemyPosition(new Vector2(500, 1000), 0);
         return movement;
     }
     setThree() {
         let movement = new Array();
-        movement[0] = new EnemyPosition(new Vector2(256, 400), 180);
-        movement[1] = new EnemyPosition(new Vector2(64, 100), 180);
-        movement[2] = new EnemyPosition(new Vector2(64, 1000), 180);
+        movement[0] = new EnemyPosition(new Vector2(448, 10), 0);
+        movement[1] = new EnemyPosition(new Vector2(64, 303), 0);
+        movement[2] = new EnemyPosition(new Vector2(448, 606), 0);
+        movement[3] = new EnemyPosition(new Vector2(0, 1000), 0);
         return movement;
     }
     setFour() {
         let movement = new Array();
-        movement[0] = new EnemyPosition(new Vector2(256, 400), 180);
-        movement[1] = new EnemyPosition(new Vector2(448, 100), 180);
-        movement[2] = new EnemyPosition(new Vector2(448, 1000), 180);
+        movement[0] = new EnemyPosition(new Vector2(-68, 626), 270);
+        movement[1] = new EnemyPosition(new Vector2(572, 626), 270);
+        return movement;
+    }
+    setFive() {
+        let movement = new Array();
+        movement[0] = new EnemyPosition(new Vector2(572, 160), 90);
+        movement[1] = new EnemyPosition(new Vector2(-68, 160), 90);
+        return movement;
+    }
+    setSix() {
+        let movement = new Array();
+        movement[0] = new EnemyPosition(new Vector2(192, 0), 0);
+        movement[1] = new EnemyPosition(new Vector2(192, 450), 0);
+        movement[2] = new EnemyPosition(new Vector2(64, 160), 0);
+        movement[3] = new EnemyPosition(new Vector2(64, 1000), 0);
+        return movement;
+    }
+    setSeven() {
+        let movement = new Array();
+        movement[0] = new EnemyPosition(new Vector2(320, 0), 0);
+        movement[1] = new EnemyPosition(new Vector2(320, 450), 0);
+        movement[2] = new EnemyPosition(new Vector2(448, 160), 0);
+        movement[3] = new EnemyPosition(new Vector2(448, 1000), 0);
+        return movement;
+    }
+    setEight() {
+        let movement = new Array();
+        movement[0] = new EnemyPosition(new Vector2(-68, 160), 270);
+        movement[1] = new EnemyPosition(new Vector2(572, 160), 270);
+        return movement;
+    }
+    setNine() {
+        let movement = new Array();
+        movement[0] = new EnemyPosition(new Vector2(64, -64), 0);
+        movement[1] = new EnemyPosition(new Vector2(448, 1000), 0);
+        return movement;
+    }
+    setTen() {
+        let movement = new Array();
+        movement[0] = new EnemyPosition(new Vector2(448, -64), 0);
+        movement[1] = new EnemyPosition(new Vector2(64, 1000), 0);
         return movement;
     }
 }
@@ -511,11 +580,13 @@ class EnemyWeapons {
                 return this.setTwo(_shipPos);
             case 3:
                 return this.setThree(_shipPos);
+            case 4:
+                return this.setFour(_shipPos);
         }
     }
     setZero(_shipPos) {
         let weaponset = new Array();
-        weaponset[0] = new Weapon(new Vector2(), _shipPos, 2, 180, this.projectilePools[0], [this.player]);
+        weaponset[0] = new Weapon(new Vector2(), _shipPos, 1.5, 180, this.projectilePools[0], [this.player]);
         return weaponset;
     }
     setOne(_shipPos) {
@@ -525,36 +596,85 @@ class EnemyWeapons {
     }
     setTwo(_shipPos) {
         let weaponset = new Array();
-        weaponset[0] = new Weapon(new Vector2(-10, 0), _shipPos, 1, 160, this.projectilePools[0], [this.player]);
-        weaponset[1] = new Weapon(new Vector2(10, 0), _shipPos, 1, 200, this.projectilePools[0], [this.player]);
-        return weaponset;
-    }
-    setThree(_shipPos) {
-        let weaponset = new Array();
         weaponset[0] = new Weapon(new Vector2(-10, 0), _shipPos, 1, 180, this.projectilePools[0], [this.player]);
         weaponset[1] = new Weapon(new Vector2(10, 0), _shipPos, 1, 180, this.projectilePools[0], [this.player]);
         return weaponset;
     }
+    setThree(_shipPos) {
+        let weaponset = new Array();
+        weaponset[0] = new Weapon(new Vector2(-20, 0), _shipPos, .7, 290, this.projectilePools[0], [this.player], function () { this.spinBehaviour(weaponset[0]); }.bind(this));
+        weaponset[1] = new Weapon(new Vector2(-20, 0), _shipPos, .7, 270, this.projectilePools[0], [this.player], function () { this.spinBehaviour(weaponset[1]); }.bind(this));
+        weaponset[2] = new Weapon(new Vector2(-20, 0), _shipPos, .7, 250, this.projectilePools[0], [this.player], function () { this.spinBehaviour(weaponset[2]); }.bind(this));
+        return weaponset;
+    }
+    setFour(_shipPos) {
+        let weaponset = new Array();
+        weaponset[0] = new Weapon(new Vector2(-5, 0), _shipPos, 1.5, 160, this.projectilePools[0], [this.player]);
+        weaponset[1] = new Weapon(new Vector2(0, 0), _shipPos, 1.5, 180, this.projectilePools[0], [this.player]);
+        weaponset[2] = new Weapon(new Vector2(5, 0), _shipPos, 1.5, 200, this.projectilePools[0], [this.player]);
+        return weaponset;
+    }
+    spinBehaviour(_Weapon) {
+        let angle = _Weapon.getAngle();
+        angle += 1;
+        _Weapon.setAngle(angle);
+    }
+}
+class ComboController {
+    constructor(_targets) {
+        this.targets = _targets;
+    }
+    initComboMode() {
+    }
+    indicateTargets() {
+    }
+    // Check's if the pointer is colliding with a target.
+    checkCollision() {
+        if (this.targets != null) {
+            for (let i = 0; i < this.targets.length; i++) {
+                let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.targets[i].vectorPosition);
+                if (distance < this.targets[i].collisionRadius + 25) {
+                    return this.targets[i];
+                }
+            }
+        }
+    }
+    update() {
+    }
 }
 class Player extends Ship {
-    constructor(_charNumber, _projectilePools, _maxHP, _collisionRadius, _targets) {
+    constructor(_charNumber, _projectilePools, _maxHP, _collisionRadius, _targets, _group) {
         super(_collisionRadius, _maxHP);
         this.comboMode = false;
         this.moving = false;
         this.slowMo = false;
+        game.physics.arcade.enable(this);
         this.projectilePools = _projectilePools;
         this.loadTexture("ships_player", _charNumber);
+        this.setDeathSound("enemy_death_small");
         this.speed = 20;
         this.anchor.set(0.5);
+        this.spriteGroup = _group;
         this.plasmaWeapons = new Array();
         this.missileWeapons = new Array();
         this.exhaustAnimation = new Phaser.Sprite(game, this.vectorPosition.X, this.vectorPosition.Y, "player_exhaust");
         this.exhaustAnimation.anchor.set(0.5, -0.8);
         this.exhaustAnimation.animations.add("exhaust");
         this.exhaustAnimation.play("exhaust", 24, true);
+        this.onHitSprite = new Phaser.Sprite(game, 0, 0, "player_hit_overlay");
+        this.onHitSprite.alpha = 0;
+        this.onHitTween = game.add.tween(this.onHitSprite).to({ alpha: 1 }, 400, "Linear", false, 0, 0).to({ alpha: 0 }, 600, "Linear", false, 0, 0);
+        this.onHealAnimation = new Phaser.Sprite(game, 0, 0, "player_healing");
+        this.onHealAnimation.anchor.set(0.5);
+        this.onHealAnimation.animations.add("heal");
+        this.onHealAnimation.visible = false;
+        this.powerupSound = new Phaser.Sound(game, "pickup_sound", 1, false);
+        this.onHitSound = new Phaser.Sound(game, "metal_hit", 1, false);
         game.add.existing(this);
         game.add.existing(this.exhaustAnimation);
-        game.physics.arcade.enable(this);
+        game.add.existing(this.onHitSprite);
+        game.add.existing(this.onHealAnimation);
+        this.spriteGroup.addMultiple([this, this.exhaustAnimation, this.onHitSprite]);
         this.enemies = _targets;
         this.moveDir = new Vector2();
         this.targetEnemies = new Array();
@@ -569,16 +689,22 @@ class Player extends Ship {
     onHit(_amount) {
         super.onHit(_amount);
         this.healthIndicator.onHealthChange();
+        this.onHitTween.start();
+        if (this.currentHP >= 0) {
+            this.onHitSound.play();
+        }
     }
     handlePickup(_pickupType) {
-        console.log("handling pickup: " + _pickupType);
         if (_pickupType == PickupType.REPAIR) {
-            if (this.maxHP <= 60) {
+            this.onHealAnimation.visible = true;
+            this.onHealAnimation.play("heal", 24);
+            if (this.currentHP <= (this.maxHP - 20)) {
                 this.currentHP += 20;
             }
             else {
                 this.currentHP = this.maxHP;
             }
+            this.healthIndicator.onHealthChange();
         }
         else if (_pickupType == PickupType.UPGRADEPLASMA) {
             this.plasmaUpgradeCount++;
@@ -592,8 +718,9 @@ class Player extends Ship {
                 this.missileWeapons = this.playerUpgrades.nextMissileUpgrade(this.missileUpgradeCount);
             }
         }
+        this.powerupSound.play();
     }
-    // Check's if the pointer is colliding with an enemy. 
+    // Check's if the pointer is colliding with an enemy.
     checkCollision() {
         if (this.enemies != null) {
             for (let i = 0; i < this.enemies.length; i++) {
@@ -636,6 +763,7 @@ class Player extends Ship {
                 this.comboMode = true;
             }
         }
+        this.onHealAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         // When button is released.
         if (this.comboMode == true && (game.input.mousePointer.isDown == false || game.input.pointer1.isDown)) {
             this.comboMode = false;
@@ -665,7 +793,7 @@ class Player extends Ship {
             }
         }
         // Indicate enemies for combo mode.
-        if (game.input.mousePointer.isDown == true && this.comboMode == false) {
+        if (game.input.mousePointer.isDown == false && this.comboMode == false) {
             this.indicateEnemies();
         }
         // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
@@ -695,7 +823,12 @@ class Player extends Ship {
     }
     die() {
         super.die();
-        game.state.start("Menu");
+        this.destroy(true);
+        this.exhaustAnimation.destroy(true);
+        game.camera.onFadeComplete.add(function () {
+            game.state.start("GameOver");
+        });
+        game.camera.fade(0x000000, 1000);
     }
 }
 class PlayerUpgrades {
@@ -755,18 +888,18 @@ class PlayerUpgrades {
     }
     missileUpgradeOne() {
         let weaponSet = new Array(1);
-        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.7, 0, this.player.projectilePools[1], this.player.enemies);
         return weaponSet;
     }
     missileUpgradeTwo() {
         let weaponSet = new Array(2);
-        weaponSet[0] = new Weapon(new Vector2(-30, 0), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
-        weaponSet[1] = new Weapon(new Vector2(30, 0), this.player.vectorPosition, 0.5, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[0] = new Weapon(new Vector2(-30, 0), this.player.vectorPosition, 0.7, 0, this.player.projectilePools[1], this.player.enemies);
+        weaponSet[1] = new Weapon(new Vector2(30, 0), this.player.vectorPosition, 0.7, 0, this.player.projectilePools[1], this.player.enemies);
         return weaponSet;
     }
     missileUpgradeThree() {
         let weaponSet = new Array(1);
-        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.2, -30, this.player.projectilePools[1], this.player.enemies, function () {
+        weaponSet[0] = new Weapon(new Vector2(), this.player.vectorPosition, 0.3, -30, this.player.projectilePools[1], this.player.enemies, function () {
             this.missileUpgradeThreeBehaviour(weaponSet[0]);
         }.bind(this));
         return weaponSet;
@@ -792,10 +925,12 @@ class Ship extends Phaser.Sprite {
         this.explosion = new Phaser.Sprite(game, 0, 0, "explosion", 24);
         this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
         this.explosion.anchor.set(0.5);
+        this.hitTween = game.add.tween(this).to({ tint: 0xff0000, alpha: 0.6 }, 90, "Linear", false, 0, 0, true);
         this.active = true;
     }
     onHit(_amount) {
         this.currentHP -= _amount;
+        this.hitTween.start();
     }
     update() {
         this.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
@@ -803,12 +938,16 @@ class Ship extends Phaser.Sprite {
             this.die();
         }
     }
+    setDeathSound(_sound) {
+        this.deathSound = new Phaser.Sound(game, _sound, 1, false);
+    }
     die() {
         this.active = false;
         this.explosion.position.set(this.vectorPosition.X, this.vectorPosition.Y);
         this.explosion.angle = Math.floor(Math.random() * (359) + 1);
         game.add.existing(this.explosion);
         this.explosion.animations.play("explode");
+        this.deathSound.play();
         ScreenShakeHandler.smallShake();
     }
 }
@@ -845,21 +984,46 @@ class Weapon {
     setAngle(_angle) {
         this.fireAngle = _angle;
     }
+    getAngle() {
+        return this.fireAngle;
+    }
     setPosition(_relativePosition) {
         this.relativePosition = _relativePosition;
     }
 }
-class GameState extends Phaser.State {
-    constructor(...args) {
-        super(...args);
-        this.characterNumber = 0;
+class GameOver extends Phaser.State {
+    create() {
+        this.game.camera.flash(0x000000, 1000);
+        this.entranceSound = new Phaser.Sound(game, "gameover_entry", 1, false);
+        this.exitSound = new Phaser.Sound(game, "gameover_exit", 1, false);
+        this.entranceSound.play();
+        this.gameOverSprite = new Phaser.Sprite(game, 0, 0, "gameover_overlay");
+        this.insertCoinSprite = new Phaser.Sprite(game, 0, 300, "gameover_insertcoin");
+        game.add.existing(this.gameOverSprite);
+        game.add.existing(this.insertCoinSprite);
+        game.add.tween(this.insertCoinSprite).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
     }
+    update() {
+        if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
+            this.changeState();
+        }
+    }
+    changeState() {
+        this.camera.onFadeComplete.add(function () {
+            game.state.start("Menu", true);
+        });
+        game.camera.fade(0x000000, 1000);
+        this.exitSound.play();
+    }
+}
+class GameState extends Phaser.State {
     init(_characterNumber) {
         this.characterNumber = _characterNumber;
     }
     create() {
         menuMusic.stop();
-        //gameMusic.play();
+        gameMusic.play();
+        game.camera.flash(0x000000, 1000);
         this.level = new Level();
         this.plasmaBulletGroup = new Phaser.Group(game);
         this.missileGroup = new Phaser.Group(game);
@@ -872,12 +1036,12 @@ class GameState extends Phaser.State {
         // Create the manager that keeps track of all the enemies in the game
         this.enemyManager = new EnemyManager([this.enemyPlasmaBulletPool, this.missilePool], this.shipGroup);
         // Create a player
-        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40, this.enemyManager.getEnemies());
-        this.shipGroup.add(this.player);
+        this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.missilePool], 80, 40, this.enemyManager.getEnemies(), this.shipGroup);
         this.enemyManager.setPlayer(this.player);
         this.healthIndicator = new HealthIndicator(this.player);
         this.player.healthIndicator = this.healthIndicator;
         this.uiGroup.add(this.healthIndicator);
+        this.comboMeter = new ComboMeter(this.uiGroup);
         this.scoreIndicator = new ScoreIndicator();
         this.enemyManager.scoreCounter = this.scoreIndicator;
         this.uiGroup.add(this.scoreIndicator);
@@ -889,20 +1053,30 @@ class GameState extends Phaser.State {
 }
 class MenuState extends Phaser.State {
     create() {
-        //gameMusic.stop();
+        gameMusic.stop();
+        if (!menuMusic.isPlaying) {
+            menuMusic.play();
+        }
+        game.camera.flash(0x000000, 1000);
         this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
-        this.welcomeSprite = new Phaser.Sprite(game, 0, 0, 'menu_welcome_bar');
+        this.welcomeSprite = new Phaser.Sprite(game, 0, 820, 'menu_welcome_bar');
+        this.nameOverlay = new Phaser.Sprite(game, 0, 0, 'menu_name_overlay');
         this.overlay = new Phaser.Sprite(game, -20, 170, "menu_selection_overlay");
         this.animationSprite = new Phaser.Sprite(game, 0, 600, "character_select_animation");
-        this.startButton = new Phaser.Button(game, 262, 665, 'menu_button_start', function () { this.startGame(); }, this);
-        this.previousButton = new Phaser.Button(game, 5, 640, 'menu_button_arrow', function () { this.changeCharacter(-1); }, this);
-        this.nextButton = new Phaser.Button(game, 507, 640, 'menu_button_arrow', function () { this.changeCharacter(1); }, this);
+        this.buttonClickSound = new Phaser.Sound(game, "button_click", 1, false);
+        let entranceSound = new Phaser.Sound(game, "menu_entry", 1, false);
+        entranceSound.play();
+        this.startButton = new Phaser.Button(game, 262, 665, 'menu_button_start', function () { this.startGame(); this.buttonClickSound.play(); }, this);
+        this.previousButton = new Phaser.Button(game, 5, 640, 'menu_button_arrow', function () { this.changeCharacter(-1); this.buttonClickSound.play(); }, this);
+        this.nextButton = new Phaser.Button(game, 507, 640, 'menu_button_arrow', function () { this.changeCharacter(1); this.buttonClickSound.play(); }, this);
         this.nextButton.scale.set(-1, 1);
         this.startButton.anchor.set(0.5);
         this.animationSprite.animations.add("anim");
         this.animationSprite.play("anim", 24, true);
         this.portraits = new Array();
         this.ships = new Array();
+        this.names = new Array();
+        this.selectSounds = new Array();
         let playerPortrait1 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_1');
         let playerPortrait2 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_2');
         let playerPortrait3 = new Phaser.Sprite(game, 0, 0, 'menu_portrait_3');
@@ -911,6 +1085,14 @@ class MenuState extends Phaser.State {
         let ship2 = new Phaser.Sprite(game, 0, 0, 'ships_player', 1);
         let ship3 = new Phaser.Sprite(game, 0, 0, 'ships_player', 2);
         let ship4 = new Phaser.Sprite(game, 0, 0, 'ships_player', 3);
+        let name1 = new Phaser.Text(game, 0, 0, "Hybrid Hyun");
+        let name2 = new Phaser.Text(game, 0, 0, "Danger Dia");
+        let name3 = new Phaser.Text(game, 0, 0, "Killer Kimmy");
+        let name4 = new Phaser.Text(game, 0, 0, "Spacey Stacey");
+        let select1 = new Phaser.Sound(game, "select_hyun", 1, false);
+        let select2 = new Phaser.Sound(game, "select_dia", 1, false);
+        let select3 = new Phaser.Sound(game, "select_kimmy", 1, false);
+        let select4 = new Phaser.Sound(game, "select_stacey", 1, false);
         this.portraits.push(playerPortrait1);
         this.portraits.push(playerPortrait2);
         this.portraits.push(playerPortrait3);
@@ -919,19 +1101,30 @@ class MenuState extends Phaser.State {
         this.ships.push(ship2);
         this.ships.push(ship3);
         this.ships.push(ship4);
+        this.names.push(name1);
+        this.names.push(name2);
+        this.names.push(name3);
+        this.names.push(name4);
+        this.selectSounds.push(select1);
+        this.selectSounds.push(select2);
+        this.selectSounds.push(select3);
+        this.selectSounds.push(select4);
         this.currentCharacterNumber = 0;
-        this.currentPortrait = new Phaser.Sprite(game, 135, 165, this.portraits[this.currentCharacterNumber].texture);
-        this.currentPortrait.scale.set(0.7);
+        this.currentPortrait = new Phaser.Sprite(game, 51, 170, this.portraits[this.currentCharacterNumber].texture);
         this.currentShip = new Phaser.Sprite(game, 27, 410, this.ships[this.currentCharacterNumber].texture);
+        this.currentName = new Phaser.Text(game, 256, 56, this.names[this.currentCharacterNumber].text, { font: "normal 52px ocra", fill: "#b3ffe2", align: "center" });
+        this.currentName.anchor.set(0.5);
         game.add.existing(this.background);
         game.add.existing(this.welcomeSprite);
-        game.add.existing(this.overlay);
         game.add.existing(this.animationSprite);
         game.add.existing(this.startButton);
         game.add.existing(this.previousButton);
         game.add.existing(this.nextButton);
         game.add.existing(this.currentPortrait);
         game.add.existing(this.currentShip);
+        game.add.existing(this.overlay);
+        game.add.existing(this.nameOverlay);
+        game.add.existing(this.currentName);
     }
     changeCharacter(_changeFactor) {
         this.currentCharacterNumber += _changeFactor;
@@ -943,9 +1136,15 @@ class MenuState extends Phaser.State {
         }
         this.currentPortrait.loadTexture(this.portraits[this.currentCharacterNumber].texture);
         this.currentShip.loadTexture(this.ships[this.currentCharacterNumber].texture);
+        this.currentName.setText(this.names[this.currentCharacterNumber].text);
     }
     startGame() {
-        game.state.start("Game", true, false, this.currentCharacterNumber);
+        let _this = this;
+        this.camera.onFadeComplete.add(function () {
+            game.state.start("Game", true, false, _this.currentCharacterNumber);
+        });
+        game.camera.fade(0x000000, 1000);
+        this.selectSounds[this.currentCharacterNumber].play();
     }
 }
 class Preloader extends Phaser.State {
@@ -955,21 +1154,28 @@ class Preloader extends Phaser.State {
         game.load.image("startscreen_background", "assets/Images/Backgrounds/StartScreen/startscreen_background.jpg");
         game.load.image("startscreen_title", "assets/Images/Backgrounds/StartScreen/startscreen_title.png");
         game.load.image("insert_coin_text", "assets/Images/Backgrounds/StartScreen/startscreen_coin_text.png");
-        game.load.image("menu_background", "assets/Images/Backgrounds/background_characterselect.png");
-        game.load.image("menu_portrait_1", "assets/Images/UI/Portraits/portrait_1.png");
-        game.load.image("menu_portrait_2", "assets/Images/UI/Portraits/portrait_2.png");
-        game.load.image("menu_portrait_3", "assets/Images/UI/Portraits/portrait_3.png");
-        game.load.image("menu_portrait_4", "assets/Images/UI/Portraits/portrait_4.png");
+        game.load.image("menu_background", "assets/Images/Backgrounds/background_characterselect.jpg");
+        game.load.image("menu_portrait_1", "assets/Images/UI/CharacterSelect/Portraits/portrait_1.png");
+        game.load.image("menu_portrait_2", "assets/Images/UI/CharacterSelect/Portraits/portrait_2.png");
+        game.load.image("menu_portrait_3", "assets/Images/UI/CharacterSelect/Portraits/portrait_3.png");
+        game.load.image("menu_portrait_4", "assets/Images/UI/CharacterSelect/Portraits/portrait_4.png");
         game.load.image("menu_button_start", "assets/Images/UI/CharacterSelect/button_select.png");
         game.load.image("menu_button_arrow", "assets/Images/UI/CharacterSelect/button_arrow.png");
         game.load.image("menu_selection_overlay", "assets/Images/UI/CharacterSelect/selection_overlay.png");
         game.load.image("menu_welcome_bar", "assets/Images/UI/CharacterSelect/welcome_bar.png");
+        game.load.image("menu_name_overlay", "assets/Images/UI/CharacterSelect/name_overlay.png");
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
+        game.load.image("pause_button", "assets/Images/UI/button_pause.png");
         game.load.image("health_bar", "assets/Images/UI/Indicators/health_bar.png");
         game.load.image("target_indicator", "assets/Images/UI/Indicators/crosshair.png");
+        game.load.image("combo_section_middle", "assets/Images/UI/Indicators/combo_bar.png");
+        game.load.image("combo_section_end", "assets/Images/UI/Indicators/combo_bar_end.png");
+        game.load.image("player_hit_overlay", "assets/Images/player_hit_overlay.png");
+        game.load.image("gameover_overlay", "assets/Images/UI/GameOver/gameover_overlay.png");
+        game.load.image("gameover_insertcoin", "assets/Images/UI/GameOver/gameover_insertcoin.png");
         game.load.image("pickup_repair", "assets/Images/Pickups/pickup_health.png");
         game.load.image("pickup_plasma", "assets/Images/Pickups/pickup_plasma.png");
         game.load.image("pickup_missile", "assets/Images/Pickups/pickup_missile.png");
@@ -980,27 +1186,47 @@ class Preloader extends Phaser.State {
         game.load.spritesheet("ships_enemy_blue", "assets/SpriteSheets/Ships/enemy_ship_sheet_blue.png", 128, 128, 3);
         game.load.spritesheet("ships_enemy_pink", "assets/SpriteSheets/Ships/enemy_ship_sheet_pink.png", 128, 128, 3);
         game.load.spritesheet("missile", "assets/SpriteSheets/Animations/projectile_missile.png", 64, 64, 22);
+        game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 13);
         game.load.spritesheet("player_exhaust", "assets/SpriteSheets/Animations/player_exhaust.png", 32, 64, 5);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
-        game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 13);
+        game.load.spritesheet("player_healing", "assets/SpriteSheets/Animations/player_healing.png", 256, 256, 15);
         game.load.spritesheet("character_select_animation", "assets/SpriteSheets/Animations/character_select_animation.png", 512, 256, 30);
         game.load.spritesheet("bullet_hit_blue", "assets/SpriteSheets/Animations/hit_bullet_blue.png", 64, 64, 5);
         game.load.spritesheet("bullet_hit_red", "assets/SpriteSheets/Animations/hit_bullet_red.png", 64, 64, 5);
-        game.load.spritesheet("combo02", "assets/SpriteSheets/Animations/combo02.png", 256, 192, 12);
+        game.load.spritesheet("combo_small", "assets/SpriteSheets/Animations/combo_small.png", 256, 192, 12);
+        game.load.spritesheet("combo_big", "assets/SpriteSheets/Animations/combo_big.png", 256, 192, 12);
         game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
-        // Audio
-        game.load.audio("music_menu", "assets/Audio/music_menu.mp3");
+        // Audio Music
+        game.load.audio("music_menu", "assets/Audio/Music/music_menu.mp3");
+        game.load.audio("music_game", "assets/Audio/Music/music_game.mp3");
+        // Audio SFX
+        game.load.audio("button_click", "assets/Audio/SFX/button_click_1.mp3");
+        game.load.audio("startscreen_entry", "assets/Audio/SFX/startscreen_entry.mp3");
+        game.load.audio("menu_entry", "assets/Audio/SFX/menu_entry.mp3");
+        game.load.audio("gameover_entry", "assets/Audio/SFX/gameover_entry.mp3");
+        game.load.audio("gameover_exit", "assets/Audio/SFX/gameover_exit.mp3");
+        game.load.audio("player_death", "assets/Audio/SFX/ship_explosion_big.mp3");
+        game.load.audio("enemy_death_small", "assets/Audio/SFX/electric_explosion_small.mp3");
+        game.load.audio("enemy_death_big", "assets/Audio/SFX/electric_explosion_big.mp3");
+        game.load.audio("pickup_sound", "assets/Audio/SFX/player_powerup.mp3");
+        game.load.audio("metal_hit", "assets/Audio/SFX/metal_hit.mp3");
+        game.load.audio("select_dia", "assets/Audio/SFX/character_select_dia.mp3");
+        game.load.audio("select_hyun", "assets/Audio/SFX/character_select_hyun.mp3");
+        game.load.audio("select_kimmy", "assets/Audio/SFX/character_select_kimmy.mp3");
+        game.load.audio("select_stacey", "assets/Audio/SFX/character_select_stacey.mp3");
         // JSON
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave06", "assets/WaveData/wave06.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave07", "assets/WaveData/wave07.json", null, Phaser.Tilemap.TILED_JSON);
     }
     // After the preload function is done, the create function is called which starts the GameState
     create() {
         menuMusic = game.add.audio("music_menu", 1, true);
-        //gameMusic = game.add.audio("music_game", 1, true);
+        gameMusic = game.add.audio("music_game", 1, true);
         game.state.start("Start");
     }
 }
@@ -1010,6 +1236,9 @@ class StartState extends Phaser.State {
         this.title = new Phaser.Sprite(game, 0, -400, 'startscreen_title');
         this.insertCoin = new Phaser.Sprite(game, game.width / 2, 460, 'insert_coin_text');
         this.insertCoin.anchor.set(0.5);
+        this.entrySound = new Phaser.Sound(game, "startscreen_entry", 1, false);
+        this.exitSound = new Phaser.Sound(game, "gameover_exit", 1, false);
+        this.entrySound.play();
         game.add.tween(this.title).to({ y: -60 }, 2400, Phaser.Easing.Bounce.Out, true);
         game.add.tween(this.insertCoin).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
         game.add.existing(this.background);
@@ -1023,35 +1252,48 @@ class StartState extends Phaser.State {
         }
     }
     startMenu() {
-        game.state.start("Menu", true, false);
+        this.exitSound.play();
+        this.camera.onFadeComplete.add(function () {
+            game.state.start("Menu", true, false);
+        });
+        game.camera.fade(0x000000, 1000);
     }
 }
-class ComboMeter extends Phaser.Sprite {
-    constructor() {
-        super(game, 0, 0);
+class ComboMeter {
+    constructor(_group) {
         this.maxComboFuel = 100;
-        this.currentComboFuel = 100;
+        this.currentComboFuel = 0;
         this.bars = 8;
         this.barSections = new Array();
         this.comboReady = false;
+        this.spriteGroup = _group;
         this.setBarSprites();
-        game.add.existing(this);
-        this.onMeterChange(this.currentComboFuel);
+        this.onMeterChange(0);
     }
     setBarSprites() {
-        var step = 10;
+        var step = 20;
         for (var i = 0; i < this.bars; i++) {
-            var x = 20;
-            var y = 600 + step * i;
-            var bar = new Phaser.Sprite(game, x, y, "health_bar");
+            var x = 34;
+            var y = 740 + step * i;
+            let bar;
+            if (i == 0) {
+                bar = new Phaser.Sprite(game, x, y - 7, "combo_section_end");
+                bar.scale.set(1, -1);
+            }
+            else if (i == this.bars - 1) {
+                bar = new Phaser.Sprite(game, x, y, "combo_section_end");
+            }
+            else {
+                bar = new Phaser.Sprite(game, x, y, "combo_section_middle");
+            }
             bar.anchor.set(0.5);
+            this.spriteGroup.add(bar);
             game.add.existing(bar);
             this.barSections.push(bar);
         }
     }
-    // Executed on a change in the players HP
+    // Execute on a change in the amount of charge in the combo meter.
     onMeterChange(_amount) {
-        // Calculate the number of health blocks that will be set invisible;
         if (this.currentComboFuel < this.maxComboFuel) {
             this.currentComboFuel += _amount;
         }
@@ -1059,14 +1301,15 @@ class ComboMeter extends Phaser.Sprite {
             this.currentComboFuel = this.maxComboFuel;
             this.comboReady = true;
         }
+        // Calculate the number of combo sprites that will be set to a lower alpha value.
         let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 10);
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {
-                this.barSections[arrayBars - i].visible = true;
+                this.barSections[arrayBars - i].alpha = 1;
             }
             else {
-                this.barSections[arrayBars - i].visible = false;
+                this.barSections[arrayBars - i].alpha = 0.5;
             }
         }
     }

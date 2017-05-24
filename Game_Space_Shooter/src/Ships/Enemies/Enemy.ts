@@ -18,6 +18,7 @@ class Enemy extends Ship {
     private score: number;
     public hasPickup: boolean;
     private anim: Phaser.Animation;
+
     constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<EnemyPosition>) {
         super(_collisionRadius, _maxHP);
         this.killEnemy = _killEnemy;
@@ -29,15 +30,15 @@ class Enemy extends Ship {
         this.vectorPosition.Y = _start.Y;
         this.currentMove = 0;
         if (_movementPattern == null) {
-            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000),180)];
+            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000),0)];
         }
         else {
             this.movementPattern = _movementPattern;
         }
-
+        this.angle = this.movementPattern[this.currentMove].rotation;
         this.inBounds = false;
         this.hasPickup = false;
-
+        this.score = 10;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.comboSprite.anchor.setTo(0.5);
@@ -73,11 +74,15 @@ class Enemy extends Ship {
             this.moveDir.Y = (this.movementPattern[this.currentMove].point.Y - this.vectorPosition.Y) / 100;
             this.moveDir.normalize();
             this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove].point) < 1) {
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove].point) < 1.5) {
                 this.currentMove++;
-                if (this.currentMove == this.movementPattern.length) {
+                if (this.currentMove >= this.movementPattern.length) {
                     this.killEnemy(this, 0);
                 }
+                else {
+                    this.angle = this.movementPattern[this.currentMove].rotation;
+                }
+                
             }
             if (this.inBounds) {
                 if (this.weapons != null) {
@@ -87,6 +92,7 @@ class Enemy extends Ship {
                 }
             }
             else if (this.checkBounds()) {
+
                 this.inBounds = true;
             }
 
@@ -95,15 +101,13 @@ class Enemy extends Ship {
             if (this.explosion.animations.frame >= this.explosion.animations.frameTotal - 8) {
                 this.killEnemy(this, this.score);
             }
-        } 
+        }
     }
     private checkBounds(): boolean {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
-    public toggleComboTarget(activate: boolean)
-    {
-        if (activate == true && this.anim.isFinished == false)
-        {
+    public toggleComboTarget(activate: boolean) {
+        if (activate == true && this.anim.isFinished == false) {
             this.anim.play();
             this.addChild(this.comboSprite);
         }
@@ -112,9 +116,8 @@ class Enemy extends Ship {
         }
     }
 
-    public indicateTarget()
-    {
-        this.indicator.alpha = 0;
-        game.add.tween(this.indicator).to({ alpha: 1 }, 350, Phaser.Easing.Linear.None, true);
+    public indicateTarget() {
+        this.indicator.alpha = 1;
+        game.add.tween(this.indicator).to({ alpha: 0 }, 350, "Linear", true, 0, 0);
     }
 }
