@@ -35,8 +35,10 @@
             var desiredBorderWidth = (document.body.clientHeight / borderScaleRatio);
 
             border.style.width = desiredBorderWidth + "px";
-            border.style.marginLeft = -(desiredBorderWidth / 2) + "px";
-            border.style.marginTop = -(border.height / 2) + "px";
+
+            var desiredMargin = -(desiredBorderWidth / 2) + "px";
+            border.style.marginLeft = desiredMargin;
+            border.style.marginTop = desiredMargin;
         }
 
         $(window).resize(function () {

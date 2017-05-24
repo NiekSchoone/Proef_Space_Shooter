@@ -46,6 +46,9 @@
         if (this.currentComboFuel < this.maxComboFuel) {
             this.currentComboFuel += _amount;
         }
+        if (this.currentComboFuel < 0) {
+            this.currentComboFuel = 0;
+        }
         if (this.currentComboFuel >= this.maxComboFuel) {
             this.currentComboFuel = this.maxComboFuel;
             this.comboReady = true;

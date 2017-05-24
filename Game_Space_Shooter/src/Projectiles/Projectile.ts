@@ -9,7 +9,7 @@
     protected targets: Array<Ship>;
     protected speed: number;
     protected returnToPool: Function; //Callback function to return this to the projectile pool it belongs to
-
+    
     protected hitAnimation: Phaser.Sprite;
     protected randomHitRotation: boolean;
 

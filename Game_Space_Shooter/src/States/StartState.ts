@@ -4,7 +4,6 @@
     private title: Phaser.Sprite;
     private insertCoin: Phaser.Sprite;
 
-    private entrySound: Phaser.Sound;
     private exitSound: Phaser.Sound;
 
     create() {
@@ -14,10 +13,7 @@
 
         this.insertCoin.anchor.set(0.5);
 
-        this.entrySound = new Phaser.Sound(game, "startscreen_entry", 1, false);
         this.exitSound = new Phaser.Sound(game, "gameover_exit", 1, false);
-
-        this.entrySound.play();
 
         game.add.tween(this.title).to({ y: -60 }, 2400, Phaser.Easing.Bounce.Out, true);
         game.add.tween(this.insertCoin).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);

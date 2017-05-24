@@ -13,9 +13,10 @@
     private level: number;
     private activeLevel: boolean;
     private spriteGroup: Phaser.Group;
+    private comboMeter: ComboMeter;
     public scoreCounter: ScoreIndicator;
 
-    constructor(_projectilePools: ProjectilePool[], _group: Phaser.Group) {
+    constructor(_projectilePools: ProjectilePool[], _group: Phaser.Group, _comboMeter: ComboMeter) {
         this.movenments = new EnemyMovements();
         
         this.enemies = new Array<Enemy>();
@@ -29,6 +30,7 @@
         this.level = 0;
 
         this.spriteGroup = _group;
+        this.comboMeter = _comboMeter;
 
         this.waves.push(game.add.tilemap("wave01"));
         this.waves.push(game.add.tilemap("wave02"));
@@ -44,8 +46,7 @@
                 this.timer = 1000;
                 this.activeLevel = true;
             }
-        }
-        else {
+        } else {
             let enemiesInScreen: boolean = true;
             for (let e: number = 0; e < this.enemies.length; e++) {
                 enemiesInScreen = (enemiesInScreen == true && this.enemies[e].inBounds == true)
@@ -108,6 +109,7 @@
 
     private killEnemy(_enemy: Enemy, score: number) {
         this.scoreCounter.onScoreChange(score);
+        this.comboMeter.onMeterChange(5);
         if (_enemy.hasPickup == true) {
             let pickup = new Pickup(this.player, _enemy.vectorPosition, Math.floor(Math.random() * 3));
             game.add.existing(pickup);

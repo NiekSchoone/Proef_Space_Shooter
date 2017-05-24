@@ -6,24 +6,18 @@
     private projectileCount: number;
     private spriteGroup: Phaser.Group;
 
-    private plasmaTexture: string;
-    private plasmaHitTexture: string;
+    private texture: string;
+    private hitTexture: string;
 
-    constructor(_type: ProjectileType, _group: Phaser.Group, _tex?: string, _hitTex?: string) {
+    constructor(_type: ProjectileType, _group: Phaser.Group, _tex: string, _hitTex: string) {
         this.poolType = _type;
         this.available = new Array<Projectile>();
         this.inUse = new Array<Projectile>();
         this.projectileCount = 0;
         this.spriteGroup = _group;
-
-        if (this.poolType == ProjectileType.PLASMABULLET) {
-            if (_tex != null && _hitTex != null) {
-                this.plasmaTexture = _tex;
-                this.plasmaHitTexture = _hitTex;
-            } else {
-                throw "No texture specified for plasma bullets.";
-            }
-        }
+        
+        this.texture = _tex;
+        this.hitTexture = _hitTex;
     }
 
     // Get a projectile from the pool and return it
@@ -55,9 +49,9 @@
         let newProjectile;
         // Check which type is defined for this pool and make a new projectile based on that type
         if (this.poolType == ProjectileType.PLASMABULLET) {
-            newProjectile = new PlasmaBullet(this.returnProjectile.bind(this), this.plasmaTexture, this.plasmaHitTexture);
+            newProjectile = new PlasmaBullet(this.returnProjectile.bind(this), this.texture, this.hitTexture);
         } else if (this.poolType == ProjectileType.MISSILE) {
-            newProjectile = new Missile(this.returnProjectile.bind(this), 'missile', "missile_hit");
+            newProjectile = new Missile(this.returnProjectile.bind(this), this.texture, this.hitTexture);
         } else {
             throw "Incorrect type specified for object pool";
         }
