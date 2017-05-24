@@ -5,10 +5,9 @@
 }
 class Enemy extends Ship {
     private enemyType: EnemyType;
-    private movementPattern: Array<Vector2>;
+    private movementPattern: Array<EnemyPosition>;
     private currentMove: number;
     private moveDir: Vector2;
-    private notdead: boolean;
     private killEnemy: Function;
     private comboSprite: Phaser.Sprite;
     private weapons: Array<Weapon>;
@@ -22,17 +21,26 @@ class Enemy extends Ship {
     public inBounds: boolean;
     public color: number;
 
-    constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<Vector2> = null) {
+    constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<EnemyPosition>) {
         super(_collisionRadius, _maxHP);
-
-        this.moveDir = new Vector2(0, 0);
-        this.enemyType = _type;
         this.killEnemy = _killEnemy;
+
+        this.active = true;
+        this.speed = _speed;
+        this.moveDir = new Vector2(0, 0);
         this.vectorPosition.X = _start.X;
         this.vectorPosition.Y = _start.Y;
         this.currentMove = 0;
-        this.color = _color;
-        this.speed = _speed;
+        if (_movementPattern == null) {
+            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000),0)];
+        }
+        else {
+            this.movementPattern = _movementPattern;
+        }
+        this.angle = this.movementPattern[this.currentMove].rotation;
+        this.inBounds = false;
+        this.hasPickup = false;
+        this.score = 10;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
         this.indicator.alpha = 0;
@@ -44,20 +52,22 @@ class Enemy extends Ship {
         this.indicator.anchor.setTo(0.5);
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
+        this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
+        this.anim.setFrame(19);
+        this.anchor.set(0.5);
         this.addChild(this.indicator);
+
         this.hasPickup = false;
         this.isIndicating = true;
 
         this.indicateInTween = game.add.tween(this.indicator).to({ alpha: 1 }, 400, "Linear", false);
         this.indicateOutTween = game.add.tween(this.indicator).to({ alpha: 0 }, 400, "Linear", false);
 
-        if (_movementPattern == null) {
-            this.movementPattern = [new Vector2(this.vectorPosition.X, 1000)];
-        }
-        else {
-            this.movementPattern = _movementPattern;
-        }
         this.score = 10;
+
+        this.color = _color;
+        this.enemyType = _type;
+
         switch (this.color) {
             case 0:
                 this.loadTexture("ships_enemy_orange", this.enemyType);
@@ -70,9 +80,6 @@ class Enemy extends Ship {
                 break;
         }
         this.active = true;
-        this.moveDir.X = 0;
-        this.moveDir.Y = 1;
-
         game.add.existing(this);
     }
     public setWeapons(_weapons: Array<Weapon>) {
@@ -80,17 +87,25 @@ class Enemy extends Ship {
     }
     public update() {
         if (this.active) {
-
+            this.moveDir.X = (this.movementPattern[this.currentMove].point.X - this.vectorPosition.X) / 100;
+            this.moveDir.Y = (this.movementPattern[this.currentMove].point.Y - this.vectorPosition.Y) / 100;
+            this.moveDir.normalize();
+            this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
+            if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove].point) < 1.5) {
+                this.currentMove++;
+                if (this.currentMove >= this.movementPattern.length) {
+                    this.killEnemy(this, 0);
+                }
+                else {
+                    this.angle = this.movementPattern[this.currentMove].rotation;
+                }
+                
+            }
             if (this.inBounds) {
-                this.moveDir.X = (this.movementPattern[this.currentMove].X - this.vectorPosition.X) / 100;
-                this.moveDir.Y = (this.movementPattern[this.currentMove].Y - this.vectorPosition.Y) / 100;
                 if (this.weapons != null) {
                     for (let i = 0; i < this.weapons.length; i++) {
                         this.weapons[i].update();
                     }
-                }
-                if (this.checkBounds() == false) {
-                    this.killEnemy(this, 0);
                 }
             }
             else if (this.checkBounds()) {
@@ -104,17 +119,7 @@ class Enemy extends Ship {
                 this.killEnemy(this, this.score);
             }
         }
-
-        this.moveDir.normalize();
-        this.vectorPosition.add(new Vector2(this.moveDir.X * this.speed, this.moveDir.Y * this.speed));
-        if (Vector2.distance(this.vectorPosition, this.movementPattern[this.currentMove]) < 1) {
-            this.currentMove++;
-            if (this.currentMove == this.movementPattern.length) {
-                this.killEnemy(this, 0);
-            }
-        }
     }
-
     private checkBounds(): boolean {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }

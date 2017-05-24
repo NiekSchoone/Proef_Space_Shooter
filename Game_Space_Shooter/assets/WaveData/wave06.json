@@ -12,7 +12,7 @@
                  "name":"",
                  "properties":
                     {
-                     "color":2,
+                     "color":1,
                      "movement":0,
                      "weapons":4
                     },
@@ -26,32 +26,8 @@
                  "type":"fighter",
                  "visible":true,
                  "width":128,
-                 "x":448,
-                 "y":1152
-                }, 
-                {
-                 "gid":1,
-                 "height":128,
-                 "id":22,
-                 "name":"",
-                 "properties":
-                    {
-                     "color":2,
-                     "movement":6,
-                     "weapons":0
-                    },
-                 "propertytypes":
-                    {
-                     "color":"int",
-                     "movement":"int",
-                     "weapons":"int"
-                    },
-                 "rotation":0,
-                 "type":"scout",
-                 "visible":true,
-                 "width":128,
-                 "x":384,
-                 "y":1280
+                 "x":256,
+                 "y":1184
                 }, 
                 {
                  "gid":1,
@@ -61,8 +37,8 @@
                  "properties":
                     {
                      "color":2,
-                     "movement":7,
-                     "weapons":0
+                     "movement":0,
+                     "weapons":1
                     },
                  "propertytypes":
                     {
@@ -71,11 +47,35 @@
                      "weapons":"int"
                     },
                  "rotation":0,
-                 "type":"scout",
+                 "type":"bomber",
                  "visible":true,
                  "width":128,
-                 "x":512,
-                 "y":1280
+                 "x":448,
+                 "y":1024
+                }, 
+                {
+                 "gid":1,
+                 "height":128,
+                 "id":25,
+                 "name":"",
+                 "properties":
+                    {
+                     "color":1,
+                     "movement":0,
+                     "weapons":4
+                    },
+                 "propertytypes":
+                    {
+                     "color":"int",
+                     "movement":"int",
+                     "weapons":"int"
+                    },
+                 "rotation":0,
+                 "type":"fighter",
+                 "visible":true,
+                 "width":128,
+                 "x":640,
+                 "y":1184
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -84,7 +84,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":25,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "properties":
     {

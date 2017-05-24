@@ -93,6 +93,8 @@
         game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave04", "assets/WaveData/wave04.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave05", "assets/WaveData/wave05.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave06", "assets/WaveData/wave06.json", null, Phaser.Tilemap.TILED_JSON);
+        game.load.tilemap("wave07", "assets/WaveData/wave07.json", null, Phaser.Tilemap.TILED_JSON);
     }
 
     // After the preload function is done, the create function is called which starts the GameState
