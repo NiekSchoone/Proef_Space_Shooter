@@ -38,7 +38,7 @@
     private startMenu() {
         this.exitSound.play();
         this.camera.onFadeComplete.add(function () {
-            game.state.start("Menu", true, false);
+            game.state.start("Tutorial", true, false);
         });
         game.camera.fade(0x000000, 1000);
     }

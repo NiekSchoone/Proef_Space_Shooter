@@ -22,6 +22,8 @@
     private buttonClickSound: Phaser.Sound;
     private selectSounds: Array<Phaser.Sound>;
 
+
+
     create() {
         gameMusic.stop();
         if (!menuMusic.isPlaying) {
@@ -32,7 +34,7 @@
 
         this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
         this.welcomeSprite = new Phaser.Sprite(game, 0, 820, 'menu_welcome_bar');
-        this.nameOverlay = new Phaser.Sprite(game, 0, 0, 'menu_name_overlay'); 
+        this.nameOverlay = new Phaser.Sprite(game, 0, 0, 'menu_name_overlay');
         this.overlay = new Phaser.Sprite(game, -20, 170, "menu_selection_overlay");
         this.animationSprite = new Phaser.Sprite(game, 0, 600, "character_select_animation");
 

@@ -103,6 +103,7 @@
     <TypeScriptCompile Include="Phaser\phaser.d.ts" />
     <TypeScriptCompile Include="Phaser\pixi.d.ts" />
     <TypeScriptCompile Include="src\Ships\Player\ComboController.ts" />
+    <TypeScriptCompile Include="src\States\TutorialState.ts" />
     <TypeScriptCompile Include="src\UI\ComboMeter.ts" />
     <TypeScriptCompile Include="src\States\GameOver.ts" />
     <TypeScriptCompile Include="src\UI\ScoreIndicator.ts" />

@@ -9,6 +9,7 @@ class App {
         // Add the various states the game goes through
         game.state.add("Preload", Preloader);
         game.state.add("Start", StartState);
+        game.state.add("Tutorial", TuorialState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         game.state.add("GameOver", GameOver);
@@ -1164,6 +1165,12 @@ class Preloader extends Phaser.State {
         game.load.image("menu_selection_overlay", "assets/Images/UI/CharacterSelect/selection_overlay.png");
         game.load.image("menu_welcome_bar", "assets/Images/UI/CharacterSelect/welcome_bar.png");
         game.load.image("menu_name_overlay", "assets/Images/UI/CharacterSelect/name_overlay.png");
+        // images tutorial
+        game.load.image("tutorial_1", "assets/Images/UI/Tutorial/Tutorial1.png");
+        game.load.image("tutorial_2", "assets/Images/UI/Tutorial/Tutorial2.png");
+        game.load.image("tutorial_3", "assets/Images/UI/Tutorial/Tutorial3.png");
+        game.load.image("tutorial_dots", "assets/Images/UI/Tutorial/Dots.png");
+        game.load.image("chat_logo", "assets/Images/UI/Tutorial/Chats.png");
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
@@ -1254,9 +1261,52 @@ class StartState extends Phaser.State {
     startMenu() {
         this.exitSound.play();
         this.camera.onFadeComplete.add(function () {
-            game.state.start("Menu", true, false);
+            game.state.start("Tutorial", true, false);
         });
         game.camera.fade(0x000000, 1000);
+    }
+}
+class TuorialState extends Phaser.State {
+    create() {
+        this.clicked = false;
+        this.clicks = 0;
+        this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
+        let chat = new Phaser.Sprite(game, 0, 0, 'chat_logo');
+        this.dots = new Phaser.Sprite(game, 400, 300, 'tutorial_dots');
+        game.add.existing(this.background);
+        game.add.existing(chat);
+        game.add.existing(this.dots);
+        this.tutorials = new Array();
+        this.tutorials[0] = new Phaser.Sprite(game, 256, 100, 'tutorial_1');
+        this.tutorials[0].anchor.x = .5;
+        game.add.existing(this.tutorials[0]);
+        this.tutorials[1] = new Phaser.Sprite(game, 256, 300, 'tutorial_2');
+        this.tutorials[1].anchor.x = .5;
+        this.tutorials[2] = new Phaser.Sprite(game, 256, 500, 'tutorial_3');
+        this.tutorials[2].anchor.x = .5;
+        game.camera.flash(0x000000, 1000);
+    }
+    update() {
+        if (this.clicked == false && game.input.activePointer.isDown) {
+            this.clicked = true;
+            this.nextTutorial();
+        }
+        else if (this.clicked == true && game.input.activePointer.isDown == false) {
+            this.clicked = false;
+        }
+    }
+    nextTutorial() {
+        this.clicks++;
+        if (this.clicks < this.tutorials.length) {
+            game.add.existing(this.tutorials[this.clicks]);
+            this.dots.y += 200;
+        }
+        else {
+            this.camera.onFadeComplete.add(function () {
+                game.state.start("Menu", true, false);
+            });
+            game.camera.fade(0x000000, 1000);
+        }
     }
 }
 class ComboMeter {

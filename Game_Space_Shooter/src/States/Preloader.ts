@@ -20,7 +20,14 @@
         game.load.image("menu_selection_overlay", "assets/Images/UI/CharacterSelect/selection_overlay.png");
         game.load.image("menu_welcome_bar", "assets/Images/UI/CharacterSelect/welcome_bar.png");
         game.load.image("menu_name_overlay", "assets/Images/UI/CharacterSelect/name_overlay.png");
-        
+
+        // images tutorial
+        game.load.image("tutorial_1", "assets/Images/UI/Tutorial/Tutorial1.png");
+        game.load.image("tutorial_2", "assets/Images/UI/Tutorial/Tutorial2.png");
+        game.load.image("tutorial_3", "assets/Images/UI/Tutorial/Tutorial3.png");
+        game.load.image("tutorial_dots", "assets/Images/UI/Tutorial/Dots.png");
+        game.load.image("chat_logo", "assets/Images/UI/Tutorial/Chats.png");
+
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
