@@ -1,5 +1,4 @@
-﻿enum EnemyType
-{
+﻿enum EnemyType {
     FIGHTER,
     BOMBER,
     SCOUT
@@ -12,12 +11,15 @@ class Enemy extends Ship {
     private killEnemy: Function;
     private comboSprite: Phaser.Sprite;
     private weapons: Array<Weapon>;
-    public inBounds: boolean;
     private indicator: Phaser.Sprite;
-    public color: number;
     private score: number;
-    public hasPickup: boolean;
     private anim: Phaser.Animation;
+    private indicateInTween: Phaser.Tween;
+    private indicateOutTween: Phaser.Tween;
+    private isIndicating: boolean;
+    public hasPickup: boolean;
+    public inBounds: boolean;
+    public color: number;
 
     constructor(_type: EnemyType, _color: number, _maxHP: number, _speed: number, _start: Vector2, _collisionRadius: number, _killEnemy: Function, _movementPattern: Array<EnemyPosition>) {
         super(_collisionRadius, _maxHP);
@@ -25,7 +27,7 @@ class Enemy extends Ship {
 
         this.active = true;
         this.speed = _speed;
-        this.moveDir = new Vector2(0, 1);
+        this.moveDir = new Vector2(0, 0);
         this.vectorPosition.X = _start.X;
         this.vectorPosition.Y = _start.Y;
         this.currentMove = 0;
@@ -41,6 +43,11 @@ class Enemy extends Ship {
         this.score = 10;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
         this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
+        this.indicator.alpha = 0;
+        this.inBounds = false;
+        this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
+        this.anim.setFrame(19);
+        this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
         this.indicator.anchor.setTo(0.5);
         this.indicator.scale.setTo(1.5);
@@ -50,8 +57,17 @@ class Enemy extends Ship {
         this.anchor.set(0.5);
         this.addChild(this.indicator);
 
+        this.hasPickup = false;
+        this.isIndicating = true;
+
+        this.indicateInTween = game.add.tween(this.indicator).to({ alpha: 1 }, 400, "Linear", false);
+        this.indicateOutTween = game.add.tween(this.indicator).to({ alpha: 0 }, 400, "Linear", false);
+
+        this.score = 10;
+
         this.color = _color;
         this.enemyType = _type;
+
         switch (this.color) {
             case 0:
                 this.loadTexture("ships_enemy_orange", this.enemyType);
@@ -63,6 +79,7 @@ class Enemy extends Ship {
                 this.loadTexture("ships_enemy_pink", this.enemyType);
                 break;
         }
+        this.active = true;
         game.add.existing(this);
     }
     public setWeapons(_weapons: Array<Weapon>) {
@@ -106,6 +123,7 @@ class Enemy extends Ship {
     private checkBounds(): boolean {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
+
     public toggleComboTarget(activate: boolean) {
         if (activate == true && this.anim.isFinished == false) {
             this.anim.play();
@@ -116,8 +134,16 @@ class Enemy extends Ship {
         }
     }
 
-    public indicateTarget() {
-        this.indicator.alpha = 1;
-        game.add.tween(this.indicator).to({ alpha: 0 }, 350, "Linear", true, 0, 0);
+    public indicateIn() {
+        if (!this.isIndicating) {
+            this.indicateInTween.start();
+            this.isIndicating = true;
+        }
+    }
+    public indicateOut() {
+        if (this.isIndicating) {
+            this.indicateOutTween.start();
+            this.isIndicating = false;
+        }
     }
 }

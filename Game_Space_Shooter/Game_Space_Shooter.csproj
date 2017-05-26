@@ -25,6 +25,10 @@
     <Content Include="app.css" />
     <Content Include="assets\Audio\Music\music_game.mp3" />
     <Content Include="assets\Audio\Music\music_menu.mp3" />
+    <Content Include="assets\Audio\SFX\bullet_impact_1.mp3" />
+    <Content Include="assets\Audio\SFX\bullet_impact_2.mp3" />
+    <Content Include="assets\Audio\SFX\bullet_impact_3.mp3" />
+    <Content Include="assets\Audio\SFX\bullet_impact_4.mp3" />
     <Content Include="assets\Audio\SFX\button_click_1.mp3" />
     <Content Include="assets\Audio\SFX\button_click_2.mp3" />
     <Content Include="assets\Audio\SFX\character_select_dia.mp3" />
@@ -35,6 +39,7 @@
     <Content Include="assets\Audio\SFX\electric_explosion_small.mp3" />
     <Content Include="assets\Audio\SFX\gameover_entry.mp3" />
     <Content Include="assets\Audio\SFX\gameover_exit.mp3" />
+    <Content Include="assets\Audio\SFX\gameover_voice.mp3" />
     <Content Include="assets\Audio\SFX\menu_entry.mp3" />
     <Content Include="assets\Audio\SFX\startscreen_entry.mp3" />
     <Content Include="assets\Audio\SFX\metal_hit.mp3" />
@@ -57,6 +62,8 @@
     <Content Include="assets\Images\player_hit_overlay.png" />
     <Content Include="assets\Images\Projectiles\bullet_enemy.png" />
     <Content Include="assets\Images\Projectiles\bullet_player.png" />
+    <Content Include="assets\Images\Projectiles\missile_enemy.png" />
+    <Content Include="assets\Images\Projectiles\missile_player.png" />
     <Content Include="assets\Images\UI\button_pause.png" />
     <Content Include="assets\Images\UI\CharacterSelect\button_arrow.png" />
     <Content Include="assets\Images\UI\CharacterSelect\name_overlay.png" />
@@ -88,7 +95,6 @@
     <Content Include="assets\SpriteSheets\Animations\player_exhaust.png" />
     <Content Include="assets\SpriteSheets\Animations\player_healing.png" />
     <Content Include="assets\SpriteSheets\Animations\player_powerup.png" />
-    <Content Include="assets\SpriteSheets\Animations\projectile_missile.png" />
     <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_pink.png" />
     <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_blue.png" />
     <Content Include="assets\SpriteSheets\Ships\enemy_ship_sheet_orange.png" />

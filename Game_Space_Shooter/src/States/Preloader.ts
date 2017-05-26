@@ -31,6 +31,8 @@
         // Images game
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
+        game.load.image("missile_enemy", "assets/Images/Projectiles/missile_enemy.png");
+        game.load.image("missile_player", "assets/Images/Projectiles/missile_player.png");
 
         game.load.image("ui_overlay", "assets/Images/UI/ui_overlay.png");
         game.load.image("pause_button", "assets/Images/UI/button_pause.png");
@@ -54,11 +56,11 @@
         game.load.spritesheet("ships_enemy_orange", "assets/SpriteSheets/Ships/enemy_ship_sheet_orange.png", 128, 128, 3);
         game.load.spritesheet("ships_enemy_blue", "assets/SpriteSheets/Ships/enemy_ship_sheet_blue.png", 128, 128, 3);
         game.load.spritesheet("ships_enemy_pink", "assets/SpriteSheets/Ships/enemy_ship_sheet_pink.png", 128, 128, 3);
-        game.load.spritesheet("missile", "assets/SpriteSheets/Animations/projectile_missile.png", 64, 64, 22);
         game.load.spritesheet("missile_hit", "assets/SpriteSheets/Animations/Explosions/hit_missile_explosion.png", 128, 128, 13);
         game.load.spritesheet("player_exhaust", "assets/SpriteSheets/Animations/player_exhaust.png", 32, 64, 5);
         game.load.spritesheet("explosion", "assets/SpriteSheets/Animations/Explosions/death_explosion.png", 256, 256, 24);
         game.load.spritesheet("player_healing", "assets/SpriteSheets/Animations/player_healing.png", 256, 256, 15);
+        game.load.spritesheet("player_powerup", "assets/SpriteSheets/Animations/player_powerup.png", 128, 128, 17);
 
         game.load.spritesheet("character_select_animation", "assets/SpriteSheets/Animations/character_select_animation.png", 512, 256, 30);
 
@@ -83,11 +85,14 @@
         game.load.audio("enemy_death_small", "assets/Audio/SFX/electric_explosion_small.mp3");
         game.load.audio("enemy_death_big", "assets/Audio/SFX/electric_explosion_big.mp3");
         game.load.audio("pickup_sound", "assets/Audio/SFX/player_powerup.mp3");
-        game.load.audio("metal_hit", "assets/Audio/SFX/metal_hit.mp3");
         game.load.audio("select_dia", "assets/Audio/SFX/character_select_dia.mp3");
         game.load.audio("select_hyun", "assets/Audio/SFX/character_select_hyun.mp3");
         game.load.audio("select_kimmy", "assets/Audio/SFX/character_select_kimmy.mp3");
         game.load.audio("select_stacey", "assets/Audio/SFX/character_select_stacey.mp3");
+        /*game.load.audio("impact_1", "assets/Audio/SFX/bullet_impact_1.mp3");
+        game.load.audio("impact_2", "assets/Audio/SFX/bullet_impact_2.mp3");
+        game.load.audio("impact_3", "assets/Audio/SFX/bullet_impact_3.mp3");
+        game.load.audio("impact_4", "assets/Audio/SFX/bullet_impact_4.mp3");*/
 
         // JSON
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
