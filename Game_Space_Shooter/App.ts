@@ -16,6 +16,7 @@ class App {
         // Add the various states the game goes through
         game.state.add("Preload", Preloader);
         game.state.add("Start", StartState);
+        game.state.add("Tutorial", TuorialState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         game.state.add("GameOver", GameOver);
