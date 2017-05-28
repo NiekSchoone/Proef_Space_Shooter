@@ -3,7 +3,6 @@
     private available: Array<Projectile>;
     private inUse: Array<Projectile>;
     private poolType: ProjectileType;
-    private projectileCount: number;
     private spriteGroup: Phaser.Group;
 
     private texture: string;
@@ -13,14 +12,15 @@
         this.poolType = _type;
         this.available = new Array<Projectile>();
         this.inUse = new Array<Projectile>();
-        this.projectileCount = 0;
         this.spriteGroup = _group;
         
         this.texture = _tex;
         this.hitTexture = _hitTex;
     }
 
-    // Get a projectile from the pool and return it
+    /**
+     * @description Return a projectile from the pool
+     */
     public getProjectile(): Projectile {
         let projectile;
         if (this.available.length != 0) {
@@ -35,7 +35,10 @@
         }
     }
 
-    // Returns a given projectile to the pool of available projectiles
+    /**
+     * @description Return a projectile to the pool of available projectiles
+     * @param projectile
+     */
     private returnProjectile(projectile: Projectile) {
         projectile.resetValues();
         ArrayMethods.removeObject(this.inUse, projectile); // Remove the projectile from the "inUse" array.
@@ -44,7 +47,9 @@
         }
     }
 
-    // Adds a projectile to the pool ready for use
+    /**
+     * @description Add a projectile to the pool ready for use
+     */
     private addProjectile(): Projectile {
         let newProjectile;
         // Check which type is defined for this pool and make a new projectile based on that type
@@ -58,7 +63,6 @@
         if (newProjectile != null) {
             game.add.existing(newProjectile); // Add the projectile to the game
             this.spriteGroup.add(newProjectile);
-            this.projectileCount++;
             return newProjectile;
         }
     }

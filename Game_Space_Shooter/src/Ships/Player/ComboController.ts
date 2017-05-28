@@ -19,7 +19,7 @@
     // Check's if the pointer is colliding with a target.
     private checkPointerCollision(): Enemy {
         for (let i = 0; i < this.targets.length; i++) {
-            let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.targets[i].vectorPosition);
+            let distance = Vector2.distance(new Vector2(game.input.activePointer.position.x, game.input.activePointer.position.y), this.targets[i].vectorPosition);
 
             if (distance < this.targets[i].collisionRadius + 25) {
                 return this.targets[i];
@@ -30,7 +30,7 @@
     public update() {
         this.currentPointerTarget = this.checkPointerCollision();
         // If mouse goes down on top of an enemy
-        if (this.currentPointerTarget != null && (game.input.mousePointer.isDown || game.input.pointer1.isDown) && this.player.moving == false) {
+        if (this.currentPointerTarget != null && game.input.activePointer.isDown && this.player.moving == false) {
             // Check if there's already targets
             if (this.selectedTargets.length > 0) {
                 // Loop through all target enemies and check if duplicate.

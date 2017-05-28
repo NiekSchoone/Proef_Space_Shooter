@@ -112,6 +112,7 @@
 
     private changeCharacter(_changeFactor: number) {
         this.currentCharacterNumber += _changeFactor;
+        console.log(this.currentCharacterNumber);
         if (this.currentCharacterNumber < 0) {
             this.currentCharacterNumber = this.portraits.length - 1;
         } else if (this.currentCharacterNumber > this.portraits.length - 1) {

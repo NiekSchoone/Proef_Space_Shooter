@@ -10,7 +10,6 @@
     protected explosion: Phaser.Sprite;
     protected deathSound: Phaser.Sound;
     protected hitTween: Phaser.Tween;
-    //protected onHitSounds: Array<Phaser.Sound>;
 
     constructor(_collisionRadius: number, _maxHP: number) {
         super(game, 0, 0);
@@ -25,23 +24,11 @@
         this.explosion.anchor.set(0.5);
 
         this.hitTween = game.add.tween(this).to({ tint: 0xff0000, alpha: 0.6 }, 90, "Linear", false, 0, 0, true);
-
-        /*let hitSounds1 = new Phaser.Sound(game, "impact_1", 1, false);
-        let hitSounds2 = new Phaser.Sound(game, "impact_2", 1, false);
-        let hitSounds3 = new Phaser.Sound(game, "impact_3", 1, false);
-        let hitSounds4 = new Phaser.Sound(game, "impact_4", 1, false);
-        this.onHitSounds = new Array<Phaser.Sound>();
-        this.onHitSounds.push(hitSounds1, hitSounds2, hitSounds3, hitSounds4);*/
-
         this.active = true;
     }
 
     public onHit(_amount: number) {
         this.currentHP -= _amount;
-        /*if (this.currentHP >= 0) {
-            let rand = Math.floor(Math.random() * 3);
-            this.onHitSounds[rand].play();
-        }*/
         this.hitTween.start();
     }
 

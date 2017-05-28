@@ -82,10 +82,6 @@
         game.load.audio("select_hyun", "assets/Audio/SFX/character_select_hyun.mp3");
         game.load.audio("select_kimmy", "assets/Audio/SFX/character_select_kimmy.mp3");
         game.load.audio("select_stacey", "assets/Audio/SFX/character_select_stacey.mp3");
-        /*game.load.audio("impact_1", "assets/Audio/SFX/bullet_impact_1.mp3");
-        game.load.audio("impact_2", "assets/Audio/SFX/bullet_impact_2.mp3");
-        game.load.audio("impact_3", "assets/Audio/SFX/bullet_impact_3.mp3");
-        game.load.audio("impact_4", "assets/Audio/SFX/bullet_impact_4.mp3");*/
 
         // JSON
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
@@ -99,7 +95,6 @@
 
     // After the preload function is done, the create function is called which starts the GameState
     create() {
-
         menuMusic = game.add.audio("music_menu", 1, true);
         gameMusic = game.add.audio("music_game", 1, true);
 

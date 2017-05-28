@@ -41,20 +41,23 @@
         }
     }
 
-    // Execute on a change in the amount of charge in the combo meter.
+    /**
+     * @description Applies a given value to the current amount of combo fuel
+     * @param _amount
+     */
     public onMeterChange(_amount: number) {
-        if (this.currentComboFuel < this.maxComboFuel) {
-            this.currentComboFuel += _amount;
-        }
+        this.currentComboFuel += _amount;
+
         if (this.currentComboFuel < 0) {
             this.currentComboFuel = 0;
         }
         if (this.currentComboFuel >= this.maxComboFuel) {
             this.currentComboFuel = this.maxComboFuel;
             this.comboReady = true;
+        } else {
+            this.comboReady = false;
         }
-        // Calculate the number of combo sprites that will be set to a lower alpha value.
-        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 10);
+        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 8); // Calculate the number of combo sprites that will be set to a lower alpha value.
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {

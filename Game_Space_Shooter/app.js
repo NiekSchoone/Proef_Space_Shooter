@@ -8,7 +8,7 @@ class ComboController {
     // Check's if the pointer is colliding with a target.
     checkPointerCollision() {
         for (let i = 0; i < this.targets.length; i++) {
-            let distance = Vector2.distance(new Vector2(game.input.mousePointer.position.x, game.input.mousePointer.position.y), this.targets[i].vectorPosition);
+            let distance = Vector2.distance(new Vector2(game.input.activePointer.position.x, game.input.activePointer.position.y), this.targets[i].vectorPosition);
             if (distance < this.targets[i].collisionRadius + 25) {
                 return this.targets[i];
             }
@@ -18,7 +18,7 @@ class ComboController {
     update() {
         this.currentPointerTarget = this.checkPointerCollision();
         // If mouse goes down on top of an enemy
-        if (this.currentPointerTarget != null && (game.input.mousePointer.isDown || game.input.pointer1.isDown) && this.player.moving == false) {
+        if (this.currentPointerTarget != null && game.input.activePointer.isDown && this.player.moving == false) {
             // Check if there's already targets
             if (this.selectedTargets.length > 0) {
                 // Loop through all target enemies and check if duplicate.
@@ -109,11 +109,12 @@ class ComboMeter {
             this.barSections.push(bar);
         }
     }
-    // Execute on a change in the amount of charge in the combo meter.
+    /**
+     * @description Applies a given value to the current amount of combo fuel
+     * @param _amount
+     */
     onMeterChange(_amount) {
-        if (this.currentComboFuel < this.maxComboFuel) {
-            this.currentComboFuel += _amount;
-        }
+        this.currentComboFuel += _amount;
         if (this.currentComboFuel < 0) {
             this.currentComboFuel = 0;
         }
@@ -121,8 +122,10 @@ class ComboMeter {
             this.currentComboFuel = this.maxComboFuel;
             this.comboReady = true;
         }
-        // Calculate the number of combo sprites that will be set to a lower alpha value.
-        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 10);
+        else {
+            this.comboReady = false;
+        }
+        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 8); // Calculate the number of combo sprites that will be set to a lower alpha value.
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {
@@ -599,6 +602,7 @@ class MenuState extends Phaser.State {
     }
     changeCharacter(_changeFactor) {
         this.currentCharacterNumber += _changeFactor;
+        console.log(this.currentCharacterNumber);
         if (this.currentCharacterNumber < 0) {
             this.currentCharacterNumber = this.portraits.length - 1;
         }
@@ -730,6 +734,11 @@ class AnimationHandler {
     }
 }
 class ArrayMethods {
+    /**
+     * @description Check if an array contains a certain value
+     * @param list
+     * @param obj
+     */
     static containsObject(list, obj) {
         for (var i = 0; i < list.length; i++) {
             if (list[i] === obj) {
@@ -738,6 +747,11 @@ class ArrayMethods {
         }
         return false;
     }
+    /**
+     * @description Remove a value from an array
+     * @param list
+     * @param obj
+     */
     static removeObject(list, obj) {
         for (var i = 0; i < list.length; i++) {
             if (list[i] === obj) {
@@ -747,12 +761,23 @@ class ArrayMethods {
     }
 }
 class ScreenShakeHandler {
+    /**
+     * @description Executes a light camera shake used on small explosions
+     */
     static smallShake() {
         game.camera.shake(0.005, 500);
     }
+    /**
+     * @description Executes a heavy camera shake used on big explosions
+     */
     static bigShake() {
         game.camera.shake(0.02, 1000);
     }
+    /**
+     * @description Executes a camera shake with given values
+     * @param intensity
+     * @param duration
+     */
     static customShake(intensity, duration) {
         game.camera.shake(intensity, duration);
     }
@@ -920,7 +945,6 @@ var PickupType;
     PickupType[PickupType["UPGRADEPLASMA"] = 2] = "UPGRADEPLASMA";
 })(PickupType || (PickupType = {}));
 class Ship extends Phaser.Sprite {
-    //protected onHitSounds: Array<Phaser.Sound>;
     constructor(_collisionRadius, _maxHP) {
         super(game, 0, 0);
         this.collisionRadius = _collisionRadius;
@@ -931,20 +955,10 @@ class Ship extends Phaser.Sprite {
         this.explosion.animations.add("explode", Phaser.ArrayUtils.numberArray(0, 23), 24, false);
         this.explosion.anchor.set(0.5);
         this.hitTween = game.add.tween(this).to({ tint: 0xff0000, alpha: 0.6 }, 90, "Linear", false, 0, 0, true);
-        /*let hitSounds1 = new Phaser.Sound(game, "impact_1", 1, false);
-        let hitSounds2 = new Phaser.Sound(game, "impact_2", 1, false);
-        let hitSounds3 = new Phaser.Sound(game, "impact_3", 1, false);
-        let hitSounds4 = new Phaser.Sound(game, "impact_4", 1, false);
-        this.onHitSounds = new Array<Phaser.Sound>();
-        this.onHitSounds.push(hitSounds1, hitSounds2, hitSounds3, hitSounds4);*/
         this.active = true;
     }
     onHit(_amount) {
         this.currentHP -= _amount;
-        /*if (this.currentHP >= 0) {
-            let rand = Math.floor(Math.random() * 3);
-            this.onHitSounds[rand].play();
-        }*/
         this.hitTween.start();
     }
     update() {
@@ -1346,12 +1360,13 @@ class ProjectilePool {
         this.poolType = _type;
         this.available = new Array();
         this.inUse = new Array();
-        this.projectileCount = 0;
         this.spriteGroup = _group;
         this.texture = _tex;
         this.hitTexture = _hitTex;
     }
-    // Get a projectile from the pool and return it
+    /**
+     * @description Return a projectile from the pool
+     */
     getProjectile() {
         let projectile;
         if (this.available.length != 0) {
@@ -1366,7 +1381,10 @@ class ProjectilePool {
             return projectile;
         }
     }
-    // Returns a given projectile to the pool of available projectiles
+    /**
+     * @description Return a projectile to the pool of available projectiles
+     * @param projectile
+     */
     returnProjectile(projectile) {
         projectile.resetValues();
         ArrayMethods.removeObject(this.inUse, projectile); // Remove the projectile from the "inUse" array.
@@ -1374,7 +1392,9 @@ class ProjectilePool {
             this.available.push(projectile); // Place the projectile back in the array of available projectiles
         }
     }
-    // Adds a projectile to the pool ready for use
+    /**
+     * @description Add a projectile to the pool ready for use
+     */
     addProjectile() {
         let newProjectile;
         // Check which type is defined for this pool and make a new projectile based on that type
@@ -1390,7 +1410,6 @@ class ProjectilePool {
         if (newProjectile != null) {
             game.add.existing(newProjectile); // Add the projectile to the game
             this.spriteGroup.add(newProjectile);
-            this.projectileCount++;
             return newProjectile;
         }
     }
@@ -1507,10 +1526,6 @@ class Preloader extends Phaser.State {
         game.load.audio("select_hyun", "assets/Audio/SFX/character_select_hyun.mp3");
         game.load.audio("select_kimmy", "assets/Audio/SFX/character_select_kimmy.mp3");
         game.load.audio("select_stacey", "assets/Audio/SFX/character_select_stacey.mp3");
-        /*game.load.audio("impact_1", "assets/Audio/SFX/bullet_impact_1.mp3");
-        game.load.audio("impact_2", "assets/Audio/SFX/bullet_impact_2.mp3");
-        game.load.audio("impact_3", "assets/Audio/SFX/bullet_impact_3.mp3");
-        game.load.audio("impact_4", "assets/Audio/SFX/bullet_impact_4.mp3");*/
         // JSON
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON);
