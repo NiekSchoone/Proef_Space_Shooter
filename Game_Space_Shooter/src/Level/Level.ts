@@ -1,4 +1,7 @@
-﻿class Level {
+﻿/**
+ * @description Class containing the background of the game
+ */
+class Level {
 
     private scrollSpeed: number;
     private scrollY: number;
@@ -15,7 +18,9 @@
         this.backgroundGroup.align(1, 4, 512, 2048);
         this.backgroundGroup.y = -4096;
     }
-
+    /**
+     * @description Scrolls and displays random chunks of the background
+     */
     private scrollBackground() {
         this.backgroundGroup.y += this.scrollSpeed;
         this.scrollY += this.scrollSpeed;
@@ -26,7 +31,9 @@
             this.backgroundGroup.cursor.frame = Math.floor(Math.random() * 4) + 1;
         }
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         this.scrollBackground();
     }

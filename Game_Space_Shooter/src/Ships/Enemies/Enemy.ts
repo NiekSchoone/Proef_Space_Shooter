@@ -1,9 +1,16 @@
-﻿enum EnemyType {
+﻿/**
+ * @description All possible types of enemy
+ */
+enum EnemyType {
     FIGHTER,
     BOMBER,
     SCOUT
 }
+/**
+ * @description Class containing functionality of an enemy
+ */
 class Enemy extends Ship {
+
     private enemyType: EnemyType;
     private movementPattern: Array<EnemyPosition>;
     private currentMove: number;
@@ -17,6 +24,7 @@ class Enemy extends Ship {
     private indicateInTween: Phaser.Tween;
     private indicateOutTween: Phaser.Tween;
     private isIndicating: boolean;
+
     public hasPickup: boolean;
     public inBounds: boolean;
     public color: number;
@@ -32,9 +40,8 @@ class Enemy extends Ship {
         this.vectorPosition.Y = _start.Y;
         this.currentMove = 0;
         if (_movementPattern == null) {
-            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000),0)];
-        }
-        else {
+            this.movementPattern = [new EnemyPosition(new Vector2(this.vectorPosition.X, 1000), 0)];
+        } else {
             this.movementPattern = _movementPattern;
         }
         this.angle = this.movementPattern[this.currentMove].rotation;
@@ -42,19 +49,16 @@ class Enemy extends Ship {
         this.hasPickup = false;
         this.score = 10;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
-        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
-        this.indicator.alpha = 0;
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         this.anim.setFrame(19);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
+        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
+        this.indicator.alpha = 0;
         this.indicator.anchor.setTo(0.5);
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
-        this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
-        this.anim.setFrame(19);
-        this.anchor.set(0.5);
         this.addChild(this.indicator);
 
         this.hasPickup = false;
@@ -82,9 +86,16 @@ class Enemy extends Ship {
         this.active = true;
         game.add.existing(this);
     }
+    /**
+     * @description Sets the weapon system that will be used by this enemy
+     * @param _weapons
+     */
     public setWeapons(_weapons: Array<Weapon>) {
         this.weapons = _weapons;
     }
+    /**
+     * @description Executes every frame
+     */
     public update() {
         if (this.active) {
             this.moveDir.X = (this.movementPattern[this.currentMove].point.X - this.vectorPosition.X) / 100;
@@ -99,7 +110,6 @@ class Enemy extends Ship {
                 else {
                     this.angle = this.movementPattern[this.currentMove].rotation;
                 }
-                
             }
             if (this.inBounds) {
                 if (this.weapons != null) {
@@ -120,26 +130,37 @@ class Enemy extends Ship {
             }
         }
     }
+    /**
+     * @description Check if the position of this enemy is outside of the level's bounds
+     */
     private checkBounds(): boolean {
         return (this.vectorPosition.Y > -64 && this.vectorPosition.Y < 1000 && this.vectorPosition.X > -64 && this.vectorPosition.X < 576)
     }
-
+    /**
+     * @description Toggle whether this enemy is a combo target or not
+     * @param activate
+     */
     public toggleComboTarget(activate: boolean) {
         if (activate == true && this.anim.isFinished == false) {
-            this.anim.play();
             this.addChild(this.comboSprite);
+            this.anim.play();
         }
         else {
             this.removeChild(this.comboSprite);
         }
     }
-
+    /**
+     * @description Display a crosshair over this enemy
+     */
     public indicateIn() {
         if (!this.isIndicating) {
             this.indicateInTween.start();
             this.isIndicating = true;
         }
     }
+    /**
+     * @description Hide the crosshair on this enemy
+     */
     public indicateOut() {
         if (this.isIndicating) {
             this.indicateOutTween.start();

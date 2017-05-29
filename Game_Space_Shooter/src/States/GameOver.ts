@@ -1,4 +1,7 @@
-﻿class GameOver extends Phaser.State {
+﻿/**
+ * @description State that contains the game over screen
+ */
+class GameOver extends Phaser.State {
 
     private gameOverSprite: Phaser.Sprite;
     private insertCoinSprite: Phaser.Sprite;
@@ -6,8 +9,11 @@
     private entranceSound: Phaser.Sound;
     private exitSound: Phaser.Sound;
 
+    /**
+     * @description Executes on the creation of this state
+     */
     create() {
-        this.game.camera.flash(0x000000, 1000);
+        game.camera.flash(0x000000, 1000);
 
         this.entranceSound = new Phaser.Sound(game, "gameover_entry", 1, false);
         this.exitSound = new Phaser.Sound(game, "gameover_exit", 1, false);
@@ -21,13 +27,17 @@
         game.add.existing(this.insertCoinSprite);
         game.add.tween(this.insertCoinSprite).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true);
     }
-
+    /**
+     * @description Executes every frame
+     */
     update() {
         if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
             this.changeState();
         }
     }
-
+    /**
+     * @description Starts the character selection menu
+     */
     private changeState() {
         this.camera.onFadeComplete.add(function () {
             game.state.start("Menu", true);

@@ -1,4 +1,7 @@
-﻿class ComboController {
+﻿/**
+ * @description Class containing the combo functionality for the player
+ */
+class ComboController {
     private player: Player;
     private targets: Array<Enemy>;
     private comboMeter: ComboMeter;
@@ -15,8 +18,9 @@
         this.comboMeter = _comboMeter;
         this.selectedTargets = new Array<Enemy>();
     }
-
-    // Check's if the pointer is colliding with a target.
+    /**
+     * @description Checks if the pointer is colliding with a target
+     */
     private checkPointerCollision(): Enemy {
         for (let i = 0; i < this.targets.length; i++) {
             let distance = Vector2.distance(new Vector2(game.input.activePointer.position.x, game.input.activePointer.position.y), this.targets[i].vectorPosition);
@@ -26,7 +30,9 @@
             }
         } return null;
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         this.currentPointerTarget = this.checkPointerCollision();
         // If mouse goes down on top of an enemy
@@ -47,13 +53,14 @@
             }
         }
     }
-
+    /**
+     * @description Executes the current initiated combo
+     */
     public executeCombo() {
         this.comboInitiated = false;
         let selectedAmount = this.selectedTargets.length;
         // Check if more than one enemy is selected.
         if (selectedAmount > 1) {
-            // Loop through the enemies and kill them
             for (var i = 0; i <= selectedAmount; i++) {
                 if (this.selectedTargets[i] != null) {
                     let currentTarget = this.selectedTargets[i];
@@ -77,7 +84,10 @@
             this.selectedTargets.splice(i);
         }
     }
-
+    /**
+     * @description Tells all targets to indicate that they are a combo target
+     * @param _active
+     */
     public indicateTargets(_active: boolean) {
         for (var i = 0; i < this.targets.length; i++) {
             if (_active) {

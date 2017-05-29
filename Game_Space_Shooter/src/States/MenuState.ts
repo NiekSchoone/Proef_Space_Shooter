@@ -1,4 +1,7 @@
-﻿class MenuState extends Phaser.State {
+﻿/**
+ * @description State that contains the character selection menu
+ */
+class MenuState extends Phaser.State {
 
     private background: Phaser.Sprite;
     private welcomeSprite: Phaser.Sprite;
@@ -22,8 +25,9 @@
     private buttonClickSound: Phaser.Sound;
     private selectSounds: Array<Phaser.Sound>;
 
-
-
+    /**
+     * @description Executes on the creation of this state
+     */
     create() {
         gameMusic.stop();
         if (!menuMusic.isPlaying) {
@@ -111,10 +115,12 @@
         game.add.existing(this.nameOverlay);
         game.add.existing(this.currentName);
     }
-
+    /**
+     * @description Changes to the next character image
+     * @param _changeFactor
+     */
     private changeCharacter(_changeFactor: number) {
         this.currentCharacterNumber += _changeFactor;
-        console.log(this.currentCharacterNumber);
         if (this.currentCharacterNumber < 0) {
             this.currentCharacterNumber = this.portraits.length - 1;
         } else if (this.currentCharacterNumber > this.portraits.length - 1) {
@@ -124,7 +130,9 @@
         this.currentShip.loadTexture(this.ships[this.currentCharacterNumber].texture);
         this.currentName.setText(this.names[this.currentCharacterNumber].text);
     }
-
+    /**
+     * @description Starts the Game state
+     */
     private startGame() {
         let _this = this;
         this.camera.onFadeComplete.add(function () {

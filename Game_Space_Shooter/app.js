@@ -5,7 +5,6 @@ class ComboController {
         this.comboMeter = _comboMeter;
         this.selectedTargets = new Array();
     }
-    // Check's if the pointer is colliding with a target.
     checkPointerCollision() {
         for (let i = 0; i < this.targets.length; i++) {
             let distance = Vector2.distance(new Vector2(game.input.activePointer.position.x, game.input.activePointer.position.y), this.targets[i].vectorPosition);
@@ -17,18 +16,14 @@ class ComboController {
     }
     update() {
         this.currentPointerTarget = this.checkPointerCollision();
-        // If mouse goes down on top of an enemy
         if (this.currentPointerTarget != null && game.input.activePointer.isDown && this.player.moving == false) {
-            // Check if there's already targets
             if (this.selectedTargets.length > 0) {
-                // Loop through all target enemies and check if duplicate.
                 if (!ArrayMethods.containsObject(this.selectedTargets, this.currentPointerTarget) && this.currentPointerTarget.color == this.currentTargetColor) {
                     this.selectedTargets.push(this.currentPointerTarget);
                     this.currentPointerTarget.toggleComboTarget(true);
                 }
             }
             else {
-                // If it's the first target, skip checking duplicates.
                 this.currentTargetColor = this.currentPointerTarget.color;
                 this.selectedTargets.push(this.currentPointerTarget);
                 this.currentPointerTarget.toggleComboTarget(true);
@@ -39,9 +34,7 @@ class ComboController {
     executeCombo() {
         this.comboInitiated = false;
         let selectedAmount = this.selectedTargets.length;
-        // Check if more than one enemy is selected.
         if (selectedAmount > 1) {
-            // Loop through the enemies and kill them
             for (var i = 0; i <= selectedAmount; i++) {
                 if (this.selectedTargets[i] != null) {
                     let currentTarget = this.selectedTargets[i];
@@ -60,7 +53,6 @@ class ComboController {
         else if (selectedAmount <= 1 && selectedAmount != 0) {
             this.selectedTargets[0].toggleComboTarget(false);
         }
-        // Empty the target array.
         for (var i = 0; i <= this.selectedTargets.length; i++) {
             this.selectedTargets.splice(i);
         }
@@ -73,6 +65,51 @@ class ComboController {
             else {
                 this.targets[i].indicateOut();
             }
+        }
+    }
+}
+class TuorialState extends Phaser.State {
+    create() {
+        this.clicked = false;
+        this.clicks = 0;
+        this.background = new Phaser.Sprite(game, 0, 0, 'menu_background');
+        let chat = new Phaser.Sprite(game, 0, 0, 'chat_logo');
+        this.dots = new Phaser.Sprite(game, 400, 300, 'tutorial_dots');
+        game.add.existing(this.background);
+        game.add.existing(chat);
+        game.add.existing(this.dots);
+        this.clickSound = new Phaser.Sound(game, "button_click", 1, false);
+        this.tutorials = new Array();
+        this.tutorials[0] = new Phaser.Sprite(game, 256, 100, 'tutorial_1');
+        this.tutorials[0].anchor.x = .5;
+        game.add.existing(this.tutorials[0]);
+        this.tutorials[1] = new Phaser.Sprite(game, 256, 300, 'tutorial_2');
+        this.tutorials[1].anchor.x = .5;
+        this.tutorials[2] = new Phaser.Sprite(game, 256, 500, 'tutorial_3');
+        this.tutorials[2].anchor.x = .5;
+        game.camera.flash(0x000000, 1000);
+    }
+    update() {
+        if (this.clicked == false && game.input.activePointer.isDown) {
+            this.clicked = true;
+            this.nextTutorial();
+        }
+        else if (this.clicked == true && game.input.activePointer.isDown == false) {
+            this.clicked = false;
+        }
+    }
+    nextTutorial() {
+        this.clickSound.play();
+        this.clicks++;
+        if (this.clicks < this.tutorials.length) {
+            game.add.existing(this.tutorials[this.clicks]);
+            this.dots.y += 200;
+        }
+        else {
+            this.camera.onFadeComplete.add(function () {
+                game.state.start("Menu", true, false);
+            });
+            game.camera.fade(0x000000, 1000);
         }
     }
 }
@@ -109,10 +146,6 @@ class ComboMeter {
             this.barSections.push(bar);
         }
     }
-    /**
-     * @description Applies a given value to the current amount of combo fuel
-     * @param _amount
-     */
     onMeterChange(_amount) {
         this.currentComboFuel += _amount;
         if (this.currentComboFuel < 0) {
@@ -125,7 +158,7 @@ class ComboMeter {
         else {
             this.comboReady = false;
         }
-        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 8); // Calculate the number of combo sprites that will be set to a lower alpha value.
+        let sum = Math.ceil((this.currentComboFuel / this.maxComboFuel) * 8);
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {
@@ -142,7 +175,7 @@ class ComboMeter {
 }
 class GameOver extends Phaser.State {
     create() {
-        this.game.camera.flash(0x000000, 1000);
+        game.camera.flash(0x000000, 1000);
         this.entranceSound = new Phaser.Sound(game, "gameover_entry", 1, false);
         this.exitSound = new Phaser.Sound(game, "gameover_exit", 1, false);
         this.entranceSound.play();
@@ -202,9 +235,7 @@ class HealthIndicator extends Phaser.Sprite {
             angle += step;
         }
     }
-    // Executed on a change in the players HP
     onHealthChange() {
-        // Calculate the number of health blocks that will be set invisible;
         let sum = Math.ceil((this.player.currentHP / this.player.maxHP) * 8);
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
@@ -376,12 +407,9 @@ class EnemyWeapons {
 }
 class PlayerUpgrades {
     constructor(_player) {
-        this.angle = -30;
         this.step = 1;
         this.player = _player;
         this.currentWeaponSet = new Array();
-        this.plasmaUpgradeCount = 0;
-        this.missileUpgradeCount = 0;
     }
     nextPlasmaUpgrade(_plasmaUpgradeCount) {
         switch (_plasmaUpgradeCount) {
@@ -448,14 +476,15 @@ class PlayerUpgrades {
         return weaponSet;
     }
     missileUpgradeThreeBehaviour(_missileWeapon) {
-        if (this.angle >= 30) {
+        let angle = _missileWeapon.getAngle();
+        if (angle >= 30) {
             this.step = -1;
         }
-        else if (this.angle <= -30) {
+        else if (angle <= -30) {
             this.step = 1;
         }
-        this.angle += this.step;
-        _missileWeapon.setAngle(this.angle);
+        angle += this.step;
+        _missileWeapon.setAngle(angle);
     }
 }
 class Weapon {
@@ -487,7 +516,6 @@ class Weapon {
         newProj.setTarget(this.targets);
         newProj.fire(this.vectorPosition, this.fireAngle);
     }
-    // Set the angle the projectiles will fire towards
     setAngle(_angle) {
         this.fireAngle = _angle;
     }
@@ -514,13 +542,13 @@ class StartState extends Phaser.State {
     }
     update() {
         if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
-            this.startMenu();
+            this.startTutorial();
         }
     }
-    startMenu() {
+    startTutorial() {
         this.exitSound.play();
         this.camera.onFadeComplete.add(function () {
-            game.state.start("Menu", true, false);
+            game.state.start("Tutorial", true, false);
         });
         game.camera.fade(0x000000, 1000);
     }
@@ -602,7 +630,6 @@ class MenuState extends Phaser.State {
     }
     changeCharacter(_changeFactor) {
         this.currentCharacterNumber += _changeFactor;
-        console.log(this.currentCharacterNumber);
         if (this.currentCharacterNumber < 0) {
             this.currentCharacterNumber = this.portraits.length - 1;
         }
@@ -707,7 +734,7 @@ class EnemyManager {
             this.spriteGroup.add(newEnemy);
         }
     }
-    setPlayer(_player) {
+    setTarget(_player) {
         this.player = _player;
         this.weapons = new EnemyWeapons(this.projectilePools, this.player);
     }
@@ -725,20 +752,7 @@ class EnemyManager {
         return this.enemies;
     }
 }
-class AnimationHandler {
-    static addAnimation(_anim) {
-        this.animations.push(_anim);
-    }
-    static getAnimation() {
-        return this.animations[0];
-    }
-}
 class ArrayMethods {
-    /**
-     * @description Check if an array contains a certain value
-     * @param list
-     * @param obj
-     */
     static containsObject(list, obj) {
         for (var i = 0; i < list.length; i++) {
             if (list[i] === obj) {
@@ -747,11 +761,6 @@ class ArrayMethods {
         }
         return false;
     }
-    /**
-     * @description Remove a value from an array
-     * @param list
-     * @param obj
-     */
     static removeObject(list, obj) {
         for (var i = 0; i < list.length; i++) {
             if (list[i] === obj) {
@@ -761,23 +770,12 @@ class ArrayMethods {
     }
 }
 class ScreenShakeHandler {
-    /**
-     * @description Executes a light camera shake used on small explosions
-     */
     static smallShake() {
         game.camera.shake(0.005, 500);
     }
-    /**
-     * @description Executes a heavy camera shake used on big explosions
-     */
     static bigShake() {
         game.camera.shake(0.02, 1000);
     }
-    /**
-     * @description Executes a camera shake with given values
-     * @param intensity
-     * @param duration
-     */
     static customShake(intensity, duration) {
         game.camera.shake(intensity, duration);
     }
@@ -790,11 +788,11 @@ class Vector2 {
     get X() {
         return this.x;
     }
-    get Y() {
-        return this.y;
-    }
     set X(value) {
         this.x = value;
+    }
+    get Y() {
+        return this.y;
     }
     set Y(value) {
         this.y = value;
@@ -1070,7 +1068,6 @@ class Player extends Ship {
         if (this.comboMeter.ComboReady) {
             this.comboController.update();
         }
-        // When a mouse pointer or touch pointer is down on the screen, get get the position and calculate a move direction
         if (game.input.activePointer.isDown && !this.comboController.comboInitiated) {
             this.comboController.indicateTargets(false);
             this.moving = true;
@@ -1092,10 +1089,8 @@ class Player extends Ship {
         this.exhaustAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         super.update();
     }
-    // Set targets that the player's weapon can hit
     setTargets(_targets) {
         this.enemies = _targets;
-        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
     }
     die() {
         super.die();
@@ -1134,19 +1129,16 @@ class Enemy extends Ship {
         this.hasPickup = false;
         this.score = 10;
         this.comboSprite = new Phaser.Sprite(game, 0, 0, "indicator");
-        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
-        this.indicator.alpha = 0;
         this.inBounds = false;
         this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
         this.anim.setFrame(19);
         this.anchor.set(0.5);
         this.comboSprite.anchor.setTo(0.5);
+        this.indicator = new Phaser.Sprite(game, 0, 0, "target_indicator");
+        this.indicator.alpha = 0;
         this.indicator.anchor.setTo(0.5);
         this.indicator.scale.setTo(1.5);
         this.indicator.angle = 45;
-        this.anim = this.comboSprite.animations.add("indicator", Phaser.ArrayUtils.numberArray(0, 19), 24, false);
-        this.anim.setFrame(19);
-        this.anchor.set(0.5);
         this.addChild(this.indicator);
         this.hasPickup = false;
         this.isIndicating = true;
@@ -1210,8 +1202,8 @@ class Enemy extends Ship {
     }
     toggleComboTarget(activate) {
         if (activate == true && this.anim.isFinished == false) {
-            this.anim.play();
             this.addChild(this.comboSprite);
+            this.anim.play();
         }
         else {
             this.removeChild(this.comboSprite);
@@ -1277,7 +1269,6 @@ class Projectile extends Phaser.Sprite {
             this.checkBounds();
         }
     }
-    // Fires a bullet from a given position and angle
     fire(_pos, _rotation) {
         this.angle = _rotation;
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
@@ -1288,11 +1279,9 @@ class Projectile extends Phaser.Sprite {
             this.animations.play(this.key);
         }
     }
-    // Set targets this projectile can hit
     setTarget(_targets) {
         this.targets = _targets;
     }
-    // Checks each posible hit target
     checkCollision() {
         if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
@@ -1303,13 +1292,11 @@ class Projectile extends Phaser.Sprite {
             }
         }
     }
-    // Check if the position of this projectile is out of the bounds of the level
     checkBounds() {
         if (this.vectorPosition.Y <= -20 || this.vectorPosition.Y >= game.height + 20 || this.vectorPosition.X >= game.width + 20 || this.vectorPosition.X <= -20) {
             this.returnToPool(this);
         }
     }
-    // On hitting a target the projectile will return to the pool and apply damage on the target
     onHit(_target) {
         if (this.hitAnimation != null) {
             if (this.randomHitRotation) {
@@ -1324,7 +1311,6 @@ class Projectile extends Phaser.Sprite {
         _target.onHit(this.damageAmount);
         this.returnToPool(this);
     }
-    // Reset the values of this projectile to their default values
     resetValues() {
         this.active = false;
         this.visible = false;
@@ -1364,16 +1350,13 @@ class ProjectilePool {
         this.texture = _tex;
         this.hitTexture = _hitTex;
     }
-    /**
-     * @description Return a projectile from the pool
-     */
     getProjectile() {
         let projectile;
         if (this.available.length != 0) {
-            projectile = this.available.pop(); // If there are any previously created projectiles available pop the last one and assign it to "projectile"
+            projectile = this.available.pop();
         }
         else {
-            projectile = this.addProjectile(); // If there are no available projectiles, make a new one
+            projectile = this.addProjectile();
         }
         if (projectile != null) {
             this.inUse.push(projectile);
@@ -1381,23 +1364,15 @@ class ProjectilePool {
             return projectile;
         }
     }
-    /**
-     * @description Return a projectile to the pool of available projectiles
-     * @param projectile
-     */
     returnProjectile(projectile) {
         projectile.resetValues();
-        ArrayMethods.removeObject(this.inUse, projectile); // Remove the projectile from the "inUse" array.
+        ArrayMethods.removeObject(this.inUse, projectile);
         if (!ArrayMethods.containsObject(this.available, projectile)) {
-            this.available.push(projectile); // Place the projectile back in the array of available projectiles
+            this.available.push(projectile);
         }
     }
-    /**
-     * @description Add a projectile to the pool ready for use
-     */
     addProjectile() {
         let newProjectile;
-        // Check which type is defined for this pool and make a new projectile based on that type
         if (this.poolType == ProjectileType.PLASMABULLET) {
             newProjectile = new PlasmaBullet(this.returnProjectile.bind(this), this.texture, this.hitTexture);
         }
@@ -1408,7 +1383,7 @@ class ProjectilePool {
             throw "Incorrect type specified for object pool";
         }
         if (newProjectile != null) {
-            game.add.existing(newProjectile); // Add the projectile to the game
+            game.add.existing(newProjectile);
             this.spriteGroup.add(newProjectile);
             return newProjectile;
         }
@@ -1428,16 +1403,13 @@ class GameState extends Phaser.State {
         this.shipGroup = new Phaser.Group(game);
         this.uiGroup = new Phaser.Group(game);
         this.comboMeter = new ComboMeter(this.uiGroup);
-        // Create the various pools for different projectiles
         this.playerPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_player", "bullet_hit_blue");
         this.enemyPlasmaBulletPool = new ProjectilePool(ProjectileType.PLASMABULLET, this.plasmaBulletGroup, "plasma_bullet_enemy", "bullet_hit_red");
         this.playerMissilePool = new ProjectilePool(ProjectileType.MISSILE, this.missileGroup, "missile_player", "missile_hit");
         this.enemyMissilePool = new ProjectilePool(ProjectileType.MISSILE, this.missileGroup, "missile_enemy", "missile_hit");
-        // Create the manager that keeps track of all the enemies in the game
         this.enemyManager = new EnemyManager([this.enemyPlasmaBulletPool, this.enemyMissilePool], this.shipGroup, this.comboMeter);
-        // Create a player
         this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.playerMissilePool], 80, 40, this.enemyManager.getEnemies(), this.shipGroup, this.comboMeter);
-        this.enemyManager.setPlayer(this.player);
+        this.enemyManager.setTarget(this.player);
         this.healthIndicator = new HealthIndicator(this.player);
         this.player.healthIndicator = this.healthIndicator;
         this.uiGroup.add(this.healthIndicator);
@@ -1459,9 +1431,7 @@ class GameState extends Phaser.State {
     }
 }
 class Preloader extends Phaser.State {
-    // Preload all assets
     preload() {
-        // Images menu
         game.load.image("startscreen_background", "assets/Images/Backgrounds/StartScreen/startscreen_background.jpg");
         game.load.image("startscreen_title", "assets/Images/Backgrounds/StartScreen/startscreen_title.png");
         game.load.image("insert_coin_text", "assets/Images/Backgrounds/StartScreen/startscreen_coin_text.png");
@@ -1475,7 +1445,11 @@ class Preloader extends Phaser.State {
         game.load.image("menu_selection_overlay", "assets/Images/UI/CharacterSelect/selection_overlay.png");
         game.load.image("menu_welcome_bar", "assets/Images/UI/CharacterSelect/welcome_bar.png");
         game.load.image("menu_name_overlay", "assets/Images/UI/CharacterSelect/name_overlay.png");
-        // Images game
+        game.load.image("tutorial_1", "assets/Images/UI/Tutorial/Tutorial1.png");
+        game.load.image("tutorial_2", "assets/Images/UI/Tutorial/Tutorial2.png");
+        game.load.image("tutorial_3", "assets/Images/UI/Tutorial/Tutorial3.png");
+        game.load.image("tutorial_dots", "assets/Images/UI/Tutorial/Dots.png");
+        game.load.image("chat_logo", "assets/Images/UI/Tutorial/Chats.png");
         game.load.image("plasma_bullet_player", "assets/Images/Projectiles/bullet_player.png");
         game.load.image("plasma_bullet_enemy", "assets/Images/Projectiles/bullet_enemy.png");
         game.load.image("missile_enemy", "assets/Images/Projectiles/missile_enemy.png");
@@ -1492,7 +1466,6 @@ class Preloader extends Phaser.State {
         game.load.image("pickup_repair", "assets/Images/Pickups/pickup_health.png");
         game.load.image("pickup_plasma", "assets/Images/Pickups/pickup_plasma.png");
         game.load.image("pickup_missile", "assets/Images/Pickups/pickup_missile.png");
-        // Spritesheets
         game.load.spritesheet("game_background", "assets/Images/Backgrounds/game_background.jpg", 512, 2048, 4);
         game.load.spritesheet("ships_player", "assets/SpriteSheets/Ships/player_ship_sheet.png", 128, 128, 4);
         game.load.spritesheet("ships_enemy_orange", "assets/SpriteSheets/Ships/enemy_ship_sheet_orange.png", 128, 128, 3);
@@ -1509,10 +1482,8 @@ class Preloader extends Phaser.State {
         game.load.spritesheet("combo_small", "assets/SpriteSheets/Animations/combo_small.png", 256, 192, 12);
         game.load.spritesheet("combo_big", "assets/SpriteSheets/Animations/combo_big.png", 256, 192, 12);
         game.load.spritesheet("indicator", "assets/SpriteSheets/Animations/indicator.png", 256, 256);
-        // Audio Music
         game.load.audio("music_menu", "assets/Audio/Music/music_menu.mp3");
         game.load.audio("music_game", "assets/Audio/Music/music_game.mp3");
-        // Audio SFX
         game.load.audio("button_click", "assets/Audio/SFX/button_click_1.mp3");
         game.load.audio("startscreen_entry", "assets/Audio/SFX/startscreen_entry.mp3");
         game.load.audio("menu_entry", "assets/Audio/SFX/menu_entry.mp3");
@@ -1526,7 +1497,6 @@ class Preloader extends Phaser.State {
         game.load.audio("select_hyun", "assets/Audio/SFX/character_select_hyun.mp3");
         game.load.audio("select_kimmy", "assets/Audio/SFX/character_select_kimmy.mp3");
         game.load.audio("select_stacey", "assets/Audio/SFX/character_select_stacey.mp3");
-        // JSON
         game.load.tilemap("wave01", "assets/WaveData/wave01.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave02", "assets/WaveData/wave02.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave03", "assets/WaveData/wave03.json", null, Phaser.Tilemap.TILED_JSON);
@@ -1535,7 +1505,6 @@ class Preloader extends Phaser.State {
         game.load.tilemap("wave06", "assets/WaveData/wave06.json", null, Phaser.Tilemap.TILED_JSON);
         game.load.tilemap("wave07", "assets/WaveData/wave07.json", null, Phaser.Tilemap.TILED_JSON);
     }
-    // After the preload function is done, the create function is called which starts the GameState
     create() {
         menuMusic = game.add.audio("music_menu", 1, true);
         gameMusic = game.add.audio("music_game", 1, true);
@@ -1549,14 +1518,13 @@ class App {
     }
     create() {
         game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
-        game.physics.startSystem(Phaser.Physics.ARCADE); // Start the arcade physics system
-        // Add the various states the game goes through
+        game.physics.startSystem(Phaser.Physics.ARCADE);
         game.state.add("Preload", Preloader);
         game.state.add("Start", StartState);
+        game.state.add("Tutorial", TuorialState);
         game.state.add("Menu", MenuState);
         game.state.add("Game", GameState);
         game.state.add("GameOver", GameOver);
-        // Start the preload state
         game.state.start("Preload");
     }
 }

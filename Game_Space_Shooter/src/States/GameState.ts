@@ -1,4 +1,7 @@
-﻿class GameState extends Phaser.State {
+﻿/**
+ * @description State that contains the game screen
+ */
+class GameState extends Phaser.State {
     private player: Player;
     private level: Level;
     private healthIndicator: HealthIndicator;
@@ -17,10 +20,16 @@
     private missileGroup: Phaser.Group;
     private uiGroup: Phaser.Group;
 
+    /**
+     * @description Execute initiation logic
+     * @param _characterNumber
+     */
     init(_characterNumber) {
         this.characterNumber = _characterNumber;
     }
-
+    /**
+     * @description Executes on the creation of this state
+     */
     create() {
         menuMusic.stop();
         gameMusic.play();
@@ -48,7 +57,7 @@
         // Create a player
         this.player = new Player(this.characterNumber, [this.playerPlasmaBulletPool, this.playerMissilePool], 80, 40, this.enemyManager.getEnemies(), this.shipGroup, this.comboMeter);
 
-        this.enemyManager.setPlayer(this.player);
+        this.enemyManager.setTarget(this.player); // Set the target for the enemies
 
         this.healthIndicator = new HealthIndicator(this.player);
         this.player.healthIndicator = this.healthIndicator;
@@ -63,7 +72,9 @@
         game.input.onDown.add(function () { if (game.paused) { game.paused = false; } }, this);
         game.add.existing(pauseButton);
     }
-
+    /**
+     * @description Executes every frame
+     */
     update() {
         this.level.update();
         this.enemyManager.update();

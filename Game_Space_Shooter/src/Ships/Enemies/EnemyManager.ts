@@ -1,4 +1,7 @@
-﻿class EnemyManager {
+﻿/**
+ * @description Class managing enemy objects
+ */
+class EnemyManager {
 
     private enemies: Array<Enemy>;
     private movenments: EnemyMovements;
@@ -40,7 +43,9 @@
         this.waves.push(game.add.tilemap("wave06"));
         this.waves.push(game.add.tilemap("wave07"));
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         if (this.activeLevel == false) {
             this.timer -= game.time.physicsElapsedMS;
@@ -68,7 +73,9 @@
             }
         }
     }
-
+    /**
+     * @description Spawn a wave of enemies
+     */
     private spawnWave() {
         let waveToSpawn: number = Math.floor(Math.random() * 6);
         let enemytoPickup = Math.floor(Math.random() * this.waves[waveToSpawn].objects["Ships"].length);;
@@ -106,12 +113,19 @@
             this.spriteGroup.add(newEnemy);
         }
     }
-
-    public setPlayer(_player: Player) {
+    /**
+     * @description Set the target of the enemies and their weapon systems
+     * @param _player
+     */
+    public setTarget(_player: Player) {
         this.player = _player;
         this.weapons = new EnemyWeapons(this.projectilePools, this.player);
     }
-
+    /**
+     * @description Kill off a given enemy and remove it from the game
+     * @param _enemy
+     * @param score
+     */
     private killEnemy(_enemy: Enemy, score: number) {
         this.scoreCounter.onScoreChange(score);
         this.comboMeter.onMeterChange(5);
@@ -122,7 +136,9 @@
         ArrayMethods.removeObject(this.enemies, _enemy);
         _enemy.destroy();
     }
-
+    /**
+     * @description Get the array of enemies
+     */
     public getEnemies(): Array<Enemy> {
         return this.enemies;
     }

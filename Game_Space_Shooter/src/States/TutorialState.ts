@@ -1,9 +1,18 @@
-﻿class TuorialState extends Phaser.State {
+﻿/**
+ * @description State that holds the tutorial screen
+ */
+class TuorialState extends Phaser.State {
+
     private background: Phaser.Sprite;
     private tutorials: Array<Phaser.Sprite>;
     private dots: Phaser.Sprite;
     private clicks: number;
     private clicked: boolean;
+    private clickSound: Phaser.Sound;
+
+    /**
+     * @description Executes on the creation of this state
+     */
     create() {
         this.clicked = false;
         this.clicks = 0;
@@ -14,6 +23,7 @@
         game.add.existing(chat);
         game.add.existing(this.dots);
 
+        this.clickSound = new Phaser.Sound(game, "button_click", 1, false);
 
         this.tutorials = new Array<Phaser.Sprite>();
         this.tutorials[0] = new Phaser.Sprite(game, 256, 100, 'tutorial_1');
@@ -26,7 +36,9 @@
 
         game.camera.flash(0x000000, 1000);
     }
-
+    /**
+     * @description Executes every frame
+     */
     update() {
         if (this.clicked == false && game.input.activePointer.isDown) {
             this.clicked = true;
@@ -36,19 +48,20 @@
             this.clicked = false;
         }
     }
-
+    /**
+     * @description Displays the next tutorial screen and switches to the Menu state
+     */
     private nextTutorial() {
+        this.clickSound.play();
         this.clicks++
         if (this.clicks < this.tutorials.length) {
             game.add.existing(this.tutorials[this.clicks]);
             this.dots.y += 200;
-        }
-        else {
+        } else {
             this.camera.onFadeComplete.add(function () {
                 game.state.start("Menu", true, false);
             });
             game.camera.fade(0x000000, 1000);
         }
-        
     }
 }

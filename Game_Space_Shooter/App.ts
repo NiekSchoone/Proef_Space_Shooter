@@ -2,12 +2,17 @@
 declare var menuMusic: Phaser.Sound;
 declare var gameMusic: Phaser.Sound;
 
+/**
+ * @description Class creating the game canvas and the states of the game
+ */
 class App {
     constructor() {
         game = new Phaser.Game(512, 910, Phaser.AUTO, 'content', { create: this.create });
         game.stage = new Phaser.Stage(game);
     }
-
+    /**
+     * @description Called after the constructor
+     */
     create() {
         game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
 

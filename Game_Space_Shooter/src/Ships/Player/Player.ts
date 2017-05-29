@@ -1,3 +1,6 @@
+/**
+ * @description Class controlling the player character
+ */
 class Player extends Ship {
     private moveDir: Vector2;
     private exhaustAnimation: Phaser.Sprite;
@@ -76,13 +79,19 @@ class Player extends Ship {
         this.plasmaUpgradeCount = 0;
         this.missileUpgradeCount = 0;
     }
-
+    /**
+     * @description Handles what happens when the player gets hit
+     * @param _amount
+     */
     public onHit(_amount: number) {
         super.onHit(_amount);
         this.healthIndicator.onHealthChange();
         this.onHitTween.start();
     }
-
+    /**
+     * @description Handles what happens when the player grabs a pickup
+     * @param _pickupType
+     */
     public handlePickup(_pickupType: PickupType) {
         if (_pickupType == PickupType.REPAIR) {
             this.onHealAnimation.visible = true;
@@ -110,7 +119,9 @@ class Player extends Ship {
         }
         this.powerupSound.play();
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         for (let i = 0; i < this.plasmaWeapons.length; i++) {
             this.plasmaWeapons[i].update();
@@ -142,13 +153,16 @@ class Player extends Ship {
         this.exhaustAnimation.position.setTo(this.vectorPosition.X, this.vectorPosition.Y);
         super.update();
     }
-
-    // Set targets that the player's weapon can hit
+    /**
+     * @description Set the targets that the player can hit with his weapons
+     * @param _targets
+     */
     public setTargets(_targets: Array<Enemy>) {
         this.enemies = _targets;
-        this.plasmaWeapons = this.playerUpgrades.plasmaUpgradeZero();
     }
-
+    /**
+     * @description Execute when the player gets destroyed
+     */
     protected die() {
         super.die();
         this.destroy(true);

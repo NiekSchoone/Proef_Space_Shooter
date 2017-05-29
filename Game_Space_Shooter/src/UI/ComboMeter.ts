@@ -1,11 +1,14 @@
-﻿class ComboMeter {
-
+﻿/**
+ * @description Handles the visual representation of when a combo is ready to be executed
+ */
+class ComboMeter {
     private maxComboFuel: number;
     private currentComboFuel: number;
     private bars: number;
     private barSections: Array<Phaser.Sprite>;
     private comboReady: boolean;
     private spriteGroup: Phaser.Group;
+
     constructor(_group: Phaser.Group) {
         this.maxComboFuel = 100;
         this.currentComboFuel = 0;
@@ -17,7 +20,9 @@
 
         this.onMeterChange(0);
     }
-
+    /**
+     * @description Create the visual representation of the combo meter
+     */
     private setBarSprites() {
         var step = 20;
         for (var i = 0; i < this.bars; i++) {
@@ -40,7 +45,6 @@
             this.barSections.push(bar);
         }
     }
-
     /**
      * @description Applies a given value to the current amount of combo fuel
      * @param _amount

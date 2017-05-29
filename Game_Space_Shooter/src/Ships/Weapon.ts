@@ -1,4 +1,7 @@
-﻿class Weapon {
+﻿/**
+ * @description Class that fires projectiles
+ */
+class Weapon {
     private cooldown: number;
     private timer: number;
     private projectilePool: ProjectilePool;
@@ -19,7 +22,9 @@
         this.behaviour = _behaviour;
         this.timer = _cooldown;
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         if (this.cooldown > 0) {
             this.timer -= game.time.physicsElapsedMS;
@@ -27,26 +32,37 @@
                 this.timer = this.cooldown;
                 this.fire();
             }
-            
         }
         if (this.behaviour != null) {
             this.behaviour();
         }
     }
-
+    /**
+     * @description Get a projectile from the projectile pool and fire it
+     */
     public fire() {
         this.vectorPosition = Vector2.copy(this.shipPosition).add(this.relativePosition);
         let newProj = this.projectilePool.getProjectile();
         newProj.setTarget(this.targets);
         newProj.fire(this.vectorPosition, this.fireAngle);
     }
-    // Set the angle the projectiles will fire towards
+    /**
+     * @description Set the angle at which projectiles fire out of this weapon
+     * @param _angle
+     */
     public setAngle(_angle: number) {
         this.fireAngle = _angle;
     }
+    /**
+     * @description Get the angle at which the projectiles fire out of this weapon
+     */
     public getAngle(): number {
         return this.fireAngle;
     }
+    /**
+     * @description Set the position of this weapon relative to the position of the ship that owns it
+     * @param _relativePosition
+     */
     public setPosition(_relativePosition: Vector2) {
         this.relativePosition = _relativePosition;
     }

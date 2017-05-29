@@ -1,4 +1,7 @@
-﻿class HealthIndicator extends Phaser.Sprite{
+﻿/**
+ * @description A sprite that indicates the amount of health the player has left
+ */
+class HealthIndicator extends Phaser.Sprite{
 
     private bars: number;
     private barSections: Array<Phaser.Sprite>;
@@ -12,10 +15,11 @@
         this.barSections = new Array<Phaser.Sprite>();
         this.setBarSprites();
         game.add.existing(this);
-
         this.onHealthChange();
     }
-
+    /**
+     * @description Create the visual representation of the health bars
+     */
     private setBarSprites() {
         var angle = -0.95;
         var step = (Math.PI) / 7.15;
@@ -33,11 +37,11 @@
             angle += step;
         }
     }
-
-    // Executed on a change in the players HP
+    /**
+     * @description Handles what happens on a change in the players health points
+     */
     public onHealthChange() {
-        // Calculate the number of health blocks that will be set invisible;
-        let sum = Math.ceil((this.player.currentHP / this.player.maxHP) * 8);
+        let sum = Math.ceil((this.player.currentHP / this.player.maxHP) * 8); // Calculate the number of health blocks that will be set invisible
         let arrayBars = this.bars - 1;
         for (var i = 0; i < this.bars; i++) {
             if (i < sum) {

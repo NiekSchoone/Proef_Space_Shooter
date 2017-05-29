@@ -1,4 +1,7 @@
-﻿class Projectile extends Phaser.Sprite {
+﻿/**
+ * @description Sprite that has the functionality of a projectile
+ */
+class Projectile extends Phaser.Sprite {
 
     public projectileType: ProjectileType;
     public vectorPosition: Vector2;
@@ -29,7 +32,9 @@
             game.add.existing(this.hitAnimation);
         }
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         if (this.active) {
             this.vectorPosition.add(this.velocity);
@@ -38,8 +43,11 @@
             this.checkBounds();
         }
     }
-
-    // Fires a bullet from a given position and angle
+    /**
+     * @description Fires a projectile from a given position and angle
+     * @param _pos
+     * @param _rotation
+     */
     public fire(_pos: Vector2, _rotation: number) {
         this.angle = _rotation;
         let angleVelocity = game.physics.arcade.velocityFromAngle(this.angle - 90, this.speed);
@@ -51,13 +59,16 @@
             this.animations.play(this.key as string);
         }
     }
-
-    // Set targets this projectile can hit
+    /**
+     * @description Set the targets that this projectile can hit
+     * @param _targets
+     */
     public setTarget(_targets: Array<Ship>) {
         this.targets = _targets;
     }
-
-    // Checks each posible hit target
+    /**
+     * @description Check if collision is made with any targets
+     */
     protected checkCollision() {
         if (this.targets != null) {
             for (let i = 0; i < this.targets.length; i++) {
@@ -69,15 +80,18 @@
             }
         }
     }
-
-    // Check if the position of this projectile is out of the bounds of the level
+    /**
+     * @description Check if the position of a projectile is outside of the level's bounds
+     */
     protected checkBounds() {
         if (this.vectorPosition.Y <= -20 || this.vectorPosition.Y >= game.height + 20 || this.vectorPosition.X >= game.width + 20 || this.vectorPosition.X <= -20) {
             this.returnToPool(this);
         }
     }
-
-    // On hitting a target the projectile will return to the pool and apply damage on the target
+    /**
+     * @description Handles what happens when a projectile hits a given target
+     * @param _target
+     */
     protected onHit(_target: Ship) {
         if (this.hitAnimation != null) {
             if (this.randomHitRotation) {
@@ -91,8 +105,9 @@
         _target.onHit(this.damageAmount);
         this.returnToPool(this);
     }
-
-    // Reset the values of this projectile to their default values
+    /**
+     * @description Reset the values of a projectile to its default values
+     */
     public resetValues() {
         this.active = false;
         this.visible = false;
@@ -102,7 +117,9 @@
         this.animations.frame = 0;
     }
 }
-
+/**
+ * @description All possible types of projectiles
+ */
 enum ProjectileType {
     PLASMABULLET,
     MISSILE

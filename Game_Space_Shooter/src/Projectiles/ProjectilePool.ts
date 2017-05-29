@@ -1,4 +1,7 @@
-﻿class ProjectilePool {
+﻿/**
+ * @description An object pool for projectiles
+ */
+class ProjectilePool {
 
     private available: Array<Projectile>;
     private inUse: Array<Projectile>;

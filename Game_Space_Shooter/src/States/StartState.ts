@@ -1,11 +1,16 @@
-﻿class StartState extends Phaser.State {
+﻿/**
+ * @description State that contains the title screen
+ */
+class StartState extends Phaser.State {
 
     private background: Phaser.Sprite;
     private title: Phaser.Sprite;
     private insertCoin: Phaser.Sprite;
 
     private exitSound: Phaser.Sound;
-
+    /**
+     * @description Executes on the creation of this state
+     */
     create() {
         this.background = new Phaser.Sprite(game, 0, 0, 'startscreen_background');
         this.title = new Phaser.Sprite(game, 0, -400, 'startscreen_title');
@@ -24,14 +29,18 @@
 
         menuMusic.play();
     }
-
+    /**
+     * @description Executes every frame
+     */
     update() {
         if (game.input.pointer1.isDown || game.input.mousePointer.isDown) {
-            this.startMenu();
+            this.startTutorial();
         }
     }
-
-    private startMenu() {
+    /**
+     * @description Starts the tutorial state
+     */
+    private startTutorial() {
         this.exitSound.play();
         this.camera.onFadeComplete.add(function () {
             game.state.start("Tutorial", true, false);

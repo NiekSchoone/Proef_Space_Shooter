@@ -1,4 +1,7 @@
-﻿class Missile extends Projectile {
+﻿/**
+ * @description A type of projectile
+ */
+class Missile extends Projectile {
 
     constructor(_toPool: Function, _tex: string, _hitAnim: string) {
         super(_toPool, _tex, _hitAnim, false);

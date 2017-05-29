@@ -75,6 +75,11 @@
     <Content Include="assets\Images\UI\Indicators\crosshair.png" />
     <Content Include="assets\Images\UI\Indicators\health_bar.png" />
     <Content Include="assets\Images\UI\Indicators\health_circle.png" />
+    <Content Include="assets\Images\UI\Tutorial\Chats.png" />
+    <Content Include="assets\Images\UI\Tutorial\Dots.png" />
+    <Content Include="assets\Images\UI\Tutorial\Tutorial1.png" />
+    <Content Include="assets\Images\UI\Tutorial\Tutorial2.png" />
+    <Content Include="assets\Images\UI\Tutorial\Tutorial3.png" />
     <Content Include="assets\Images\UI\ui_overlay.png" />
     <Content Include="assets\Images\Pickups\pickup_health.png" />
     <Content Include="assets\SpriteSheets\Animations\character_select_animation.png" />
@@ -115,7 +120,6 @@
     <TypeScriptCompile Include="src\States\StartState.ts" />
     <TypeScriptCompile Include="src\States\MenuState.ts" />
     <TypeScriptCompile Include="src\Ships\Enemies\EnemyManager.ts" />
-    <TypeScriptCompile Include="src\Utils\AnimationHandler.ts" />
     <TypeScriptCompile Include="src\Utils\ArrayMethods.ts" />
     <TypeScriptCompile Include="src\Utils\ScreenShakeHandler.ts" />
     <TypeScriptCompile Include="src\Utils\Vector2.ts" />
@@ -193,7 +197,7 @@
     <TypeScriptSourceRoot />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
     <TypeScriptTarget>ES6</TypeScriptTarget>
     <TypeScriptJSXEmit>None</TypeScriptJSXEmit>

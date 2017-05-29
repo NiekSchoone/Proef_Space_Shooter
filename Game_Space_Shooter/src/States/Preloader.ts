@@ -1,8 +1,12 @@
-﻿class Preloader extends Phaser.State {
+﻿/**
+ * @description State that loads all the assets into the cache
+ */
+class Preloader extends Phaser.State {
 
-    // Preload all assets
+    /**
+     * @description Loads all assets
+     */
     preload() {
-
         // Images menu
         game.load.image("startscreen_background", "assets/Images/Backgrounds/StartScreen/startscreen_background.jpg");
         game.load.image("startscreen_title", "assets/Images/Backgrounds/StartScreen/startscreen_title.png");
@@ -100,7 +104,9 @@
         game.load.tilemap("wave07", "assets/WaveData/wave07.json", null, Phaser.Tilemap.TILED_JSON);
     }
 
-    // After the preload function is done, the create function is called which starts the GameState
+    /**
+     * @description Executes after the preload function
+     */
     create() {
         menuMusic = game.add.audio("music_menu", 1, true);
         gameMusic = game.add.audio("music_game", 1, true);

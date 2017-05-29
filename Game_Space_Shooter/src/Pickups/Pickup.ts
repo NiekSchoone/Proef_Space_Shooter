@@ -1,4 +1,7 @@
-﻿class Pickup extends Phaser.Sprite {
+﻿/**
+ * @description Sprite containing functionality of a pickup
+ */
+class Pickup extends Phaser.Sprite {
 
     private pickupType: PickupType;
     private vectorPosition: Vector2;
@@ -26,7 +29,9 @@
                 break;
         }
     }
-
+    /**
+     * @description Executes every frame
+     */
     public update() {
         if (this.speed < 5) {
             this.speed += 0.04;
@@ -37,18 +42,24 @@
         this.checkCollision();
         this.checkBounds();
     }
-
+    /**
+     * @description Executes when collision is made with the player
+     */
     private onHit() {
         this.player.handlePickup(this.pickupType);
         this.destroy();
     }
-
+    /**
+     * @description Checks if the position of this pickup is outside of the level's bounds
+     */
     private checkBounds() {
         if (this.vectorPosition.Y < -20 || this.vectorPosition.Y > game.height + 20 || this.vectorPosition.X > game.width + 20 || this.vectorPosition.X < -20) {
             this.destroy();
         }
     }
-
+    /**
+     * @description Check if the pickup collides with the player's bounds
+     */
     private checkCollision() {
         let distance = Vector2.distance(this.vectorPosition, this.player.vectorPosition);
 
@@ -57,7 +68,9 @@
         }
     }
 }
-
+/**
+ * @description All possible types of pickup
+ */
 enum PickupType {
     REPAIR,
     UPGRADEMISSILE,

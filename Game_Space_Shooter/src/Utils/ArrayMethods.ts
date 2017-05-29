@@ -1,5 +1,7 @@
-﻿class ArrayMethods {
-
+﻿/**
+ * @description Class containing methods affecting arrays
+ */
+class ArrayMethods {
     /**
      * @description Check if an array contains a certain value
      * @param list
@@ -10,10 +12,8 @@
             if (list[i] === obj) {
                 return true;
             }
-        }
-        return false;
+        } return false;
     }
-
     /**
      * @description Remove a value from an array
      * @param list

@@ -1,4 +1,7 @@
-﻿class ScoreIndicator extends Phaser.Text {
+﻿/**
+ * @description Text object that contains the score of the game
+ */
+class ScoreIndicator extends Phaser.Text {
 
     private style: Phaser.PhaserTextStyle;
     private currentScore: number;
@@ -10,7 +13,10 @@
         this.currentScore = 0;
         game.add.existing(this);
     }
-
+    /**
+     * @description Adds a given amount of points to the players current score
+     * @param _amount
+     */
     public onScoreChange(_amount: number) {
         this.currentScore += _amount;
         this.setText(this.currentScore.toString());
